@@ -1,0 +1,45 @@
+
+name: apiserver
+version: 0.0.1
+private: true
+
+
+repository:
+    type: git
+    url: https://github.com/okdas/apiserver.git
+
+
+config:
+    port: 4000
+    url: http://localhost
+    pid: ./apiserver.pid
+    mysql:
+        user: 123
+        password: 123
+        host: 123
+        database: 123
+
+        session:
+            secret: kitty
+
+
+
+
+scripts:
+    start: node index.js
+
+
+
+dependencies:
+    express: 3.x
+    express-namespace: latest
+
+    jade: latest
+    log: latest
+    passport: latest
+
+
+license: MIT
+engines:
+    node: ~0.8.x
+
