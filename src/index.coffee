@@ -41,7 +41,7 @@ app.configure ->
     app.use App.session
         secret: process.env.npm_package_config_auth_session_secret
 
-    app.locals.title= 'API-server'
+    app.locals.title= 'APIserver'
 
     # passport
     app.use passport.initialize()
