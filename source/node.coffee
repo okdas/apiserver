@@ -23,5 +23,6 @@ if cluster.isWorker
 
     domain= require 'domain'
     d= do domain.create
+
     d.run ->
-        node= require './node'
+        node= require './node/index'

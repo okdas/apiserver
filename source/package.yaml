@@ -9,6 +9,8 @@ scripts:
 
 dependencies:
 
+    extend: latest
+
     express: latest
     jade: latest
 

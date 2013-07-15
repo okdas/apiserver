@@ -1,12 +1,33 @@
 express= require 'express'
+extend= require 'extend'
+
 
 ###
 Приложение
 ###
 app= module.exports= do express
 
+
 ###
-Конфигурация приложения. Инициализация прослоек
+Конфигурация
+###
+cfg= require './config.json'
+
+app.configure ->
+    config= cfg.default or {}
+    app.set 'config', config
+
+app.configure 'development', ->
+    config= app.get 'config'
+    extend true, config, cfg.development or {}
+
+app.configure 'production', ->
+    config= app.get 'config'
+    extend true, config, cfg.production or {}
+
+
+###
+Конфигурация приложения
 ###
 app.configure ->
 
