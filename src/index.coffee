@@ -1,3 +1,4 @@
+config=require 'config.json'
 ns= require 'express-namespace'
 http= require 'http'
 fs= require 'fs'
@@ -12,7 +13,7 @@ app.use (req,res,next) ->
     logger.info req.ip + ' - - ' + req.method + ' ' + req.url + ' - - "' + req.headers.referer + '"  "' + req.headers['user-agent'] + '"'
     next()
 
-require('./modules/pid/')(process.env.npm_package_config_pid)
+require('./modules/pid/')(config.pid)
 
 
 
@@ -39,7 +40,7 @@ app.configure ->
     app.use App.methodOverride()
 
     app.use App.session
-        secret: process.env.npm_package_config_auth_session_secret
+        secret: config.auth.session.secret
 
     app.locals.title= 'APIserver'
 
@@ -65,7 +66,7 @@ app.configure 'development', ->
 #
 # Сервер приложения
 #
-port= process.env.npm_package_config_port
+port= config.port
 
 server = http.createServer(app)
 server.listen port, ->

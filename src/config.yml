@@ -1,0 +1,13 @@
+port: 4000
+url: http://localhost
+pid: ./apiserver.pid
+
+mysql:
+    user: 123
+    password: 123
+    host: 123
+    database: 123
+
+auth:
+    session:
+        secret: kitty
