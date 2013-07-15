@@ -10,8 +10,8 @@
         "node": "app/node"
       },
       "src": {
-        "root": "src",
-        "node": "src/node"
+        "root": "source",
+        "node": "source/node"
       }
     }
   },
