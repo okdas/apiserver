@@ -1,22 +1,21 @@
 {
-  "name": "apiserver",
+  "name": "apiserver.builder",
   "private": true,
   "config": {
-    "compile": {
-      "in": "src/",
-      "out": "app/"
+    "build": {
+      "app": {
+        "root": "app",
+        "node": "app/node"
+      },
+      "src": {
+        "root": "src",
+        "node": "src/node"
+      }
     }
   },
   "scripts": {
     "prestart": "grunt.cmd",
-    "start": "cd app && npm start",
-    "test": "grunt lint"
-  },
-  "dependencies": {
-    "express": "3.x",
-    "express-namespace": "latest",
-    "jade": "latest",
-    "log": "latest"
+    "start": "cd app && npm start"
   },
   "devDependencies": {
     "grunt": "latest",

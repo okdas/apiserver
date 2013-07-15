@@ -1,8 +1,9 @@
 module.exports= (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
+
         clean:
-            all: ['<%= pkg.config.compile.out %>/']
+            all: ['<%= pkg.config.build.app.node %>/']
 
         coffee:
             main:
@@ -11,9 +12,9 @@ module.exports= (grunt) ->
                 files: [
                     {
                         expand: true
-                        cwd: '<%= pkg.config.compile.in %>'
+                        cwd: '<%= pkg.config.build.src.root %>'
                         src: ['**/*.coffee']
-                        dest: '<%= pkg.config.compile.out %>'
+                        dest: '<%= pkg.config.build.app.root %>'
                         ext: '.js'
                     }
                 ]
@@ -26,57 +27,40 @@ module.exports= (grunt) ->
                 files: [
                     {
                         expand: true
-                        cwd: '<%= pkg.config.compile.in %>'
+                        cwd: '<%= pkg.config.build.src.root %>'
                         src: ['**/*.yaml', '**/*.yml']
-                        dest: '<%= pkg.config.compile.out %>/'
+                        dest: '<%= pkg.config.build.app.root %>/'
                         ext: '.json'
                     }
                 ]
 
         copy:
-            modules: 
+            views:
                 files: [
                     {
                         expand: true
-                        cwd: '<%= pkg.config.compile.in %>'
-                        src: ['**/*.py', '**/*.sh']
-                        dest: '<%= pkg.config.compile.out %>'
-                    }
-                ]
-            static:
-                files: [
-                    {
-                        expand: true
-                        cwd: '<%= pkg.config.compile.in %>/views'
+                        cwd: '<%= pkg.config.build.src.node %>/views'
                         src: ['**/*', '!**/*.coffee', '!**/*.md']
-                        dest: '<%= pkg.config.compile.out %>/views'
-                    }
-                ]
-            readme:
-                {
-                    src: '<%= pkg.config.compile.in %>/readme.md'
-                    dest: '<%= pkg.config.compile.out %>/readme.md'
-                }
-
-        coffeelint:
-            app:
-                options:
-                    indentation:
-                        level: 'error'
-                        value: 4
-                    line_endings:
-                        value: 'unix'
-                        level: 'error'
-                    max_line_length:
-                        level: 'warn'
-                files: [
-                    {
-                        src: '<%= pkg.config.compile.in %>/**/*.coffee'
+                        dest: '<%= pkg.config.build.app.node %>/views'
                     }
                 ]
 
-
-
+        #coffeelint:
+        #    app:
+        #        options:
+        #            indentation:
+        #                level: 'error'
+        #                value: 4
+        #            line_endings:
+        #                value: 'unix'
+        #                level: 'error'
+        #            max_line_length:
+        #                level: 'warn'
+        #        files: [
+        #            {
+        #                src: '<%= pkg.config.compile.in %>/**/*.coffee'
+        #            }
+        #        ]
 
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-copy'
@@ -85,4 +69,4 @@ module.exports= (grunt) ->
     grunt.loadNpmTasks 'grunt-coffeelint'
 
     grunt.registerTask 'default', ['clean', 'yaml', 'coffee', 'copy']
-    grunt.registerTask 'lint', ['coffeelint']
+    #grunt.registerTask 'lint', ['coffeelint']
