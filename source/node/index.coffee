@@ -65,3 +65,13 @@ app.configure ->
     # Шаблоны вида
     app.set 'views', __dirname + '/views/templates'
     app.set 'view engine', 'jade'
+
+
+###
+Обработчик api приложения
+###
+app.configure ->
+    apiv1= require './api/v1'
+    apiv1.set 'domain', app.get 'domain'
+
+    app.use '/api/v1', apiv1
