@@ -1,7 +1,10 @@
-module.exports=
+PlayerResource= require './Player'
+ServerResource= require './Server'
+
+module.exports= (db) ->
 
     # Игрок
-    Player: require './Player'
+    Player: new PlayerResource db
 
     # Сервер
-    Server: require './Server'
+    Server: new ServerResource db

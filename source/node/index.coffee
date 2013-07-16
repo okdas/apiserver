@@ -39,10 +39,11 @@ app.configure ->
 ###
 Предметная область приложения
 ###
-domain= require './domain'
+Domain= require './domain'
 
 app.configure ->
-    app.set 'domain', domain
+    db= app.get 'db'
+    app.set 'domain', Domain db
 
 
 ###
