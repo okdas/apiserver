@@ -30,9 +30,19 @@ app.configure 'production', ->
 База данных приложения
 ###
 Db= require './db'
+
 app.configure ->
     config= app.get 'config'
     app.set 'db', Db config.db
+
+
+###
+Предметная область приложения
+###
+domain= require './domain'
+
+app.configure ->
+    app.set 'domain', domain
 
 
 ###
