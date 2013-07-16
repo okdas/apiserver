@@ -25,4 +25,7 @@ if cluster.isWorker
     d= do domain.create
 
     d.run ->
-        node= require './node/index'
+        app= require './node/index'
+        cfg= app.get 'config'
+        app.listen cfg.port, ->
+            console.log "apiserver listening on #{cfg.port}"
