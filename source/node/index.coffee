@@ -9,7 +9,7 @@ app= module.exports= do express
 
 
 ###
-Конфигурация
+Конфиг приложения
 ###
 cfg= require './config.json'
 
@@ -27,7 +27,16 @@ app.configure 'production', ->
 
 
 ###
-Конфигурация приложения
+База данных приложения
+###
+Db= require './db'
+app.configure ->
+    config= app.get 'config'
+    app.set 'db', Db config.db
+
+
+###
+Прослойки приложения
 ###
 app.configure ->
 
