@@ -1,5 +1,6 @@
 express= require 'express'
 extend= require 'extend'
+fs= require 'fs'
 
 
 ###
@@ -46,6 +47,20 @@ app.configure ->
     app.set 'domain', Domain db
 
 
+
+
+
+###
+Логирование
+###
+Logger= require 'log'
+
+logStream = fs.createWriteStream './themain.log'
+logger= new Logger 'main', logStream
+logger.info "Server started on #{app.get('config').port}"
+
+
+
 ###
 Прослойки приложения
 ###
@@ -65,6 +80,12 @@ app.configure ->
     # Шаблоны вида
     app.set 'views', __dirname + '/views/templates'
     app.set 'view engine', 'jade'
+
+    app.set 'logger', logger
+
+    app.use express.logger
+        format: ':remote-addr - - [:date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
+        stream: logStream
 
 
 ###
