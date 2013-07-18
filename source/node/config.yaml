@@ -8,6 +8,8 @@ default:
 
         charset: UTF8_GENERAL_CI
 
+    logfile: './main.log'
+
 
 
 development:

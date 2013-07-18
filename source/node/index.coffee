@@ -55,9 +55,13 @@ app.configure ->
 ###
 Logger= require 'log'
 
-logStream = fs.createWriteStream './themain.log'
+logStream = fs.createWriteStream app.get('config').logfile
 logger= new Logger 'main', logStream
 logger.info "Server started on #{app.get('config').port}"
+
+app.use (req,res,next) ->
+    logger.info "#{req.ip} - - #{req.method} #{req.url} \"#{req.headers.referer}\"  \"#{req.headers['user-agent']}\""
+    next()
 
 
 
@@ -82,10 +86,6 @@ app.configure ->
     app.set 'view engine', 'jade'
 
     app.set 'logger', logger
-
-    app.use express.logger
-        format: ':remote-addr - - [:date] ":method :url HTTP/:http-version" :status :res[content-length] ":referrer" ":user-agent"'
-        stream: logStream
 
 
 ###
