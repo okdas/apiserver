@@ -62,11 +62,25 @@ module.exports= (grunt) ->
         #            }
         #        ]
 
+        docco:
+            debug:
+                src: ['**/*.coffee'],
+                options:
+                    output: 'spec/docs/'
+
+
+
+
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-copy'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-yaml'
     grunt.loadNpmTasks 'grunt-coffeelint'
+    grunt.loadNpmTasks 'grunt-docco'
 
     grunt.registerTask 'default', ['clean', 'yaml', 'coffee', 'copy']
     #grunt.registerTask 'lint', ['coffeelint']
+    grunt.registerTask 'doc', ['docco']
+
+
+
