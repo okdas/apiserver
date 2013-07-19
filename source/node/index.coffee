@@ -82,6 +82,19 @@ module.exports= (cfg, log) ->
 
 
 
+    ###
+    База данных приложения
+    ###
+    orm= require 'orm'
+
+    app.configure ->
+        config= app.get 'config'
+        app.use orm.express config.db,
+            define: (db) ->
+                db.load 'models'
+
+
+
     Store= require './modules/Store'
     store= new Store app.get 'db'
 
