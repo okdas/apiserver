@@ -11,7 +11,7 @@ app= module.exports= do express
 ###
 Конфиг приложения
 ###
-cfg= require './config.json'
+cfg= require('../package.json').config
 
 app.configure ->
     config= cfg.default or {}
@@ -54,7 +54,7 @@ app.configure ->
 ###
 Logger= require 'log'
 
-logStream = fs.createWriteStream app.get('config').logfile
+logStream = fs.createWriteStream cfg.logfile
 logger= new Logger 'main', logStream
 logger.info "Server started on #{app.get('config').port}"
 
@@ -174,3 +174,6 @@ app.post '/api/v1/store/packages', (req, res) ->
             res.json 201, pkg
         else
             res.json 500, err
+
+
+

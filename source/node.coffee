@@ -1,5 +1,6 @@
 cluster= require 'cluster'
 os= require 'os'
+cfg= require('./package.json').config
 
 ###
 
@@ -9,6 +10,7 @@ os= require 'os'
 
 ###
 if cluster.isMaster
+    require('pid')(cfg.pidfile)
 
     nWorkers= (do os.cpus).length
     for i in [1..nWorkers]
