@@ -28,4 +28,6 @@ if cluster.isWorker
         app= require './node/index'
         cfg= app.get 'config'
         app.listen cfg.port, ->
-            console.log "apiserver listening on #{cfg.port}"
+            console.log "apiserver listening on #{cfg.port}, worker #{cluster.worker.id}"
+
+

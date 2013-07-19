@@ -1,5 +1,6 @@
 express= require 'express'
 extend= require 'extend'
+fs= require 'fs'
 
 ###
 Приложение
@@ -45,6 +46,24 @@ app.configure ->
     app.set 'domain', Domain db
 
 
+
+
+
+###
+Логирование
+###
+Logger= require 'log'
+
+logStream = fs.createWriteStream app.get('config').logfile
+logger= new Logger 'main', logStream
+logger.info "Server started on #{app.get('config').port}"
+
+app.use (req,res,next) ->
+    logger.info "#{req.ip} - - #{req.method} #{req.url} \"#{req.headers.referer}\"  \"#{req.headers['user-agent']}\""
+    next()
+
+
+
 ###
 Лог запросов приложения
 ###
@@ -70,6 +89,8 @@ app.configure ->
     # Шаблоны вида
     app.set 'views', __dirname + '/views/templates'
     app.set 'view engine', 'jade'
+
+    app.set 'logger', logger
 
 
 

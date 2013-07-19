@@ -58,7 +58,7 @@ module.exports= (grunt) ->
         #                level: 'warn'
         #        files: [
         #            {
-        #                src: '<%= pkg.config.compile.in %>/**/*.coffee'
+        #                src: '<%= pkg.config.build.src.root %>/**/*.coffee'
         #            }
         #        ]
 
@@ -75,7 +75,7 @@ module.exports= (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-copy'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-yaml'
-    grunt.loadNpmTasks 'grunt-coffeelint'
+    #grunt.loadNpmTasks 'grunt-coffeelint'
     grunt.loadNpmTasks 'grunt-docco'
 
     grunt.registerTask 'default', ['clean', 'yaml', 'coffee', 'copy']
