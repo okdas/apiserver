@@ -1,6 +1,11 @@
 cluster= require 'cluster'
 os= require 'os'
+
+fs= require 'fs'
+Log= require 'log'
+
 cfg= require('./package.json').config
+log= new Log 'main', fs.createWriteStream cfg.logfile
 
 ###
 
@@ -27,9 +32,7 @@ if cluster.isWorker
     d= do domain.create
 
     d.run ->
-        app= require './node/index'
-        cfg= app.get 'config'
+        App= require './node/index'
+        app= App cfg, log
         app.listen cfg.port, ->
-            console.log "apiserver listening on #{cfg.port}, worker #{cluster.worker.id}"
-
-
+            log.info "apiserver listening on #{cfg.port}, worker #{cluster.worker.id}"
