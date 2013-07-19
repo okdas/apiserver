@@ -45,28 +45,28 @@ module.exports= (grunt) ->
                     }
                 ]
 
-        coffeelint:
-            app:
-                options:
-                    indentation:
-                        level: 'error'
-                        value: 4
-                    line_endings:
-                        value: 'unix'
-                        level: 'error'
-                    max_line_length:
-                        level: 'warn'
-                files: [
-                    {
-                        src: '<%= pkg.config.compile.in %>/**/*.coffee'
-                    }
-                ]
+        #coffeelint:
+        #    app:
+        #        options:
+        #            indentation:
+        #                level: 'error'
+        #                value: 4
+        #            line_endings:
+        #                value: 'unix'
+        #                level: 'error'
+        #            max_line_length:
+        #                level: 'warn'
+        #        files: [
+        #            {
+        #                src: '<%= pkg.config.build.src.root %>/**/*.coffee'
+        #            }
+        #        ]
 
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-copy'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-yaml'
-    grunt.loadNpmTasks 'grunt-coffeelint'
+    #grunt.loadNpmTasks 'grunt-coffeelint'
 
     grunt.registerTask 'default', ['clean', 'yaml', 'coffee', 'copy']
-    grunt.registerTask 'lint', ['coffeelint']
+    #grunt.registerTask 'lint', ['coffeelint']
