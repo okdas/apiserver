@@ -2,16 +2,27 @@ module.exports= (db, done) ->
 
 
     ###
-    Пользователь.
+    Группа пользователей.
     ###
-    User= db.define 'User',
+    Group= db.define 'Group',
 
-        username:
+        name:
             required: true
             type: 'text'
             size: 50
 
-        password:
+
+    ###
+    Пользователь.
+    ###
+    User= db.define 'User',
+
+        name:
+            required: true
+            type: 'text'
+            size: 50
+
+        pass:
             required: true
             type: 'text'
             size: 64
@@ -22,7 +33,7 @@ module.exports= (db, done) ->
 
 
     ###
-    Роль пользователя.
+    Роль.
     ###
     Role= db.define 'Role',
 
@@ -32,8 +43,11 @@ module.exports= (db, done) ->
             size: 50
 
 
-    # Пользователь имеет множество ролей.
-    User.hasMany 'roles', Role
+    # Группа имеет несколько пользователей.
+    Group.hasMany 'users', User
+
+    # Группа имеет несколько ролей.
+    Group.hasMany 'roles', Role
 
 
     do done
