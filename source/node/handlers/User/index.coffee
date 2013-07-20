@@ -63,7 +63,13 @@ exports.addGroup= (req, res, next) ->
 Отдает указанную группу.
 ###
 exports.getGroup= (req, res, next) ->
-    res.send 200
+    id = req.params.groupId
+
+    req.models.Group.get id, (err, group) ->
+        return next err if err
+        return res.json 200, group
+
+
 
 
 
@@ -97,7 +103,13 @@ exports.listUsers= (req, res, next) ->
 Добавляет переданного пользователя в список.
 ###
 exports.addUser= (req, res, next) ->
-    res.send 200
+    user= req.body
+
+    newUser= new req.models.User user
+    newUser.save (err) ->
+        return next err if err
+        return res.json 201, newUser
+
 
 
 
@@ -106,7 +118,12 @@ exports.addUser= (req, res, next) ->
 Отдает указанного пользователя.
 ###
 exports.getUser= (req, res, next) ->
-    res.send 200
+    id = req.params.userId
+
+    req.models.User.get id, (err, user) ->
+        return next err if err
+        return res.json 200, user
+
 
 
 
@@ -115,7 +132,25 @@ exports.getUser= (req, res, next) ->
 Отдает список групп указанного пользователя.
 ###
 exports.getGroupsOfUser= (req, res, next) ->
-    res.send 200
+    id = req.params.userId
+
+    async.waterfall [
+        (callback) ->
+            req.models.User.get id, (err, user) ->
+                callback err, user
+
+    ,   (user, callback) ->
+            user.getGroups (err, groups) ->
+                callback err, groups
+    ]
+
+    ,   (err, result) ->
+        return next err if err
+        return res.json 200, result
+
+
+    
+        
 
 
 
@@ -125,3 +160,5 @@ exports.getGroupsOfUser= (req, res, next) ->
 ###
 exports.addGroupOfUser= (req, res, next) ->
     res.send 200
+
+
