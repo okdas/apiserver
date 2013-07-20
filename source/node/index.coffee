@@ -94,7 +94,122 @@ module.exports= (cfg, log, done) ->
         Db.connect config.db, (err, db) ->
             app.set 'db', db
 
+            User= require './models/User'
+
             Store= require './models/Store'
+
+
+
+    passport= require 'passport'
+
+    passport.serializeUser (user, done) ->
+        done null, user.id
+
+    passport.deserializeUser (id, done) ->
+        done null,
+            id: id
+
+    crypto= require 'crypto'
+    sha1= (string) ->
+        hash= crypto.createHash 'sha1'
+        hash.update string
+        return hash.digest 'hex'
+
+
+
+    ###
+    Сессии пользователей приложения
+    ###
+    app.configure ->
+        # Сессия
+        app.use express.session
+            secret: 'apiserver'
+
+        app.use do passport.initialize
+
+        app.use do passport.session
+
+
+
+    ###
+
+    Методы для аутентификации пользователей
+
+    ###
+
+
+    ###
+    Отдает форму аутентификации.
+    ###
+    app.get '/login', (req, res) ->
+        console.log req.session
+        res.render 'Users/Login'
+
+
+    ###
+    Обрабатывает форму аутентификации.
+    ###
+    app.post '/login', (req, res, next) ->
+        username= req.body.username
+        password= sha1 req.body.password
+
+        db= req.app.get 'db'
+
+        # найти пользователя в базе данных
+        db.models.User.find
+            username: username
+            password: password
+        ,   (err, users) ->
+
+                if err
+                    # ошибка при поиске пользователя
+                    return next err
+
+                if not users.length
+                    # пользователь не найден
+                    return res.redirect '/login'
+
+                # пользователь найден
+                user= do users.shift
+                req.login user, (err) ->
+
+                    if err
+                        # ошибка при аутентификации пользователя
+                        return next err
+
+                    # пользователь аутентифицирован
+                    return res.redirect '/'
+
+
+    ###
+    Загружает данные аутентифицированного пользователя и его роли.
+    ###
+    loadUser= (req, res, next) ->
+
+        if not req.user
+            # пользователь не аутентифицирован
+            return res.redirect '/login'
+
+        db= req.app.get 'db'
+
+        # загрузить пользователя из базы данных
+        db.models.User.get req.user.id, (err, user) ->
+
+            if err
+                # ошибка при загрузке пользователя
+                return next err
+
+            # загрузить роли пользователя из базы данных
+            user.getRoles (err, roles) ->
+                if err
+                    # ошибка при загрузке ролей пользователя
+                    return next err
+
+                # пользователь загружен
+                req.user= user
+                req.user.roles= roles
+
+                return do next
 
 
 

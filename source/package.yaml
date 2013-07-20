@@ -64,6 +64,8 @@ dependencies:
     express: latest
     jade: latest
 
+    passport: latest
+
     log: latest
 
     orm: latest
