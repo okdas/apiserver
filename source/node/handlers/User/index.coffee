@@ -86,7 +86,7 @@ exports.listUsers= (req, res, next) ->
 
                 user.getGroups (err, groups) ->
                     user.groups= groups
-                    return done err
+                    return done err, user
 
             , (err, users) ->
                 return next err if err
@@ -99,7 +99,7 @@ exports.listUsers= (req, res, next) ->
 Добавляет переданного пользователя в список.
 ###
 exports.addUser= (req, res, next) ->
-    res.sens 200
+    res.send 200
 
 
 
@@ -108,7 +108,7 @@ exports.addUser= (req, res, next) ->
 Отдает указанного пользователя.
 ###
 exports.getUser= (req, res, next) ->
-    res.sens 200
+    res.send 200
 
 
 
@@ -117,7 +117,7 @@ exports.getUser= (req, res, next) ->
 Отдает список групп указанного пользователя.
 ###
 exports.getGroupsOfUser= (req, res, next) ->
-    res.sens 200
+    res.send 200
 
 
 
@@ -126,6 +126,6 @@ exports.getGroupsOfUser= (req, res, next) ->
 Добавляет указанному пользователю переданную группу.
 ###
 exports.addGroupOfUser= (req, res, next) ->
-    res.sens 200
+    res.send 200
 
 
