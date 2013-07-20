@@ -34,5 +34,5 @@ if cluster.isWorker
     d.run ->
         App= require './node/index'
         app= App cfg, log
-        app.listen cfg.port, ->
-            log.info "apiserver listening on #{cfg.port}, worker #{cluster.worker.id}"
+        app.listen cfg.default.port, ->
+            log.info "apiserver listening on #{cfg.default.port}, worker #{cluster.worker.id}"
