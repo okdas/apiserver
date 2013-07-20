@@ -1,0 +1,196 @@
+!!! html
+html(ng-app='store')
+
+  head
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/bootcraft.css')
+    script(src='/js/libs/jquery/1.7.2/jquery.min.js')
+    script(src='/js/libs/angularjs/1.1.5/angular.min.js')
+    script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+    script.
+      var store= angular.module('store', ['ngResource']);
+
+      store.config(function () {
+
+      })
+
+      store.directive('bDialogContainer', function () {
+          return {
+              controller: function ($scope) {
+                  $scope.dialog= {
+                      visible: false
+                  };
+                  $scope.showDialog= function () {
+                      $scope.dialog.visible= true
+                  }
+                  $scope.hideDialog= function () {
+                      $scope.dialog.visible= false
+                  }
+              },
+              link: function ($scope, $e, $a) {
+                  $scope.$watch($a.bDialogContainer, function (disabled) {
+                      if (disabled) {
+                          var oldWidth= $e.innerWidth()
+                          $e.css({
+                              'overflow-y': 'hidden'
+                          })
+                          var newWidth= $e.innerWidth()
+                          $e.css({
+                              'padding-right': newWidth - oldWidth
+                          })
+                      } else {
+                          $e.css({
+                              'overflow-y': 'scroll',
+                              'padding-right': 0
+                          })
+                      }
+                  })
+              }
+          }
+      })
+
+      store.factory('Item', function ($resource) {
+        return $resource('/api/v1/store/items/:itemId', {id:'@id'}, {
+          update: {method:'patch', params:{itemId:'@id'}},
+          delete: {method:'delete', params:{itemId:'@id'}},
+        });
+      })
+
+      store.factory('Package', function ($resource) {
+        var Package= $resource('/api/v1/store/packages/:packageId', {packageId:'@id'}, {
+          update: {method:'patch'},
+          remove: {method:'delete'},
+        });
+
+        return Package;
+      })
+
+      store.controller('StoreCtrl', function ($scope, Item, Package) {
+        $scope.items= Item.query();
+        $scope.pkgs= Package.query();
+      })
+
+      store.controller('ItemsCtrl', function ($scope, Item) {
+      })
+
+      store.controller('PackagesCtrl', function ($scope, Package) {
+        $scope.dialog.createPackage= {
+            visible: false
+        }
+        $scope.showCreateDialog= function () {
+          if (!$scope.pkg) {
+            $scope.pkg= new Package;
+          }
+          $scope.dialog.createPackage.visible= true;
+          $scope.showDialog();
+        }
+        $scope.hideCreateDialog= function () {
+          $scope.dialog.createPackage.visible= false;
+          $scope.hideDialog();
+        }
+      })
+
+      store.controller('View1Ctrl', function ($scope, Item, Package) {
+        $scope.items= Item.query();
+        $scope.pkgs= Package.query();
+        
+        $scope.pkg= null;
+        $scope.selectPackage= function (pkg) {
+          $scope.pkg= pkg;
+        }
+        $scope.removePackage= function (pkg) {
+          pkg.$delete(function () {
+            console.log('удален', arguments)
+          })
+        }
+      })
+
+      store.controller('PackageFormCtrl', function ($scope) {
+        $scope.itemsIndex
+        $scope.addPackageItem= function (pkg, item) {
+          console.log('добавить предмет', item, 'в пакет', pkg)
+          pkg.addItem(item);
+        }
+        $scope.savePackage= function (pkg) {
+          console.log('сохранить пакет', pkg)
+          pkg.$save(function () {
+            console.log('сохранено', arguments)
+          }, function () {
+            console.log('не удалось сохранить', arguments)
+          }
+          );
+        }
+      })
+
+      store.controller('PackageItemFormCtrl', function ($scope) {
+        $scope.item= null;
+        $scope.selectItem= function () {
+
+        }
+      })
+    style.
+      body {
+        padding-top:5em;
+      }
+      .dialog {
+        z-index:100500;
+      }
+      .dialog-bg {
+        background:#fff;
+        opacity:.7;
+      }
+      .dialog-container {
+        padding-top:5em;
+      }
+      .dialog-container > .row {
+        background:#fff;
+        box-shadow:0 0 0 7px rgba(0, 0, 0, 0.5), 0 0 3px 1px #000;
+      }
+  body(b-dialog-container='dialog.visible')
+
+    .container(ng-controller='StoreCtrl')
+      .row
+
+        .col-lg-8
+          section.store-packages(ng-controller='PackagesCtrl')
+            h1 Пакеты предметов
+            hr
+            button.btn.btn-primary(ng-click='showCreateDialog()') Создать пакет
+            hr
+            ul.packages(ng-repeat='pkg in pkgs')
+              li
+                a(href='', ng-click='selectPackage(pkg)') {{pkg}}
+                a(href='', ng-click='removePackage(pkg)') Удалить
+
+            .dialog(ng-controller='PackageFormCtrl', ng-class='{show:dialog.createPackage.visible}')
+              .dialog-bg(ng-click='hideCreateDialog()')
+              .dialog-container.container
+                .row
+
+                  .col-lg-8
+                    section.package-editor
+                      h1 Пакет предметов
+                      hr
+                      form.form.form-horizontal.package-form
+                        input(type='text', ng-model='pkg.title', placeholder='Название пакета')
+                        textarea(ng-model='pkg.description', placeholder='Описание')
+                        hr
+                        h3 Упакованые предметы
+                        hr
+                        button.btn.btn-primary(ng-click='savePackage(pkg)') Сохранить пакет
+                      hr
+
+                  .col-lg-4
+                    section.package-form-items
+                      h1 Все предметы
+                      hr
+                      ul.items(ng-repeat='item in items')
+                        li(ng-click='addPackageItem(pkg, item)')
+                          span {{item}}
+
+        .col-lg-4
+          section.store-items(ng-controller='ItemsCtrl')
+            h1 Предметы
+            hr
+            ul.items(ng-repeat='item in items')
+              li {{item}}
