@@ -91,12 +91,20 @@ module.exports= (cfg, log, done) ->
     app.configure ->
         config= app.get 'config'
 
-        Db.connect config.db, (err, db) ->
-            app.set 'db', db
+        app.use (req, res, next) ->
 
-            User= require './models/User'
+            Db.connect config.db, (err, db) ->
+                if err
+                    # ошибка при подключении к базе данных
+                    return next err
 
-            Store= require './models/Store'
+                req.db= db
+                req.models= db.models
+
+                # подключить модели
+                db.load 'models', (err) ->
+                    console.log 'модели подключены', db.models
+                    return do next
 
 
 
@@ -142,7 +150,6 @@ module.exports= (cfg, log, done) ->
     Отдает форму аутентификации.
     ###
     app.get '/login', (req, res) ->
-        console.log req.session
         res.render 'Users/Login'
 
 
@@ -153,10 +160,8 @@ module.exports= (cfg, log, done) ->
         username= req.body.username
         password= sha1 req.body.password
 
-        db= req.app.get 'db'
-
         # найти пользователя в базе данных
-        db.models.User.find
+        req.models.User.find
             username: username
             password: password
         ,   (err, users) ->
@@ -190,10 +195,8 @@ module.exports= (cfg, log, done) ->
             # пользователь не аутентифицирован
             return res.redirect '/login'
 
-        db= req.app.get 'db'
-
         # загрузить пользователя из базы данных
-        db.models.User.get req.user.id, (err, user) ->
+        req.models.User.get req.user.id, (err, user) ->
 
             if err
                 # ошибка при загрузке пользователя
@@ -224,10 +227,9 @@ module.exports= (cfg, log, done) ->
     Отдает список предметов магазина.
     ###
     app.get '/api/v1/store/items', (req, res, next) ->
-        db= req.app.get 'db'
 
         # загрузить предметы из базы данных
-        db.models.Item.find (err, items) ->
+        req.models.Item.find (err, items) ->
             if err
                 # ошибка при загрузке предмета
                 return next err
@@ -242,10 +244,8 @@ module.exports= (cfg, log, done) ->
         item:
             title: req.body.title
 
-        db= req.app.get 'db'
-
         # сохранить новый предмет в базе данных
-        item= new db.models.Item item
+        item= new req.models.Item item
         item.save (err) ->
 
             if err
@@ -261,10 +261,8 @@ module.exports= (cfg, log, done) ->
     app.patch '/api/v1/store/items/:itemId', (req, res) ->
         id= req.param 'itemId'
 
-        db= req.app.get 'db'
-
         # загрузить предмет из базы данных
-        db.models.Item.get id, (err, item) ->
+        req.models.Item.get id, (err, item) ->
 
             if err
                 # ошибка при загрузке предмета
@@ -290,10 +288,8 @@ module.exports= (cfg, log, done) ->
     app.delete '/api/v1/store/items/:itemId', (req, res) ->
         id= req.param 'itemId'
 
-        db= req.app.get 'db'
-
         # загрузить предмет из базы данных
-        db.models.Item.get id, (err, item) ->
+        req.models.Item.get id, (err, item) ->
 
             if err
                 # ошибка при загрузке предмета
@@ -320,10 +316,9 @@ module.exports= (cfg, log, done) ->
     Отдает список пакетов магазина.
     ###
     app.get '/api/v1/store/packages', (req, res) ->
-        db= req.app.get 'db'
 
         # загрузить предметы из базы данных
-        db.models.Package.find (err, pkgs) ->
+        req.models.Package.find (err, pkgs) ->
 
             async.map pkgs
             ,   (pkg, done) ->
