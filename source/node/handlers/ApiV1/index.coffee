@@ -8,10 +8,7 @@ async= require 'async'
 exports.listItems= (req, res, next) ->
     # загрузить предметы из базы данных
     req.models.Item.find (err, items) ->
-        if err
-            # ошибка при загрузке предмета
-            return next err
-
+        return next err if err
         return res.json 200, items
 
 
@@ -25,10 +22,7 @@ exports.addItem= (req, res, next) ->
     # сохранить новый предмет в базе данных
     item= new req.models.Item item
     item.save (err) ->
-        if err
-            # ошибка при сохранении предмета
-            return next err
-
+        return next err if err
         return res.json 201, item
 
 
@@ -40,9 +34,7 @@ exports.changeItem= (req, res, next) ->
 
     # загрузить предмет из базы данных
     req.models.Item.get id, (err, item) ->
-        if err
-            # ошибка при загрузке предмета
-            return next err
+        return next err if err
 
         # применить изменения
         if req.body.title
@@ -50,10 +42,7 @@ exports.changeItem= (req, res, next) ->
 
         # сохранить предмет в базе данных
         item.save (err) ->
-            if err
-                # ошибка при загрузке предмета
-                return next err
-
+            return next err if err
             return res.json 201, item
 
 
@@ -65,15 +54,10 @@ exports.deleteItem= (req, res, next) ->
 
     # загрузить предмет из базы данных
     req.models.Item.get id, (err, item) ->
-        if err
-            # ошибка при загрузке предмета
-            return next err
+        return next err if err
 
         item.remove (err) ->
-            if err
-                # ошибка при удалении предмета
-                return next err
-
+            return next err if err
             return res.json 200, item
 
 
@@ -103,9 +87,5 @@ exports.listPackages= (req, res, next) ->
                         return done err, pkg
 
         ,   (err, pkgs) ->
-
-                if err
-                    # ошибка при загрузке пакетов
-                    return next err
-
+                return next err if err
                 return res.json 200, pkgs
