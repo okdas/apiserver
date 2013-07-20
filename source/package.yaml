@@ -14,7 +14,7 @@ config:
 
         db:
             protocol: mysql
-            host: localhost
+            host: office.kd-eurotrans.com
             port: 3306
 
             query:
@@ -27,10 +27,10 @@ config:
     development:
 
         db:
-            database: apiserver
+            database: test
 
-            user: root
-            password: password
+            user: test
+            password: test
 
             query:
                 debug: true
