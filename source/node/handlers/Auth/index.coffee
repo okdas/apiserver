@@ -1,3 +1,7 @@
+crypto= require 'crypto'
+
+
+
 ###
 
 Методы для аутентификации пользователей
@@ -34,18 +38,17 @@ loadUser= (req,res,next) ->
             return do next
 
 
-
-
+sha1= (string) ->
+    hash= crypto.createHash 'sha1'
+    hash.update string
+    return hash.digest 'hex'
 
 
 ###
 Отдает форму аутентификации.
 ###
-
 exports.getLogin= (req,res,next) ->
     res.render 'Users/Login'
-
-
 
 
 ###
@@ -79,9 +82,3 @@ exports.postLogin= (req,res,next) ->
 
                 # пользователь аутентифицирован
                 return res.redirect '/'
-
-
-
-
-
-

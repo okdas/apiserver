@@ -117,13 +117,6 @@ module.exports= (cfg, log, done) ->
         done null,
             id: id
 
-    crypto= require 'crypto'
-    sha1= (string) ->
-        hash= crypto.createHash 'sha1'
-        hash.update string
-        return hash.digest 'hex'
-
-
 
     ###
     Сессии пользователей приложения
@@ -138,14 +131,8 @@ module.exports= (cfg, log, done) ->
         app.use do passport.session
 
 
-
-
-
+    ###
+    Обработчики маршрутов
+    ###
     handlers= require './handlers'
     handlers app
-
-
-
-
-
-

@@ -15,8 +15,6 @@ exports.listItems= (req,res,next) ->
             return res.json 200, items
 
 
-
-
 ###
 Добавляет переданный предмет в магазин.
 ###
@@ -32,10 +30,6 @@ exports.addItem= (req,res,next) ->
             return next err
 
         return res.json 201, item
-
-
-
-
 
 
 ###
@@ -63,10 +57,6 @@ exports.changeItem= (req,res,next) ->
             return res.json 201, item
 
 
-
-
-
-
 ###
 Удаляет указанный предмет из магазина.
 ###
@@ -86,20 +76,6 @@ exports.deleteItem= (req,res,next) ->
 
             return res.json 200, item
 
-
-
-
-
-
-
-
-
-
-###
-
-Методы API для работы с пакетами магазина
-
-###
 
 
 ###
@@ -133,7 +109,3 @@ exports.listPackages= (req,res,next) ->
                     return next err
 
                 return res.json 200, pkgs
-
-
-
-

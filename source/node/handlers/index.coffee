@@ -4,16 +4,20 @@ module.exports= (app) ->
     Auth= require './Auth/'
 
 
-
     app.get '/', (req,res,next) ->
         res.send 200
 
 
 
+    ###
+
+    Методы для аутентификации пользователей
+
+    ###
 
     app.get '/login', Auth.getLogin
-    app.post '/login', Auth.postLogin
 
+    app.post '/login', Auth.postLogin
 
 
 
@@ -22,7 +26,6 @@ module.exports= (app) ->
     Методы API для работы с предметами магазина
 
     ###
-
 
     ###
     Отдает список предметов магазина.
@@ -53,10 +56,7 @@ module.exports= (app) ->
 
     ###
 
-
     ###
     Отдает список пакетов магазина.
     ###
     app.get '/api/v1/store/packages', ApiV1.listPackages
-
-
