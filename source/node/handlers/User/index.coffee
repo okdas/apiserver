@@ -36,21 +36,23 @@ exports.listGroups= (req, res, next) ->
                 return res.json 200, groups
 
 
+
+
+
+
 ###
 Добавляет переданную группу в список.
 ###
 exports.addGroup= (req, res, next) ->
-#    item:
-#        title: req.body.title
+    group= req.body
 
     # сохранить новый предмет в базе данных
-#    item= new req.models.Group group
-#    item.save (err) ->
-#        if err
-            # ошибка при сохранении предмета
-#            return next err
+    newGroup= new req.models.Group group
+    newGroup.save (err) ->
+        return next err if err
+        return res.json 201, newGroup
 
-        return res.json 201, item
+
 
 
 
