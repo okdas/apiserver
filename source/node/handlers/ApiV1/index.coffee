@@ -5,20 +5,20 @@ async= require 'async'
 ###
 Отдает список предметов магазина.
 ###
-exports.listItems= (req,res,next) ->
+exports.listItems= (req, res, next) ->
     # загрузить предметы из базы данных
     req.models.Item.find (err, items) ->
         if err
             # ошибка при загрузке предмета
             return next err
 
-            return res.json 200, items
+        return res.json 200, items
 
 
 ###
 Добавляет переданный предмет в магазин.
 ###
-exports.addItem= (req,res,next) ->
+exports.addItem= (req, res, next) ->
     item:
         title: req.body.title
 
@@ -35,7 +35,7 @@ exports.addItem= (req,res,next) ->
 ###
 Изменяет указанный предмет в магазине.
 ###
-exports.changeItem= (req,res,next) ->
+exports.changeItem= (req, res, next) ->
     id= req.param 'itemId'
 
     # загрузить предмет из базы данных
@@ -60,7 +60,7 @@ exports.changeItem= (req,res,next) ->
 ###
 Удаляет указанный предмет из магазина.
 ###
-exports.deleteItem= (req,res,next) ->
+exports.deleteItem= (req, res, next) ->
     id= req.param 'itemId'
 
     # загрузить предмет из базы данных
@@ -81,7 +81,7 @@ exports.deleteItem= (req,res,next) ->
 ###
 Отдает список пакетов магазина.
 ###
-exports.listPackages= (req,res,next) ->
+exports.listPackages= (req, res, next) ->
     # загрузить предметы из базы данных
     req.models.Package.find (err, pkgs) ->
         async.map pkgs
