@@ -2,6 +2,7 @@ module.exports= (app) ->
 
     ApiV1= require './ApiV1/'
     Auth= require './Auth/'
+    User= require './User'
 
 
     app.get '/', (req,res,next) ->
@@ -28,47 +29,22 @@ module.exports= (app) ->
     ###
 
 
-    ### Отдает список групп.
-    < content-type: application/json
-    [
-        {
-            "id": 1,
-            "name": "admin",
-            "roles": [
-                {
-                    "id": 1,
-                    "name": "management.*"
-                }
-            ]
-        },
-    ]
     ###
-    app.get '/api/v1/groups', ...
-
-
-    ### Добавляет переданную группу в список.
-    < content-type: application/json
+    Отдает список групп.
     ###
-    app.post '/api/v1/groups', ...
+    app.get '/api/v1/groups', User.listGroups
 
 
-    ### Отдает указанную группу.
-    < content-type: application/json
-    {
-        "id": 1,
-        "name": "admins",
-        "roles": [
-            {
-                "id": 1,
-                "name": "management.*"
-            }
-        ],
-        "users": [
-            {}, {}, {}
-        ]
-    }
     ###
-    app.get '/api/v1/groups/:groupId', ...
+    Добавляет переданную группу в список.
+    ###
+    app.post '/api/v1/groups', User.addGroup
+
+
+    ###
+    Отдает указанную группу.
+    ###
+    app.get '/api/v1/groups/:groupId', User.getGroup
 
 
     ###
@@ -78,82 +54,34 @@ module.exports= (app) ->
     ###
 
 
-    ### Отдает список пользователей.
-    < content-type: application/json
-    [
-        {
-            "id": 1,
-            "name": "root",
-            "password": "...",
-            "groups": [
-                {
-                    "id": 1,
-                    "name": "admins",
-                    "roles": [
-                        {
-                            "id": 1,
-                            "name": "management.*"
-                        }
-                    ]
-                },
-            ]
-        },
-    ]
     ###
-    app.get '/api/v1/users', ...
-
-
-    ### Добавляет переданного пользователя в список.
-    < content-type: application/json
+    Отдает список пользователей.
     ###
-    app.post '/api/v1/users', ...
+    app.get '/api/v1/users', User.listUsers
 
 
-    ### Отдает указанного пользователя.
-    < content-type: application/json
-    {
-        "id": 1,
-        "name": "root",
-        "password": "...",
-        "groups": [
-            {
-                "id": 1,
-                "name": "admin",
-                "roles": [
-                    {
-                        "id": 1,
-                        "name": "management.*"
-                    }
-                ]
-            }
-        ]
-    }
     ###
-    app.post '/api/v1/users/:userId', ...
-
-
-    ### Отдает список групп указанного пользователя.
-    < content-type: application/json
-    [
-        {
-            "id": 1,
-            "name": "admin",
-            "roles": [
-                {
-                    "id": 1,
-                    "name": "management.*"
-                }
-            ]
-        }
-    ]
+    Добавляет переданного пользователя в список.
     ###
-    app.get '/api/v1/users/:userId/groups', ...
+    app.post '/api/v1/users', User.addUser
 
 
-    ### Добавляет указанному пользователю переданную группу.
-    < content-type: application/json
     ###
-    app.post '/api/v1/users/:userId/groups', ...
+    Отдает указанного пользователя.
+    ###
+    app.get '/api/v1/users/:userId', User.getUser
+
+
+    ###
+    Отдает список групп указанного пользователя.
+    ###
+    app.get '/api/v1/users/:userId/groups', User.getGroupsOfUser
+
+
+    ###
+    Добавляет указанному пользователю переданную группу.
+    ###
+    app.post '/api/v1/users/:userId/groups', User.addGroupOfUser
 
 
 
