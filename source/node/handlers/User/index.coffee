@@ -1,3 +1,6 @@
+async= require 'async'
+
+
 ###
 
 Методы API для работы c группами пользователей
@@ -11,7 +14,7 @@
 exports.listGroups= (req, res, next) ->
     req.models.Group.find (err, groups) ->
         async.map groups
-            , (group, done) ->
+        ,   (group, done) ->
 
                 async.parallel
 
@@ -23,21 +26,14 @@ exports.listGroups= (req, res, next) ->
                         group.getUsers (err, users) ->
                             return done err, users
 
-                , (err, result) ->
-                    groups.roles= result.roles
-                    groups.users= result.users
-                    return done err, group
+                ,   (err, result) ->
+                        groups.roles= result.roles
+                        groups.users= result.users
+                        return done err, group
 
-            , (err, groups) ->
+        ,   (err, groups) ->
                 return next err if err
                 return res.json 200, groups
-
-
-
-
-
-
-
 
 
 ###
@@ -82,13 +78,13 @@ exports.getGroup= (req, res, next) ->
 exports.listUsers= (req, res, next) ->
     req.models.User.find (err, users) ->
         async.map users
-            , (user, done) ->
+        ,   (user, done) ->
 
                 user.getGroups (err, groups) ->
                     user.groups= groups
                     return done err, user
 
-            , (err, users) ->
+        ,   (err, users) ->
                 return next err if err
                 return res.json 200, users
 
@@ -127,5 +123,3 @@ exports.getGroupsOfUser= (req, res, next) ->
 ###
 exports.addGroupOfUser= (req, res, next) ->
     res.send 200
-
-
