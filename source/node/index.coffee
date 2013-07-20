@@ -103,7 +103,6 @@ module.exports= (cfg, log, done) ->
 
                 # подключить модели
                 db.load 'models', (err) ->
-                    console.log 'модели подключены', db.models
                     return do next
 
 
@@ -129,6 +128,7 @@ module.exports= (cfg, log, done) ->
         app.use do passport.initialize
 
         app.use do passport.session
+
 
 
     ###
