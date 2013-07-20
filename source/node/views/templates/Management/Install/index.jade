@@ -1,0 +1,48 @@
+!!! html
+html(ng-app='management')
+
+  head
+
+    link(rel='stylesheet', href='/css/bootstrap.css')
+    link(rel='stylesheet', href='/css/bootcraft.css')
+
+    script(src='/js/libs/jquery/1.7.2/jquery.min.js')
+    script(src='/js/libs/angularjs/1.1.5/angular.min.js')
+    script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+
+    script.
+
+      var app= angular.module('management', ['ngResource'])
+
+      app.factory('Db', function ($resource) {
+        var Db= $resource('/install/db/:action', {}, {
+          sync: {method:'get', params: {action:'sync'}},
+          drop: {method:'get', params: {action:'drop'}},
+        });
+        return Db;
+      })
+
+      app.controller('DbCtrl', function ($scope, Db) {
+        $scope.db= Db.get(function () {
+          console.log('база', $scope.db)
+        });
+
+        $scope.sync= function (db) {
+          db.$sync(function () {
+            console.log('sync', arguments)
+          })
+        }
+
+        $scope.drop= function (db) {
+          db.$drop(function () {
+            console.log('drop', arguments)
+          })
+        }
+      })
+  body
+
+    h1 Install It.
+
+    .install-db(ng-controller='DbCtrl')
+      button.btn.btn-primary(ng-click='sync(db)') Запилить
+      button.btn(ng-click='drop(db)') Выпилить

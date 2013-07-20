@@ -26,6 +26,8 @@ config:
 
     development:
 
+        installed: false
+
         db:
             database: apiserver
 
@@ -38,6 +40,8 @@ config:
 
 
     production:
+
+        installed: true
 
         db: # http://red.flydev.net/issues/5#note-3
             database: apiserver
