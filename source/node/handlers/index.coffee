@@ -21,6 +21,17 @@ module.exports= (app) ->
 
 
 
+    app.get '/management', (req, res, next) ->
+        res.render 'Management'
+
+    app.get '/management/partials/groups', (req, res, next) ->
+        res.render 'Management/partials/Groups'
+
+    app.get '/management/partials/groups/form', (req, res, next) ->
+        res.render 'Management/partials/Groups/form'
+
+
+
     ###
 
     Методы API для работы c группами пользователей
@@ -43,13 +54,13 @@ module.exports= (app) ->
         },
     ]
     ###
-    app.get '/api/v1/groups', ...
+    #app.get '/api/v1/groups', ...
 
 
     ### Добавляет переданную группу в список.
     < content-type: application/json
     ###
-    app.post '/api/v1/groups', ...
+    #app.post '/api/v1/groups', ...
 
 
     ### Отдает указанную группу.
@@ -68,7 +79,7 @@ module.exports= (app) ->
         ]
     }
     ###
-    app.get '/api/v1/groups/:groupId', ...
+    #app.get '/api/v1/groups/:groupId', ...
 
 
     ###
@@ -100,13 +111,13 @@ module.exports= (app) ->
         },
     ]
     ###
-    app.get '/api/v1/users', ...
+    #app.get '/api/v1/users', ...
 
 
     ### Добавляет переданного пользователя в список.
     < content-type: application/json
     ###
-    app.post '/api/v1/users', ...
+    #app.post '/api/v1/users', ...
 
 
     ### Отдает указанного пользователя.
@@ -129,7 +140,7 @@ module.exports= (app) ->
         ]
     }
     ###
-    app.post '/api/v1/users/:userId', ...
+    #app.post '/api/v1/users/:userId', ...
 
 
     ### Отдает список групп указанного пользователя.
@@ -147,13 +158,13 @@ module.exports= (app) ->
         }
     ]
     ###
-    app.get '/api/v1/users/:userId/groups', ...
+    #app.get '/api/v1/users/:userId/groups', ...
 
 
     ### Добавляет указанному пользователю переданную группу.
     < content-type: application/json
     ###
-    app.post '/api/v1/users/:userId/groups', ...
+    #app.post '/api/v1/users/:userId/groups', ...
 
 
 

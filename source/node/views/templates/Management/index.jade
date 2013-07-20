@@ -1,0 +1,62 @@
+!!! html
+html(ng-app='management')
+
+    head
+
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/bootcraft.css')
+
+        script(src='/js/libs/jquery/1.7.2/jquery.min.js')
+        script(src='/js/libs/angularjs/1.1.5/angular.min.js')
+        script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+
+        script.
+
+            var app= angular.module('management', ['ngResource'], function ($routeProvider) {
+                $routeProvider.when('/groups', {
+                    templateUrl: 'partials/groups', controller: 'Groups.ViewCtrl'
+                });
+                $routeProvider.when('/groups/create', {
+                    templateUrl: 'partials/groups/form', controller: 'Groups.CreateCtrl'
+                });
+            });
+
+            app.factory('Group', function ($resource) {
+                return $resource('/api/v1/groups/:groupId', {}, {});
+            });
+
+            app.controller('Groups.ViewCtrl', function ($scope, Group) {
+                $scope.grps= Group.query(function () {
+
+                });
+            });
+
+            app.controller('Groups.CreateCtrl', function ($scope, $location, Group) {
+                $scope.form= {
+                    title: 'Новая группа',
+                };
+
+                $scope.grp= new Group();
+
+                $scope.save= function (grp) {
+                    grp.$save(function () {
+                        console.log('сохранение выполнено', arguments);
+                        $location.path('/groups');
+                    }, function () {
+                        console.log('сохранение не выполнено', arguments);
+                    });
+                }
+            });
+
+    body
+
+        .container
+            .row
+                .col-12
+                    h1 Центр управления
+                    hr
+                    ul.nav.nav-pills
+                        li: a(href='#/groups') Группы пользователей
+                    hr
+
+        .view(ng-view='')
