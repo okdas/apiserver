@@ -4,6 +4,7 @@ version: 0.0.1
 
 
 config:
+
     logfile: './main.log'
     pidfile: './main.pid'
 
@@ -14,30 +15,30 @@ config:
 
         db:
             protocol: mysql
-            host: office.kd-eurotrans.com
+            host: localhost
             port: 3306
 
             query:
                 pool: true
 
 
-
-
-
     development:
 
-        db:
-            database: test
+        installed: false
 
-            user: test
-            password: test
+        db:
+            database: apiserver
+
+            user: root
+            password: password
 
             query:
                 debug: true
 
 
-
     production:
+
+        installed: true
 
         db: # http://red.flydev.net/issues/5#note-3
             database: apiserver
@@ -47,8 +48,6 @@ config:
 
             query:
                 debug: false
-
-
 
 
 
