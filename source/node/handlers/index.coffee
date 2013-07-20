@@ -23,6 +23,142 @@ module.exports= (app) ->
 
     ###
 
+    Методы API для работы c группами пользователей
+
+    ###
+
+
+    ### Отдает список групп.
+    < content-type: application/json
+    [
+        {
+            "id": 1,
+            "name": "admin",
+            "roles": [
+                {
+                    "id": 1,
+                    "name": "management.*"
+                }
+            ]
+        },
+    ]
+    ###
+    app.get '/api/v1/groups', ...
+
+
+    ### Добавляет переданную группу в список.
+    < content-type: application/json
+    ###
+    app.post '/api/v1/groups', ...
+
+
+    ### Отдает указанную группу.
+    < content-type: application/json
+    {
+        "id": 1,
+        "name": "admins",
+        "roles": [
+            {
+                "id": 1,
+                "name": "management.*"
+            }
+        ],
+        "users": [
+            {}, {}, {}
+        ]
+    }
+    ###
+    app.get '/api/v1/groups/:groupId', ...
+
+
+    ###
+
+    Методы API для работы c пользователями
+
+    ###
+
+
+    ### Отдает список пользователей.
+    < content-type: application/json
+    [
+        {
+            "id": 1,
+            "name": "root",
+            "password": "...",
+            "groups": [
+                {
+                    "id": 1,
+                    "name": "admins",
+                    "roles": [
+                        {
+                            "id": 1,
+                            "name": "management.*"
+                        }
+                    ]
+                },
+            ]
+        },
+    ]
+    ###
+    app.get '/api/v1/users', ...
+
+
+    ### Добавляет переданного пользователя в список.
+    < content-type: application/json
+    ###
+    app.post '/api/v1/users', ...
+
+
+    ### Отдает указанного пользователя.
+    < content-type: application/json
+    {
+        "id": 1,
+        "name": "root",
+        "password": "...",
+        "groups": [
+            {
+                "id": 1,
+                "name": "admin",
+                "roles": [
+                    {
+                        "id": 1,
+                        "name": "management.*"
+                    }
+                ]
+            }
+        ]
+    }
+    ###
+    app.post '/api/v1/users/:userId', ...
+
+
+    ### Отдает список групп указанного пользователя.
+    < content-type: application/json
+    [
+        {
+            "id": 1,
+            "name": "admin",
+            "roles": [
+                {
+                    "id": 1,
+                    "name": "management.*"
+                }
+            ]
+        }
+    ]
+    ###
+    app.get '/api/v1/users/:userId/groups', ...
+
+
+    ### Добавляет указанному пользователю переданную группу.
+    < content-type: application/json
+    ###
+    app.post '/api/v1/users/:userId/groups', ...
+
+
+
+    ###
+
     Методы API для работы с предметами магазина
 
     ###
