@@ -80,12 +80,12 @@ module.exports= (app) ->
     ###
     Отдает список групп указанного пользователя.
     ###
-    app.get '/api/v1/users/:userId/groups', User.getGroupsOfUser
+    app.get '/api/v1/users/:userId/groups', User.getUserGroups
 
     ###
     Добавляет указанному пользователю переданную группу.
     ###
-    app.post '/api/v1/users/:userId/groups', User.addGroupOfUser
+    app.post '/api/v1/users/:userId/groups/:groupId', User.addUserGroup
 
 
 

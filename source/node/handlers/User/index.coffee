@@ -27,8 +27,8 @@ exports.listGroups= (req, res, next) ->
                             return done err, users
 
                 ,   (err, result) ->
-                        groups.roles= result.roles
-                        groups.users= result.users
+                        group.roles= result.roles
+                        group.users= result.users
                         return done err, group
 
         ,   (err, groups) ->
@@ -66,9 +66,24 @@ exports.getGroup= (req, res, next) ->
     id = req.params.groupId
 
     req.models.Group.get id, (err, group) ->
-        return next err if err
-        return res.json 200, group
+        async.parallel
+            roles: (done) ->
+                group.getRoles (err, roles) ->
+                    return done err, roles
 
+            users: (done) ->
+                group.getUsers (err, users) ->
+                    return done err, users
+
+        ,   (err, result) ->
+                group.roles= result.roles
+                group.users= result.users
+                return next err if err
+                return res.json 200, group
+
+
+
+        
 
 
 
@@ -131,7 +146,7 @@ exports.getUser= (req, res, next) ->
 ###
 Отдает список групп указанного пользователя.
 ###
-exports.getGroupsOfUser= (req, res, next) ->
+exports.getUserGroups= (req, res, next) ->
     id = req.params.userId
 
     async.waterfall [
@@ -149,8 +164,8 @@ exports.getGroupsOfUser= (req, res, next) ->
         return res.json 200, result
 
 
-    
-        
+
+
 
 
 
@@ -158,7 +173,7 @@ exports.getGroupsOfUser= (req, res, next) ->
 ###
 Добавляет указанному пользователю переданную группу.
 ###
-exports.addGroupOfUser= (req, res, next) ->
+exports.addUserGroup= (req, res, next) ->
     res.send 200
 
 
