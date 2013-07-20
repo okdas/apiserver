@@ -1,10 +1,11 @@
 express= require 'express'
 extend= require 'extend'
+async= require 'async'
 
 ###
 Возвращает настроенный экзмепляр приложения. 
 ###
-module.exports= (cfg, log) ->
+module.exports= (cfg, log, done) ->
 
 
 
@@ -85,93 +86,152 @@ module.exports= (cfg, log) ->
     ###
     База данных приложения
     ###
-    orm= require 'orm'
+    Db= require 'orm'
 
     app.configure ->
         config= app.get 'config'
-        app.use orm.express config.db,
-            define: (db) ->
-                db.load 'models'
 
+        Db.connect config.db, (err, db) ->
+            app.set 'db', db
 
-
-    Store= require './modules/Store'
-    store= new Store app.get 'db'
+            Store= require './models/Store'
 
 
 
     ###
-    Интерфейс управления предметами магазина.
+
+    Методы API для работы с предметами магазина
+
     ###
-    app.get '/store/items', (req, res) ->
-        res.render 'Store/items'
+
 
     ###
     Отдает список предметов магазина.
     ###
-    app.get '/api/v1/store/items', (req, res) ->
-        store.Item.query (err, items) ->
-            if not err
-                res.json 200, items
-            else
-                res.json 500, err
+    app.get '/api/v1/store/items', (req, res, next) ->
+        db= req.app.get 'db'
+
+        # загрузить предметы из базы данных
+        db.models.Item.find (err, items) ->
+            if err
+                # ошибка при загрузке предмета
+                return next err
+
+            return res.json 200, items
+
 
     ###
     Добавляет переданный предмет в магазин.
     ###
     app.post '/api/v1/store/items', (req, res) ->
-        store.Item.create req.body, (err, item) ->
-            if not err
-                res.json 201, item
-            else
-                res.json 500, err
+        item:
+            title: req.body.title
+
+        db= req.app.get 'db'
+
+        # сохранить новый предмет в базе данных
+        item= new db.models.Item item
+        item.save (err) ->
+
+            if err
+                # ошибка при сохранении предмета
+                return next err
+
+            return res.json 201, item
+
 
     ###
     Изменяет указанный предмет в магазине.
     ###
     app.patch '/api/v1/store/items/:itemId', (req, res) ->
         id= req.param 'itemId'
-        store.Item.update id, req.body, (err, item) ->
-            if not err
-                res.json 200, item
-            else
-                res.json 500, err
+
+        db= req.app.get 'db'
+
+        # загрузить предмет из базы данных
+        db.models.Item.get id, (err, item) ->
+
+            if err
+                # ошибка при загрузке предмета
+                return next err
+
+            # применить изменения
+            if req.body.title
+                item.title= req.body.title
+
+            # сохранить предмет в базе данных
+            item.save (err) ->
+
+                if err
+                    # ошибка при загрузке предмета
+                    return next err
+
+                return res.json 201, item
+
 
     ###
     Удаляет указанный предмет из магазина.
     ###
     app.delete '/api/v1/store/items/:itemId', (req, res) ->
         id= req.param 'itemId'
-        store.Item.delete id, (err, item) ->
-            if not err
-                res.json 200, item
-            else
-                res.json 500, err
+
+        db= req.app.get 'db'
+
+        # загрузить предмет из базы данных
+        db.models.Item.get id, (err, item) ->
+
+            if err
+                # ошибка при загрузке предмета
+                return next err
+
+            item.remove (err) ->
+
+                if err
+                    # ошибка при удалении предмета
+                    return next err
+
+                return res.json 200, item
 
 
 
     ###
-    Интерфейс управления пакетами магазина.
+
+    Методы API для работы с пакетами магазина
+
     ###
-    app.get '/store/packages', (req, res) ->
-        res.render 'Store/packages'
+
 
     ###
     Отдает список пакетов магазина.
     ###
     app.get '/api/v1/store/packages', (req, res) ->
-        store.Package.query (err, pkgs) ->
-            if not err
-                res.json 200, pkgs
-            else
-                res.json 500, err
+        db= req.app.get 'db'
 
-    ###
-    Добавляет переданный пакет в магазин.
-    ###
-    app.post '/api/v1/store/packages', (req, res) ->
-        store.Package.create req.body, (err, pkg) ->
-            if not err
-                res.json 201, pkg
-            else
-                res.json 500, err
+        # загрузить предметы из базы данных
+        db.models.Package.find (err, pkgs) ->
+
+            async.map pkgs
+            ,   (pkg, done) ->
+
+                    async.parallel
+
+                        items: (done) ->
+                            pkg.getItems (err, items) ->
+                                return done err, items
+
+                        servers: (done) ->
+                            pkg.getServers (err, servers) ->
+                                return done err, servers
+
+                    ,   (err, result) ->
+                            pkg.items= result.items
+                            pkg.servers= result.servers
+                            return done err, pkg
+
+            ,   (err, pkgs) ->
+
+                    if err
+                        # ошибка при загрузке пакетов
+                        return next err
+
+                    return res.json 200, pkgs
