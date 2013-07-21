@@ -139,20 +139,20 @@ module.exports= (app) ->
 
     app.get '/install*', Install.isInstall
 
-    app.get '/install', Install.install
 
-    app.get '/install/db', Install.db
+    app.get '/install', Install.renderInstall
 
-    app.get '/install/db/sync', Install.dbSync
 
-    app.get '/install/db/drop', Install.dbDrop
+    app.get '/install/db', Install.getDb
+
+    app.get '/install/db/sync', Install.syncDb
+
+    app.get '/install/db/drop', Install.dropDb
 
     app.get '/install/db/models', Install.listModels
 
     app.get '/install/db/models/:modelName', Install.getModel
 
-    app.get '/install/db/models/:modelName/sync', Install.modelSync
+    app.get '/install/db/models/:modelName/sync', Install.syncModel
 
-    app.get '/install/db/models/:modelName/drop', Install.modelDrop
-
-
+    app.get '/install/db/models/:modelName/drop', Install.dropModel

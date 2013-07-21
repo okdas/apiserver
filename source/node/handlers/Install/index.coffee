@@ -1,10 +1,8 @@
 async= require 'async'
 
 
-
-
 exports.isInstall= (req, res, next) ->
-    config= app.get 'config'
+    config= req.app.get 'config'
 
     if config.installed
         return next 404
@@ -12,15 +10,11 @@ exports.isInstall= (req, res, next) ->
     return do next
 
 
-
-
-
-
-exports.install= (req, res, next) ->
+exports.renderInstall= (req, res, next) ->
     return res.render 'Management/Install'
 
 
-exports.db= (req, res, next) ->
+exports.getDb= (req, res, next) ->
     return res.json
         models: Object.keys req.models
         driver:
@@ -29,7 +23,7 @@ exports.db= (req, res, next) ->
             options: req.db.driver.opts
 
 
-exports.dbSync= (req, res, next) ->
+exports.syncDb= (req, res, next) ->
     req.db.sync (err) ->
         # ошибка при запиливании базы данных
         return next err if err
@@ -37,7 +31,7 @@ exports.dbSync= (req, res, next) ->
         return res.json true
 
 
-exports.dbDrop= (req, res, next) ->
+exports.dropDb= (req, res, next) ->
     req.db.drop (err) ->
         return next err if err
         return res.json true
@@ -48,26 +42,20 @@ exports.listModels= (req, res, next) ->
     return res.json Object.keys req.models
 
 
-
 exports.getModel= (req, res, next) ->
     modelName= req.param 'modelName'
     return res.json !!req.models[modelName]
 
 
-exports.modelSync= (req, res, next) ->
+exports.syncModel= (req, res, next) ->
     modelName= req.param 'modelName'
     req.models[modelName].sync (err) ->
         return next err if err
         return res.json true
 
 
-
-exports.modelDrop= (req, res, next) ->
+exports.dropModel= (req, res, next) ->
     modelName= req.param 'modelName'
     req.models[modelName].drop (err) ->
         return next err if err
         return res.json true
-
-
-
-
