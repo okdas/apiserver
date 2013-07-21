@@ -156,3 +156,29 @@ module.exports= (app) ->
     app.get '/install/db/models/:modelName/sync', Install.syncModel
 
     app.get '/install/db/models/:modelName/drop', Install.dropModel
+
+
+    ###
+
+    Методы API для работы со складом
+
+    ###
+
+    ###
+    Отдает склад указанного игрока на указанном сервере.
+    ###
+    app.get '/api/v1/players/:playerId/servers/:serverId/storage', (req, res, next) ->
+        playerId= parseInt req.param 'playerId'
+        serverId= parseInt req.param 'serverId'
+
+        storage=
+            items: []
+
+        req.models.StorageItem.find
+            player_id: playerId
+            server_id: serverId
+        ,   (err, items) ->
+                return next err if err
+
+                storage.items= items
+                return res.json 200, storage
