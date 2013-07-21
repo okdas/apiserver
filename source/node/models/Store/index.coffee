@@ -1,7 +1,19 @@
 module.exports= (db, done) ->
 
+
     ###
-    Отделение магазина.
+    Игрок.
+    ###
+    Player= db.define 'Player',
+
+        name:
+            required: true
+            type: 'text'
+            size: 50
+
+
+    ###
+    Сервер.
     ###
     Server= db.define 'Server',
 
