@@ -5,9 +5,8 @@ module.exports= (app) ->
     User= require './User'
     Install= require './Install/'
 
-    app.get '/', (req,res,next) ->
-        res.send 200
-
+    app.get '/', (req, res, next) ->
+        res.render 'management/welcome'
 
 
     ###

@@ -1,0 +1,88 @@
+!!! html
+html(ng-app='management')
+
+    head
+
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/bootcraft.css')
+        link(rel='stylesheet', href='/css/font-awesome.min.css')
+
+        script(src='/js/libs/jquery/1.7.2/jquery.min.js')
+        script(src='/js/libs/angularjs/1.1.5/angular.min.js')
+
+        style.
+            .navbar-brand span {
+                letter-spacing:2px;
+            }
+            .navbar-brand sup {
+                font-size:small;
+                opacity:.5;
+            }
+            header h1 {
+                margin-right:-0.25em;
+                font-size:4em; line-height:1.25em; letter-spacing:.25em;
+                text-align:center;
+            }
+            header hr {
+                width:8em;
+            }
+            header p {
+                margin-top:1em;
+                font-size:1.5em; line-height:1.5em;
+                text-align:center;
+            }
+            .fly {
+                margin-top:2em;
+                font-size:4em;
+            }
+            .fly .icon-rocket {
+                position:relative;
+                transition:0.3s ease opacity;
+                opacity:1;
+            }
+            .fly:hover .icon-rocket {
+                transition:0.3s ease-out all;
+                top:-300px; right:-300px;
+                opacity:0;
+            }
+            .navbar-fixed-bottom {
+                background-color:transparent;
+            }
+            .by {
+                padding:15px;
+                text-align:center;
+            }
+            abbr {
+                letter-spacing:2px;
+            }
+
+        script.
+            var app= angular.module('management', []);
+    body
+
+        header
+            .navbar.navbar-static-top
+                .container
+                    a.navbar-brand
+                        span FLYDEV
+                        sup v0.1
+                    .nav-collapse.collapse
+                        ul.nav.navbar-nav.pull-right
+                            li: a(href='') Служебный вход
+
+            .container
+                .row
+                    .col-12
+                        hr
+                        h1 FLYDEV
+                            br
+                            span JET ENGINE
+                        hr
+                        p Удобство, мощь и изящная реализация
+                        p.fly: i.icon-rocket
+
+            .navbar.navbar-fixed-bottom
+                .container
+                    .by
+                        a(href='') При поддержке 
+                            abbr AWESOME{39}
