@@ -83,6 +83,14 @@ module.exports= (cfg, log, done) ->
 
 
 
+    Redis= require 'redis'
+    redis= do Redis.createClient
+
+    app.use (req, res, next) ->
+
+        req.redis= redis
+        do next
+
     ###
     База данных приложения
     ###
@@ -110,20 +118,24 @@ module.exports= (cfg, log, done) ->
     passport= require 'passport'
 
     passport.serializeUser (user, done) ->
-        done null, user.id
+        done null, user.username
 
-    passport.deserializeUser (id, done) ->
+    passport.deserializeUser (username, done) ->
         done null,
-            id: id
+            username: username
 
 
     ###
     Сессии пользователей приложения
     ###
     app.configure ->
+        RedisStore= require('connect-redis')(express)
+
         # Сессия
         app.use express.session
             secret: 'apiserver'
+            store: new RedisStore
+                prefix: 'sessions'
 
         app.use do passport.initialize
 
