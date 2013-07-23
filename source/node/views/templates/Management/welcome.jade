@@ -11,6 +11,9 @@ html(ng-app='management')
         script(src='/js/libs/angularjs/1.1.5/angular.min.js')
 
         style.
+            body {
+                -webkit-backface-visibility: hidden;
+            }
             .navbar-brand span {
                 letter-spacing:2px;
             }
@@ -58,7 +61,35 @@ html(ng-app='management')
 
         script.
             var app= angular.module('management', []);
-    body
+
+            app.controller('ViewCtrl', function ($scope, $location) {
+                $scope.dialog= {
+                    overlay: false
+                };
+                $scope.showDialog= function () {
+                    $scope.dialog.overlay= 'dialog';
+                }
+                $scope.hideDialog= function () {
+                    $scope.dialog.overlay= false;
+                }
+                $scope.$on('$locationChangeSuccess', function () {
+                    console.log('locationChangeSuccess', arguments, $location.path())
+                    switch ($location.path()) {
+                        case '/login':
+                            console.log('показать диалог');
+                            $scope.showDialog();
+                            break;
+                        default:
+                            console.log('скрыть диалог')
+                            $scope.hideDialog();
+                    }
+                });
+                $scope.hide= function () {
+                    $location.path('/');
+                }
+            });
+
+    body(ng-controller='ViewCtrl', ng-cloak)
 
         header
             .navbar.navbar-static-top
@@ -68,7 +99,7 @@ html(ng-app='management')
                         sup v0.1
                     .nav-collapse.collapse
                         ul.nav.navbar-nav.pull-right
-                            li: a(href='') Служебный вход
+                            li: a(href='#/login') Контрольно-пропускной пункт
 
             .container
                 .row
@@ -86,3 +117,121 @@ html(ng-app='management')
                     .by
                         a(href='//awesome39.com') При поддержке 
                             abbr AWESOME{39}
+
+        section
+            style.
+
+                .dialog-overlay {
+                    position:fixed; top:0; right:0; bottom:0; left:0; z-index:-1;
+                    background:rgba(255,255,255,0.7);
+                    transition:all .3s;
+                    visibility:hidden;
+                    opacity:0;
+                }
+
+                .dialog {
+                    position:fixed; top:0; right:0; bottom:0; left:0; z-index:-1;
+                    overflow-x:hidden; overflow-y:hidden;
+                    padding-top:40px;
+                    transition:all .3s;
+                    visibility:hidden;
+                    opacity:0;
+                    -webkit-transform:scale(1.5);
+                    transform:scale(1.5);
+                }
+                    .dialog-bg {
+                        position:absolute; top:0; right:0; bottom:0; left:0;
+                    }
+                    .dialog-head {
+                        padding:15px;
+                        line-height:20px;
+                        background:#eee;
+                        font-size:18px;
+                        color:#777;
+                    }
+                    .dialog-body {
+                        background:#f9f9f9;
+                    }
+                    .dialog-title {
+                        margin-bottom:20px;
+                        font-size:1.5em; line-height:1.5em;
+                        text-align:center;
+                    }
+
+                .dialog.show {
+                    z-index:9999;
+                    visibility:visible;
+                    opacity:1;
+                    -webkit-transform:scale(1);
+                    transform:scale(1);
+                }
+                .dialog.show ~ .dialog-overlay {
+                    z-index:9000;
+                    visibility:visible;
+                    opacity:1;
+                }
+
+                input[type=text], input[type=password] {
+                    margin-bottom:15px;
+                    padding:15px 20px;
+                    font:inherit; font-size:19px; line-height:20px;
+                    color:#333;
+                    background:#eee;
+                    border:1px solid #ccc; border-radius:1px;
+                    box-shadow:inset 0 1px 1px rgba(0,0,0, 0.075);
+                }
+                    input[type=text]:focus,
+                    input[type=password]:focus {
+                        color:#333;
+                        box-shadow:inset 0 1px 1px rgba(0,0,0, 0.075);
+                    }
+                    input.valid {
+                        color:#357ebd;
+                        border-color:rgba(82,168,236, .8);
+                    }
+
+
+                .btn {
+                    padding:15px 20px;
+                    font:inherit; font-size:18px; line-height:20px;
+                    color:#333;
+                    border-radius:1px;
+                }
+                .btn-primary {
+                    color:#eee;
+                }
+                .btn[disabled] {
+                    background:#eee;
+                    border-color:#ccc;
+                    color:#777;
+                    opacity:1;
+                }
+
+                .dialog-form {
+                    margin-bottom:70px;
+                }
+
+                .dialog-form .form-actions {
+                    text-align:right;
+                }
+
+            .dialog(ng-class='{show:dialog.overlay=="dialog"}')
+                .dialog-bg(ng-click='hide()')
+                .dialog-container.container(ng-click='nope()')
+                    .row: .col-12
+                        .row: .col-12.dialog-head
+                            i.icon-signin
+                            span   Контрольно-пропускной пункт
+                        .row: .col-12.dialog-body
+                            .row: .col-8.col-offset-2
+                                h2.dialog-title Представьтесь, пожалуйста
+                            .row: .col-8.col-offset-2
+                                form(name='loginForm').dialog-form
+                                    input(type='text', name='username', placeholder='Пользователь', required, ng-model='username', ng-class='{valid:loginForm.username.$valid}')
+                                    input(type='password', name='password', placeholder='Пароль', required, ng-model='password', ng-class='{valid:loginForm.password.$valid}')
+                                    .form-actions
+                                        button.btn.btn-primary(type='submit', ng-disabled='!loginForm.$valid')
+                                            i.icon-signin
+                                            span   Представиться
+
+            .dialog-overlay
