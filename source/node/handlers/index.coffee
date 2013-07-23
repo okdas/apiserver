@@ -6,7 +6,7 @@ module.exports= (app) ->
     Install= require './Install/'
 
     app.get '/', (req, res, next) ->
-        res.render 'management/welcome'
+        res.render 'Management/welcome'
 
 
     ###
