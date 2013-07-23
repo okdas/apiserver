@@ -1,0 +1,101 @@
+!!! html
+html(ng-app='management')
+
+    head
+
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/bootcraft.css')
+        link(rel='stylesheet', href='/css/font-awesome.min.css')
+
+        style.
+
+            body {
+                -webkit-backface-visibility: hidden;
+            }
+            .navbar-brand span {
+                letter-spacing:2px;
+            }
+            .navbar-brand sup {
+                font-size:small;
+                opacity:.5;
+            }
+
+            abbr {
+                letter-spacing:2px;
+            }
+
+        script(src='/js/libs/jquery/1.7.2/jquery.min.js')
+        script(src='/js/libs/angularjs/1.1.5/angular.min.js')
+        script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+
+        script.
+            var app= angular.module('management', ['ngResource']);
+
+            app.factory('CurrentUser', function ($resource) {
+                var CurrentUser= $resource('/api/v1/user/:action', {}, {
+                    logout: {method:'post', params:{action:'logout'}},
+                });
+                CurrentUser.prototype.logout= function () {
+                    console.log('выйти')
+                    this.$logout(function () {
+                        console.log('вышел', arguments)
+                    });
+                }
+                return CurrentUser;
+            });
+
+            app.controller('ViewCtrl', function ($scope, $location, $http, $window) {
+
+            });
+
+            app.controller('CurrentUserCtrl', function ($scope, CurrentUser) {
+                $scope.dropdown= {
+                    isOpen: false
+                };
+                $scope.toggleDropdown= function () {
+                    $scope.dropdown.isOpen= !$scope.dropdown.isOpen;
+                }
+
+                $scope.user= CurrentUser.get(function () {
+                    console.log('пользователь получен', arguments)
+                });
+
+            });
+
+    body(ng-controller='ViewCtrl', ng-cloak)
+
+        header
+            .navbar.navbar-static-top
+                .container
+                    a.navbar-brand(href='./')
+                        span FLYDEV
+
+                    .nav-collapse.collapse
+                        
+                        ul.nav.navbar-nav
+                            
+                            li: a(href='#/players') Игроки 
+                                b.caret
+                            
+                            li: a(href='#/servers') Серверы 
+                                b.caret
+                            
+                            li: a(href='#/store') Магазин 
+                                b.caret
+
+
+                        ul.nav.navbar-nav.pull-right
+                            li: a(href='engine/') Система
+                            li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
+                                a.dropdown-toggle(href='', ng-click='toggleDropdown()')
+                                    strong {{user.username}} 
+                                    b.caret
+                                
+                                ul.dropdown-menu
+                                    li: a(href='#/user')
+                                        i.icon-user
+                                        span   Аккаунт
+                                    li.divider
+                                    li: a(href='', ng-click='user.logout()')
+                                        i.icon-signout
+                                        span   Выход

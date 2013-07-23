@@ -1,0 +1,272 @@
+!!! html
+html(ng-app='management')
+
+    head
+
+        link(rel='stylesheet', href='/css/bootstrap.css')
+        link(rel='stylesheet', href='/css/bootcraft.css')
+        link(rel='stylesheet', href='/css/font-awesome.min.css')
+
+        style.
+
+            body {
+                -webkit-backface-visibility: hidden;
+            }
+            .navbar-brand span {
+                letter-spacing:2px;
+            }
+            .navbar-brand sup {
+                font-size:small;
+                opacity:.5;
+            }
+
+            abbr {
+                letter-spacing:2px;
+            }
+
+        script(src='/js/libs/jquery/1.7.2/jquery.min.js')
+        script(src='/js/libs/angularjs/1.1.5/angular.min.js')
+        script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+
+        script.
+
+            var app= angular.module('management', ['ngResource'], function ($routeProvider) {
+
+                $routeProvider.when('/users', {
+                    templateUrl:'partials/Users', controller:'UsersViewCtrl'
+                });
+
+            });
+
+
+
+            app.controller('ViewCtrl', function ($scope, $location) {
+                $scope.dialog= {
+                    overlay: false
+                };
+                $scope.showDialog= function (name) {
+                    $scope.dialog.overlay= name;
+                }
+                $scope.hideDialog= function () {
+                    $scope.dialog.overlay= false;
+                }
+                $scope.hide= function () {
+                    $location.url(
+                        $location.path()
+                    );
+                }
+            });
+
+
+
+            app.factory('CurrentUser', function ($resource) {
+                var CurrentUser= $resource('/api/v1/user/:action', {}, {
+                    logout: {method:'post', params:{action:'logout'}},
+                });
+                CurrentUser.prototype.logout= function () {
+                    console.log('выйти')
+                    this.$logout(function () {
+                        console.log('вышел', arguments)
+                    });
+                }
+                return CurrentUser;
+            });
+
+            app.controller('CurrentUserCtrl', function ($scope, CurrentUser) {
+                $scope.dropdown= {
+                    isOpen: false
+                };
+                $scope.toggleDropdown= function () {
+                    $scope.dropdown.isOpen= !$scope.dropdown.isOpen;
+                }
+
+                $scope.user= CurrentUser.get(function () {
+                    console.log('пользователь получен', arguments)
+                });
+            });
+
+
+
+            app.factory('User', function ($resource) {
+                var User= $resource('/api/v1/users/:userId', {userId:'@id'}, {
+                });
+                return User;
+            });
+
+            app.controller('UsersViewCtrl', function ($scope, $route, User) {
+
+                var Route= function (route) {
+                    var params= route.params;
+                    if ('create' === params.action) {
+                        $scope.showDialog('create');
+                    } else {
+                        $scope.hideDialog();
+                    }
+                }
+                var route= $route.current;
+                $scope.$on('$locationChangeSuccess', function (evt) {
+                    if ($route.current && $route.current.controller === route.controller) {
+                        Route($route.current);
+                        $route.current= route;
+                    }
+                });
+                Route($route.current);
+            });
+
+            app.controller('UsersCtrl', function ($scope, $http, User) {
+                var users= $scope.users= User.query(function () {
+                    console.log('пользователи загружены', arguments)
+                }, function () {
+                    console.error('пользователи не загружены', arguments)
+                });
+                $scope.send= function (form) {
+                    console.log(form)
+                    var username= form.username.$modelValue;
+                    var password= form.password.$modelValue;
+                    $http.post('/api/v1/users', {
+                        username:username,
+                        password:password,
+                    }).
+                    success(function (user, code) {                             console.log('success', arguments);
+                        $scope.hide();
+                        console.log($scope);
+                        $scope.users.push(user);
+                    }).
+                    error(function () {
+                        console.log('error', arguments)
+                    });
+                }
+            });
+
+    body(ng-controller='ViewCtrl', ng-cloak)
+
+        header
+            .navbar.navbar-static-top
+                .container
+
+                    a.navbar-brand(href='./')
+                        span FLYDEV ENGINE
+
+                    .nav-collapse.collapse
+
+
+                        ul.nav.navbar-nav
+                            
+                            li: a(href='#/users') Пользователи 
+                                b.caret
+
+
+                        ul.nav.navbar-nav.pull-right
+                            li: a(href='../') Проект
+                            li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
+                                a.dropdown-toggle(href='', ng-click='toggleDropdown()')
+                                    strong {{user.username}} 
+                                    b.caret
+                                
+                                ul.dropdown-menu
+                                    li: a(href='#/user')
+                                        i.icon-user
+                                        span   Аккаунт
+                                    li.divider
+                                    li: a(href='', ng-click='user.logout()')
+                                        i.icon-signout
+                                        span   Выход
+
+
+        style.
+
+            .dialog-overlay {
+                position:fixed; top:0; right:0; bottom:0; left:0; z-index:-1;
+                background:rgba(255,255,255,0.7);
+                transition:all .3s;
+                visibility:hidden;
+                opacity:0;
+            }
+
+            .dialog {
+                position:fixed; top:0; right:0; bottom:0; left:0; z-index:-1;
+                overflow-x:hidden; overflow-y:hidden;
+                padding-top:40px;
+                transition:all .3s;
+                visibility:hidden;
+                opacity:0;
+                -webkit-transform:scale(1.5);
+                transform:scale(1.5);
+            }
+                .dialog-bg {
+                    position:absolute; top:0; right:0; bottom:0; left:0;
+                }
+                .dialog-head {
+                    padding:15px;
+                    line-height:20px;
+                    background:#eee;
+                    font-size:18px;
+                    color:#777;
+                }
+                .dialog-body {
+                    background:#f9f9f9;
+                }
+                .dialog-title {
+                    margin-bottom:20px;
+                    font-size:1.5em; line-height:1.5em;
+                    text-align:center;
+                }
+
+            .dialog.show {
+                z-index:9999;
+                visibility:visible;
+                opacity:1;
+                -webkit-transform:scale(1);
+                transform:scale(1);
+            }
+            .dialog.show ~ .dialog-overlay {
+                z-index:9000;
+                visibility:visible;
+                opacity:1;
+            }
+
+            input[type=text], input[type=password] {
+                margin-bottom:15px;
+                padding:15px 20px;
+                font:inherit; font-size:19px; line-height:20px;
+                color:#333;
+                background:#eee;
+                border:1px solid #ccc; border-radius:1px;
+                box-shadow:inset 0 1px 1px rgba(0,0,0, 0.075);
+            }
+                input[type=text]:focus,
+                input[type=password]:focus {
+                    color:#333;
+                    box-shadow:inset 0 1px 1px rgba(0,0,0, 0.075);
+                }
+                input.valid {
+                    color:#357ebd;
+                    border-color:rgba(82,168,236, .8);
+                }
+
+
+            .btn {
+                padding:15px 20px;
+                font:inherit; font-size:18px; line-height:20px;
+                color:#333;
+                border-radius:1px;
+            }
+            .btn-primary {
+                color:#eee;
+            }
+            .btn[disabled] {
+                background:#eee;
+                border-color:#ccc;
+                color:#777;
+                opacity:1;
+            }
+
+            .dialog-form {
+                margin-bottom:70px;
+            }
+
+            .dialog-form .form-actions {
+                text-align:right;
+            }
+
+        .view(ng-view)
