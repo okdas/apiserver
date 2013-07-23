@@ -62,7 +62,7 @@ html(ng-app='management')
         script.
             var app= angular.module('management', []);
 
-            app.controller('ViewCtrl', function ($scope, $location) {
+            app.controller('ViewCtrl', function ($scope, $location, $http, $window) {
                 $scope.dialog= {
                     overlay: false
                 };
@@ -86,6 +86,25 @@ html(ng-app='management')
                 });
                 $scope.hide= function () {
                     $location.path('/');
+                }
+                $scope.send= function (form) {
+                    console.log(form)
+                    var username= form.username.$modelValue;
+                    var password= form.password.$modelValue;
+                    $http.post('/api/v1/user/login', {
+                        username:username,
+                        password:password,
+                    }).
+                    success(function (user, code) {                             console.log('success', arguments);
+                        if (user && user.username == username) {
+                            $window.location= '/management/';
+                        } else {
+                            $scope.password= '';
+                        }
+                    }).
+                    error(function () {
+                        console.log('error', arguments)
+                    });
                 }
             });
 
@@ -226,7 +245,7 @@ html(ng-app='management')
                             .row: .col-8.col-offset-2
                                 h2.dialog-title Представьтесь, пожалуйста
                             .row: .col-8.col-offset-2
-                                form(name='loginForm').dialog-form
+                                form(name='loginForm', ng-submit='send(loginForm)').dialog-form
                                     input(type='text', name='username', placeholder='Пользователь', required, ng-model='username', ng-class='{valid:loginForm.username.$valid}')
                                     input(type='password', name='password', placeholder='Пароль', required, ng-model='password', ng-class='{valid:loginForm.password.$valid}')
                                     .form-actions
