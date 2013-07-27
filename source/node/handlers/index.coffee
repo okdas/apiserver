@@ -1,128 +1,53 @@
 async= require 'async'
 
-crypto= require 'crypto'
-sha1= (string) ->
-    hash= crypto.createHash 'sha1'
-    hash.update string
-    return hash.digest 'hex'
-
 module.exports= (app) ->
 
-    ApiV1= require './ApiV1/'
-    Auth= require './Auth/'
-    User= require './User'
     Install= require './Install/'
+
 
     app.get '/', (req, res, next) ->
         res.redirect '/management/'
 
 
-    app.get '/management/', (req, res, next) ->
-        return do next if do req.isUnauthenticated
-        return res.render 'Management/dashboard'
+
+    app.get '/management/*', (req, res, next) ->
+        return do next if do req.isAuthenticated
+        return res.render 'Management/welcome'
+
+
 
     app.get '/management/', (req, res, next) ->
-        return res.render 'Management/welcome' 
+        res.locals
+            user: req.user
+        return res.render 'Management/dashboard'
 
 
 
     app.get '/management/engine/', (req, res, next) ->
+        res.locals
+            user: req.user
         return res.render 'Management/Engine/dashboard' 
 
     app.get '/management/engine/partials/users', (req, res, next) ->
         res.render 'Management/Engine/partials/Users'
 
-
-
-    ###
-
-    Методы API для работы c пользователями
-
-    ###
-
-    ###
-    Отдает список пользователей.
-    ###
-    app.get '/api/v1/users', (req, res, next) ->
-
-        req.redis.exists 'users', (err, exists) ->
-            return next err if err
-            return res.send 500, 'кеш пуст' if not exists
-
-        req.redis.sort 'users', 'ALPHA', (err, keys) ->
-            users= []
-            async.map keys
-
-            ,   (key, done) ->
-                    q= ['users', key].join ':'
-                    req.redis.hgetall q, (err, user) ->
-                        return done err if err
-                        users.push user
-                        return do done
-
-            ,   (err) ->
-                    return next err if err
-                    return res.json 200, users
-
-
-    ###
-    Добавляет переданного пользователя в список.
-    ###
-    app.post '/api/v1/users', (req, res, next) ->
-        time= new Date().getTime()
-        user=
-            username: req.body.username
-            password: sha1 req.body.password
-            createdAt: time
-
-        multi= do req.redis.multi
-
-        key= ['users', user.username].join ':'
-        multi.hmset key, user
-
-        multi.sadd 'users', user.username
-
-        multi.exec (err, reps) ->
-            return next err if err
-            return res.json 201, user
-
-    ###
-    Отдает указанного пользователя.
-    ###
-    app.get '/api/v1/users/:userId', User.getUser
-
-    ###
-    Отдает список групп указанного пользователя.
-    ###
-    app.get '/api/v1/users/:userId/groups', User.getUserGroups
-
-    ###
-    Добавляет указанному пользователю переданную группу.
-    ###
-    app.post '/api/v1/users/:userId/groups/:groupId', User.addUserGroup
+    app.get '/management/engine/partials/users/user', (req, res, next) ->
+        res.render 'Management/Engine/partials/Users/User'
 
 
 
     ###
-
-    Методы API для работы c группами пользователей
-
+    Методы API для работы c аутентифицированным пользователем.
     ###
+    app.use '/api/v1/user'
+    ,   require './Api/V1/User'
 
-    ###
-    Отдает список групп.
-    ###
-    app.get '/api/v1/groups', User.listGroups
 
     ###
-    Добавляет переданную группу в список.
+    Методы API для работы c пользователями.
     ###
-    app.post '/api/v1/groups', User.addGroup
-
-    ###
-    Отдает указанную группу.
-    ###
-    app.get '/api/v1/groups/:groupId', User.getGroup
+    app.use '/api/v1/users'
+    ,   require './Api/V1/Users'
 
 
 
@@ -231,42 +156,3 @@ module.exports= (app) ->
             req.redis.sort 'servers BY nosort GET servers:*', (err, resp) ->
                 return next err if err
                 return res.json resp
-
-
-
-
-    app.post '/api/v1/user/login', (req, res, next) ->
-
-        username= req.body.username
-        password= req.body.password
-
-        req.redis.exists 'users', (err, exists) ->
-            return next err if err
-            return res.send 'кеш пуст' if not exists
-
-            k= ['users', username].join ':'
-            req.redis.hgetall k, (err, user) ->
-                return next err if err
-                return res.json 204, null if not user
-                return res.json 204, null if user.password != password
-
-                user.username= username
-                req.login user, (err) ->
-                    return next err if err
-                    return res.json 200,
-                        username: username
-
-
-    app.post '/api/v1/user/logout', (req, res, next) ->
-        return res.json 401, null if do req.isUnauthenticated
-
-        username= req.body.username
-        return res.json 400, null if req.user.username != username
-
-        do req.logout
-        return res.json 200, true
-
-
-    app.get '/api/v1/user', (req, res, next) ->
-        return res.json 401, null if do req.isUnauthenticated
-        return res.json 200, req.user

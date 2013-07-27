@@ -86,32 +86,60 @@ module.exports= (cfg, log, done) ->
     Redis= require 'redis'
     redis= do Redis.createClient
 
+    resource= require 'resource'
+
     app.use (req, res, next) ->
 
         req.redis= redis
+
+        req.resources=
+
+            Users:
+
+                User: resource redis
+                ,   'users', require './resources/Users/User'
+
+            Minecraft:
+
+                Player: resource redis
+                ,   'players', require './resources/Minecraft/Player'
+
+                Server: resource redis
+                ,   'servers', require './resources/Minecraft/Server'
+
+                Store:
+
+                    #Enchantment: resources redis
+                    #,   'enchantments', require './resources/Minecraft/Store/Enchantment'
+
+                    Item: resource redis
+                    ,   'items', require './resources/Minecraft/Store/Item'
+
         do next
 
-    ###
-    База данных приложения
-    ###
-    Db= require 'orm'
 
-    app.configure ->
-        config= app.get 'config'
 
-        app.use (req, res, next) ->
-
-            Db.connect config.db, (err, db) ->
-                if err
-                    # ошибка при подключении к базе данных
-                    return next err
-
-                req.db= db
-                req.models= db.models
-
-                # подключить модели
-                db.load 'models', (err) ->
-                    return do next
+#    ###
+#    База данных приложения
+#    ###
+#    Db= require 'orm'
+#
+#    app.configure ->
+#        config= app.get 'config'
+#
+#        app.use (req, res, next) ->
+#
+#            Db.connect config.db, (err, db) ->
+#                if err
+#                    # ошибка при подключении к базе данных
+#                    return next err
+#
+#                req.db= db
+#                req.models= db.models
+#
+#                # подключить модели
+#                db.load 'models', (err) ->
+#                    return do next
 
 
 
