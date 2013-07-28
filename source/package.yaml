@@ -14,12 +14,8 @@ config:
         port: 8000
 
         db:
-            protocol: mysql
             host: 176.31.14.255
             port: 3306
-
-            query:
-                pool: true
 
 
     development:
@@ -32,8 +28,7 @@ config:
             user: apiserver
             password: iamthe1337
 
-            query:
-                debug: true
+            debug: true
 
 
     production:
@@ -46,8 +41,7 @@ config:
             user: apiserver
             password: iamthe1337
 
-            query:
-                debug: false
+            debug: false
 
 
 
@@ -66,8 +60,6 @@ dependencies:
     passport: latest
 
     redis: latest
+    mysql: latest
 
     log: latest
-
-    orm: latest
-    mysql: latest
