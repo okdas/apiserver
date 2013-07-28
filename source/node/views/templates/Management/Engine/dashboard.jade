@@ -16,13 +16,13 @@ html(ng-app='management')
             var app= angular.module('management', ['ngResource'], function ($routeProvider) {
 
                 $routeProvider.when('/users', {
-                    templateUrl:'partials/users', controller:'UsersViewCtrl'
+                    templateUrl:'/partials/management/engine/users', controller:'UsersViewCtrl'
                 });
                 $routeProvider.when('/users/create', {
-                    templateUrl:'partials/users/user/create', controller:'UsersUserCreateViewCtrl'
+                    templateUrl:'/partials/management/engine/users/user/create', controller:'UsersUserCreateViewCtrl'
                 });
                 $routeProvider.when('/users/:userId', {
-                    templateUrl:'partials/users/user/update', controller:'UsersUserUpdateViewCtrl'
+                    templateUrl:'/partials/management/engine/users/user/update', controller:'UsersUserUpdateViewCtrl'
                 });
             });
 

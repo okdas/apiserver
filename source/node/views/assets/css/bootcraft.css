@@ -174,18 +174,22 @@ h3 {
     .dialog-enter {
         opacity:0;
         -webkit-transform:scale(1.5);
+        transform:scale(1.5);
     }
     .dialog-enter.dialog-enter-active {
         opacity:1;
         -webkit-transform:scale(1);
+        transform:scale(1);
     }
     .dialog-leave {
         opacity:1;
         -webkit-transform:scale(1);
+        transform:scale(1);
     }
     .dialog-leave.dialog-leave-active {
         opacity:0;
         -webkit-transform:scale(1.5);
+        transform:scale(1.5);
     }
 
 .dialog-overlay-enter, .dialog-overlay-leave {
