@@ -33,15 +33,23 @@ app.post '/login', (req, res, next) ->
     username= req.body.username
     password= req.body.password
 
-    User= req.resources.Users.User
-    User.findBy 'username', username, (err, user) ->
-        return next err if err and not (err instanceof User.Error)
-        return res.json 204, null if not user
-        return res.json 204, null if user.password != sha1 password
+    req.db.getConnection (err, connection) ->
+        return next err if err
 
-        req.login user, (err) ->
-            return next err if err
-            return res.json 200, user
+        connection.query 'SELECT * FROM users_user WHERE username = ?'
+        ,   [req.body.username]
+        ,   (err, rows) ->
+                do connection.end
+
+                return next err if err
+                return res.json 400, null if not rows.length
+
+                user= do rows.shift
+                return res.json 400, null if user.password != sha1 password
+
+                req.login user, (err) ->
+                    return next err if err
+                    return res.json 200, user
 
 
 
