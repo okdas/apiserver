@@ -46,14 +46,14 @@ module.exports= (app) ->
             user: req.user
         return res.render 'Management/Engine/dashboard'
 
-    app.get 'partials/management/engine/users', (req, res, next) ->
-        res.render '/partials/Management/Engine/Users'
+    app.get '/partials/management/engine/users', (req, res, next) ->
+        res.render 'partials/Management/Engine/Users'
 
-    app.get '/management/engine/partials/users/user/create', (req, res, next) ->
-        res.render '/partials/Management/Engine/Users/UserCreate'
+    app.get '/partials/management/engine/users/user/create', (req, res, next) ->
+        res.render 'partials/Management/Engine/Users/UserCreate'
 
-    app.get '/management/engine/partials/users/user/update', (req, res, next) ->
-        res.render '/partials/Management/Engine/Users/UserUpdate'
+    app.get '/partials/management/engine/users/user/update', (req, res, next) ->
+        res.render 'partials/Management/Engine/Users/UserUpdate'
 
 
 
