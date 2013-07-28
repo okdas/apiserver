@@ -27,12 +27,6 @@ html(ng-app='management')
             });
 
 
-            app.directive('bLoading', function () {
-                return function ($scope, $e, $a) {
-                    console.log($e, $a.bLoading)
-                }
-            });
-
 
             app.controller('ViewCtrl', function ($scope, $location) {
                 $scope.dialog= {
@@ -255,8 +249,8 @@ html(ng-app='management')
 
 
                         ul.nav.navbar-nav.pull-right
-                            li: a(href='../') Проект
-                            li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}', b-loading='loading')
+                            li: a(href='../') Управление проектом
+                            li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
                                 a.dropdown-toggle(href='', ng-click='toggleDropdown()')
                                     strong {{user.username}} 
                                     b.caret
