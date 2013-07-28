@@ -1,0 +1,37 @@
+section.dialog-static
+  .container.dialog-container
+    .row
+
+      menu.col-12.col-sm-4.col-lg-4.col-push-8 
+
+      form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='ItemForm')
+        .form-body
+          h3.dialog-title(style='text-align:center') Обновить предмет в магазине
+            p: img.img(ng-src='{{item.imageUrl}}', width='32', height='32')
+
+          fieldset
+            input.input(placeholder='Название предмета в магазине', type='text', required, ng-model='item.title')
+            input.input(placeholder='Ссылка на изображение предмета в магазине', type='text', required, ng-model='item.imageUrl')
+
+          fieldset
+            input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='item.material', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
+            input.input(placeholder='Название предмета в игре (необязательно)', type='text', ng-model='item.name')
+
+          fieldset
+            .form(name='ItemEnchantmentForm')
+              hr
+              .row
+                .col-12
+                  p(ng-repeat='ie in itemEnchantments') {{ie}}
+              .row
+                .col-4
+                  select.input(ng-model='itemEnchantment', ng-options='e.title for e in enchantments')
+                .col-4
+                  input.input(placeholder='Уровень', ng-model='itemEnchantmentLevel')
+                .col-4
+                  a.btn.btn-primary.btn-block(ng-click='addEnchantment()') Добавить чары
+              hr
+        .form-foot: .row
+          .col-12
+            button.btn.btn-primary.btn-block(type='submit', ng-click='update(ItemForm)', ng-disabled='!ItemForm.$valid')
+              span Обновить предмет

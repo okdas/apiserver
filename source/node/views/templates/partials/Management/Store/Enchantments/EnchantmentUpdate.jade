@@ -1,0 +1,24 @@
+section.dialog-static
+  .container.dialog-container
+    .row
+
+      menu.col-12.col-sm-4.col-lg-4.col-push-8 
+
+      form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='Form')
+          .form-body
+            h3.dialog-title(style='text-align:center') Обновить чары в магазине
+
+            fieldset
+              input.input(placeholder='Название чар', type='text', required, ng-model='enchantment.title')
+
+            fieldset
+              input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='enchantment.identity', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
+              input.input.input-auto(placeholder='Максимальный уровень', type='text', required, ng-model='enchantment.level', ng-pattern='/^([0-9]+)$/')
+
+          .form-foot: .row
+            .col-8
+              button.btn.btn-primary.btn-block(type='submit', ng-click='update(Form)', ng-disabled='!Form.$valid')
+                span Обновить чары
+            .col-4
+              a.btn.btn-warning.btn-block(ng-click='delete()')
+                span Удалить

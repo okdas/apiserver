@@ -1,0 +1,22 @@
+section.dialog-static
+  .container.dialog-container
+    .row
+
+      menu.col-12.col-sm-4.col-lg-4.col-push-8 
+
+      form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='ItemForm')
+          .form-body
+            h3.dialog-title(style='text-align:center') Добавить предмет в магазин
+              p: img.img(ng-show='item.imageUrl', ng-src='{{item.imageUrl}}', width='32', height='32')
+
+            fieldset
+              input.input(placeholder='Название предмета в магазине', type='text', required, ng-model='item.title')
+              input.input(placeholder='Ссылка на изображение предмета в магазине', type='text', required, ng-model='item.imageUrl')
+
+            fieldset
+              input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='item.material', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
+              input.input(placeholder='Название предмета в игре (необязательно)', type='text', ng-model='item.name')
+
+          .form-foot
+            button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
+              span Добавить предмет
