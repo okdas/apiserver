@@ -113,17 +113,24 @@ module.exports= (cfg, log, done) ->
     Сессии пользователей приложения
     ###
     app.configure ->
+        #MariaStore= require('connect-mysql-session')(express)
+        #handler= express.session
+        #    secret: 'apiserver'
+        #    store: new MariaStore app.db, 'users_session'
         RedisStore= require('connect-redis')(express)
-
-        # Сессия
-        app.use express.session
+        handler= express.session
             secret: 'apiserver'
             store: new RedisStore
-                prefix: 'sessions'
+        app.use '/management', handler
+        app.use '/api', handler
 
-        app.use do passport.initialize
+        handler= do passport.initialize
+        app.use '/management', handler
+        app.use '/api', handler
 
-        app.use do passport.session
+        handler= do passport.session
+        app.use '/management', handler
+        app.use '/api', handler
 
 
 
