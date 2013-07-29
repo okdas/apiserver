@@ -17,6 +17,26 @@ section.dialog-static
               input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='item.material', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
               input.input(placeholder='Название предмета в игре (необязательно)', type='text', ng-model='item.name')
 
+          hr
+
+          fieldset(name='ItemEnchantmentForm')
+            legend Чары предмета
+            .row(ng-repeat='enchantment in item.enchantments')
+              .col-7
+                input.input(type='text', disabled, ng-model='enchantment.title')
+              .col-2
+                input.input(type='text', ng-model='enchantment.level')
+              .col-3
+                button.btn.btn-warning.btn-block(ng-click='remEnchantment(enchantment)') Удалить
+          hr
+          fieldset
+            .row
+              .col-7
+                select.input(ng-model='enchantment', ng-options='e.title for e in enchantments | filterItemEnchantment:item')
+              .col-5
+                a.btn.btn-primary.btn-block(ng-click='addEnchantment()') Добавить чары
+          hr
+
           .form-foot
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
               span Добавить предмет
