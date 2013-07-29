@@ -47,23 +47,18 @@ app.post '/', (req, res, next) ->
             conn.query 'INSERT INTO store_item SET ?'
             ,   [data]
             ,   (err, resp) ->
-                    return done err, conn, resp
+                    id= resp.insertId if not err
+                    return done err, conn, id
 
-        (conn, resp, done) ->
-            enchantments= req.body.enchantments
-            async.reduce enchantments, 1
-            ,   (i, enchantment, done) ->
-                    data=
-                        itemId: resp.insertId
-                        enchantmentId: enchantment.id
-                        level: enchantment.level
-                        order: i
-                    conn.query 'INSERT INTO store_item_enchantments SET ?'
-                    ,   [data]
-                    ,   (err, resp) ->
-                            return done err, ++i
-            ,   (err) ->
+        (conn, id, done) ->
+            bulk= []
+            for enchantment, order in req.body.enchantments
+                bulk.push [id, enchantment.id, enchantment.level, order]
+            conn.query 'INSERT INTO store_item_enchantments (`itemId`, `enchantmentId`, `level`, `order`) VALUES ?'
+            ,   [bulk]
+            ,   (err, resp) ->
                     return done err, conn
+
 
         (conn, done) ->
             conn.query 'COMMIT', (err) ->
@@ -96,18 +91,10 @@ app.get '/:itemId', (req, res, next) ->
                     return done err, conn, item
 
         (conn, item, done) ->
-            conn.query 'SELECT * FROM store_item_enchantments as ie JOIN store_enchantment as e ON ie.enchantmentId = e.id WHERE itemId = ? ORDER BY ie.order'
+            conn.query 'SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level` FROM store_item_enchantments as ie JOIN store_enchantment as e ON ie.enchantmentId = e.id WHERE itemId = ? ORDER BY ie.order'
             ,   [req.params.itemId]
             ,   (err, resp) ->
-                    item.enchantments= []
-                    if not err
-                        resp.map (enchantment) ->
-                            item.enchantments.push
-                                id: enchantment.id
-                                identity: enchantment.identity
-                                title: enchantment.title
-                                level: enchantment.level
-                                levelmax: enchantment.levelmax
+                    item.enchantments= resp
                     return done err, conn, item
 
     ],  (err, conn, item) ->
@@ -151,19 +138,12 @@ app.put '/:itemId', (req, res, next) ->
                     return done err, conn
 
         (conn, done) ->
-            enchantments= req.body.enchantments
-            async.reduce enchantments, 1
-            ,   (i, enchantment, done) ->
-                    data=
-                        itemId: req.params.itemId
-                        enchantmentId: enchantment.id
-                        level: enchantment.level
-                        order: i
-                    conn.query 'INSERT INTO store_item_enchantments SET ?'
-                    ,   [data]
-                    ,   (err, resp) ->
-                            return done err, ++i
-            ,   (err) ->
+            bulk= []
+            for enchantment, order in req.body.enchantments
+                bulk.push [req.params.itemId, enchantment.id, enchantment.level, order]
+            conn.query 'INSERT INTO store_item_enchantments (`itemId`, `enchantmentId`, `level`, `order`) VALUES ?'
+            ,   [bulk]
+            ,   (err, resp) ->
                     return done err, conn
 
         (conn, done) ->
