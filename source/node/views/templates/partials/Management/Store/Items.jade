@@ -7,7 +7,14 @@ section
           h3.toolbar-title Предметы в магазине
           a.btn.btn-primary.btn-small.toolbar-btn(ng-href='#/store/items/create') Добавить предмет
         hr
-        ul.items
-          li(ng-repeat='item in items')
-            a(ng-href='#/store/items/{{item.id}}') {{item}}
+        style.
+          .item .img {
+            margin-right:1em;
+          }
+        .items
+          p.item(ng-repeat='item in items')
+            a(ng-href='#/store/items/{{item.id}}')
+              img.img(ng-src='{{item.imageUrl}}')
+              span {{item.title}}
+            hr
       

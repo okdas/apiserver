@@ -18,7 +18,6 @@ section.dialog-static
             input.input(placeholder='Название предмета в игре (необязательно)', type='text', ng-model='item.name')
 
           hr
-
           fieldset(name='ItemEnchantmentForm')
             legend Чары предмета
             .row(ng-repeat='enchantment in item.enchantments')
@@ -27,17 +26,20 @@ section.dialog-static
               .col-2
                 input.input(type='text', ng-model='enchantment.level')
               .col-3
-                button.btn.btn-warning.btn-block(ng-click='remEnchantment(enchantment)') Удалить
+                button.btn.btn-default.btn-block(ng-click='remEnchantment(enchantment)') Удалить
           hr
           fieldset
             .row
               .col-7
                 select.input(ng-model='enchantment', ng-options='e.title for e in enchantments | filterItemEnchantment:item')
               .col-5
-                a.btn.btn-primary.btn-block(ng-click='addEnchantment()') Добавить чары
+                a.btn.btn-default.btn-block(ng-click='addEnchantment()') Добавить чары
           hr
 
         .form-foot: .row
-          .col-12
+          .col-9
             button.btn.btn-primary.btn-block(type='submit', ng-click='update(ItemForm)', ng-disabled='!ItemForm.$valid')
               span Обновить предмет
+          .col-3
+            button.btn.btn-warning.btn-block(ng-click='delete(ItemForm)')
+              span Удалить
