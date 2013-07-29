@@ -21,9 +21,11 @@ html(ng-app='management')
                 letter-spacing:2px;
             }
 
-        script(src='/js/libs/jquery/1.7.2/jquery.min.js')
+        script(src='/js/libs/jquery/1.10.2/jquery.min.js')
         script(src='/js/libs/angularjs/1.1.5/angular.min.js')
         script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+
+        script(src='/js/libs/jquery-ui-1.10.3.custom.min.js')
 
         script.
 
@@ -167,12 +169,14 @@ html(ng-app='management')
 
                 $scope.enchantments= Enchantment.query(function () {});
                 $scope.addEnchantment= function () {
-                    if (!$scope.enchantment) return;
-                    var enchantment= angular.copy($scope.enchantment)
-                    enchantment.level= 1;
-                    $scope.item.enchantments.push(
-                        enchantment
-                    );
+                    if ($scope.enchantment) {
+                        var enchantment= angular.copy($scope.enchantment);
+                        $scope.enchantment= null;
+                        enchantment.level= 1;
+                        $scope.item.enchantments.push(
+                            enchantment
+                        );
+                    }
                 }
                 $scope.remEnchantment= function (enchantment) {
                     var enchantments= []
@@ -261,6 +265,47 @@ html(ng-app='management')
                     }, function () {});
                 };
             });
+
+            app.directive('bSortable', function ($parse) {
+                return {
+                    controller: function bSortable($scope) {
+                        $scope.bSortable= {};
+                        $scope.bSortableUpdate= function () {
+                            var list= $scope.bSortable.getter($scope);
+                            var sorted= [];
+                            $scope.bSortable.element.children().each(function () {
+                                var id= $(this).attr('id');
+                                angular.forEach(list, function (item, i) {
+                                    if (id == item.id) {
+                                        sorted.push(item);
+                                    }
+                                });
+                            });
+                            console.log(sorted);
+                            angular.forEach(list, function (item, i) {
+                                list[i]= sorted[i];
+                            });
+                            console.log(list);
+                            $scope.$digest();
+                        }
+                    },
+                    link: function ($scope, $e, $a) {
+                        $scope.bSortable.getter= $parse($a.bSortable);
+                        $scope.bSortable.element= $e;
+                    },
+                }
+            });
+            app.directive('bSortableItem', function () {
+                return {
+                    require:'^bSortable',
+                    link: function ($scope, $e, $a) {
+                        $scope.bSortable.element.sortable({axis:'y', grid:[50,50], helper:'clone', forceHelperSize:false, forcePlaceholderSize:false, tolerance:'pointer'}).off('sortupdate').
+                        on('sortupdate', function (evt, target) {
+                            $scope.bSortableUpdate()
+                        })
+                    },
+                }
+            })
 
     - var localsJson= JSON.stringify({user: user});
     body(ng-controller='ViewCtrl', ng-cloak, ng-init='locals=#{localsJson}')

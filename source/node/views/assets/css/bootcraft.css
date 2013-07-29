@@ -7,6 +7,17 @@ form {
     margin:0;
     background:#f9f9f9;
 }
+.form .form-row {
+    margin:0 -5px;
+}
+.form-row > *[class^="col-"] {
+    padding:0 5px;
+}
+.form-row label {
+    display:block;
+    padding:12px 15px; line-height:normal;
+    background:#eee;
+}
 .form-foot {
     margin:-15px; margin-top:15px;
     padding:15px;
@@ -23,7 +34,7 @@ legend {
 }
 
 .input, .btn {
-    padding:9px 12px;
+    padding:11px 14px;
     font:inherit; line-height:normal; color:#333;
     border-radius:1px;
 }
@@ -33,13 +44,13 @@ legend {
 }
 
 select {
-    max-height:36px;
+    max-height:40px;
 }
 
 .input {
     display:block;
     width:100%;
-    margin:0; margin-bottom:0.5em;
+    margin:0; margin-bottom:10px;
     color:#333; background:#eee;
     border:1px solid #ccc; outline:none;
     box-shadow:inset 0 1px 1px rgba(0,0,0, 0.075);
@@ -79,6 +90,17 @@ select {
     color:#777;
     opacity:1;
 }
+
+
+
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+
+
 
 .navbar-brand span {
     letter-spacing:2px;

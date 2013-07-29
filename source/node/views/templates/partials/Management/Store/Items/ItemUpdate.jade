@@ -20,26 +20,35 @@ section.dialog-static
           hr
           fieldset(name='ItemEnchantmentForm')
             legend Чары предмета
-            .row(ng-repeat='enchantment in item.enchantments')
-              .col-7
-                input.input(type='text', disabled, ng-model='enchantment.title')
-              .col-2
-                input.input(type='text', ng-model='enchantment.level')
-              .col-3
-                button.btn.btn-default.btn-block(ng-click='remEnchantment(enchantment)') Удалить
-          hr
-          fieldset
-            .row
-              .col-7
+            style.
+              .enchantment {
+                transition:opacity .5s ease;
+              }
+              .enchantment.ui-sortable-helper {
+                opacity:.5;
+              } .enchantment.ui-sortable-helper .col-2 {
+                opacity:.0;
+              }
+            .enchantments(b-sortable='item.enchantments')
+              .enchantment(ng-repeat='enchantment in item.enchantments', b-sortable-item, id='{{enchantment.id}}')
+                .row.form-row
+                  .col-8
+                    label(style='cursor:ns-resize;color:#357ebd;') {{enchantment.title}}
+                  .col-2
+                    input.input(type='text', ng-model='enchantment.level')
+                  .col-2
+                    button.btn.btn-link.btn-block.text-left(ng-click='remEnchantment(enchantment)') Удалить
+            .row.form-row
+              .col-8
                 select.input(ng-model='enchantment', ng-options='e.title for e in enchantments | filterItemEnchantment:item')
-              .col-5
-                a.btn.btn-default.btn-block(ng-click='addEnchantment()') Добавить чары
+              .col-4
+                a.btn.btn-primary.btn-block.text-left(ng-click='addEnchantment(enchantment)', ng-disabled='!enchantment.id') Добавить чары на предмет
           hr
 
-        .form-foot: .row
-          .col-9
+        .form-foot: .row.form-row
+          .col-10
             button.btn.btn-primary.btn-block(type='submit', ng-click='update(ItemForm)', ng-disabled='!ItemForm.$valid')
-              span Обновить предмет
-          .col-3
-            button.btn.btn-warning.btn-block(ng-click='delete(ItemForm)')
-              span Удалить
+              span Обновить предмет
+          .col-2
+            button.btn.btn-link.btn-block.text-left(ng-click='delete(ItemForm)')
+              span Удалить
