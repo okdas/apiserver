@@ -1,19 +1,16 @@
 express= require 'express'
 extend= require 'extend'
-async= require 'async'
+
 
 ###
 Возвращает настроенный экзмепляр приложения.
 ###
 module.exports= (cfg, log, done) ->
 
-
-
     ###
     Экземпляр приложения
     ###
-    app= module.exports= do express
-
+    app= do express
 
 
     ###
@@ -38,7 +35,6 @@ module.exports= (cfg, log, done) ->
         extend true, config, cfg.production or {}
 
 
-
     ###
     Логгер приложения
     ###
@@ -58,7 +54,6 @@ module.exports= (cfg, log, done) ->
         app.use (req, res, next) ->
             log.info "#{req.ip} - - #{req.method} #{req.url} \"#{req.headers.referer}\"  \"#{req.headers['user-agent']}\""
             do next
-
 
 
     ###
@@ -83,7 +78,6 @@ module.exports= (cfg, log, done) ->
         app.set 'view engine', 'jade'
 
 
-
     ###
     База данных приложения
     ###
@@ -97,7 +91,6 @@ module.exports= (cfg, log, done) ->
         app.use (req, res, next) ->
             req.db= app.db
             return do next
-
 
 
     passport= require 'passport'
@@ -134,10 +127,8 @@ module.exports= (cfg, log, done) ->
         app.use '/api', handler
 
 
-
     ###
     Обработчики маршрутов
     ###
     handlers= require './handlers'
     handlers app
-
