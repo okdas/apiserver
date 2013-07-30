@@ -32,27 +32,27 @@ html(ng-app='management')
             var app= angular.module('management', ['ngResource'], function ($routeProvider) {
 
                 $routeProvider.when('/store', {
-                    templateUrl:'/partials/management/store', controller:'StoreViewCtrl'
+                    templateUrl:'project/store/', controller:'StoreViewCtrl'
                 });
 
                 $routeProvider.when('/store/items', {
-                    templateUrl:'/partials/management/store/items', controller:'StoreItemsViewCtrl'
+                    templateUrl:'project/store/items/', controller:'StoreItemsViewCtrl'
                 });
                 $routeProvider.when('/store/items/create', {
-                    templateUrl:'/partials/management/store/items/create', controller:'StoreItemsCreateViewCtrl'
+                    templateUrl:'project/store/items/item/forms/create/', controller:'StoreItemsCreateViewCtrl'
                 });
                 $routeProvider.when('/store/items/:itemId', {
-                    templateUrl:'/partials/management/store/items/update', controller:'StoreItemsUpdateViewCtrl'
+                    templateUrl:'project/store/items/item/forms/update/', controller:'StoreItemsUpdateViewCtrl'
                 });
 
                 $routeProvider.when('/store/enchantments', {
-                    templateUrl:'/partials/management/store/enchantments', controller:'StoreEnchantmentsViewCtrl'
+                    templateUrl:'project/store/enchantments/', controller:'StoreEnchantmentsViewCtrl'
                 });
                 $routeProvider.when('/store/enchantments/create', {
-                    templateUrl:'/partials/management/store/enchantments/create', controller:'StoreEnchantmentsCreateViewCtrl'
+                    templateUrl:'project/store/enchantments/enchantment/forms/create', controller:'StoreEnchantmentsCreateViewCtrl'
                 });
                 $routeProvider.when('/store/enchantments/:enchantmentId', {
-                    templateUrl:'/partials/management/store/enchantments/update', controller:'StoreEnchantmentsUpdateViewCtrl'
+                    templateUrl:'project/store/enchantments/enchantment/forms/update', controller:'StoreEnchantmentsUpdateViewCtrl'
                 });
             });
 

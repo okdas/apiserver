@@ -2,22 +2,20 @@ module.exports= (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
-        clean:
-            all: ['<%= pkg.config.build.app.node %>/']
+        #clean:
+        #    all: ['<%= pkg.config.build.app.node %>/']
 
         coffee:
             main:
                 options:
                     bare: true
-                files: [
-                    {
-                        expand: true
-                        cwd: '<%= pkg.config.build.src.root %>'
-                        src: ['**/*.coffee']
-                        dest: '<%= pkg.config.build.app.root %>'
-                        ext: '.js'
-                    }
-                ]
+                files: [{
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.root %>'
+                    src: ['**/*.coffee']
+                    dest: '<%= pkg.config.build.app.root %>'
+                    ext: '.js'
+                }]
 
         yaml:
             package:
@@ -34,16 +32,32 @@ module.exports= (grunt) ->
                     }
                 ]
 
+        jade:
+            compile:
+                options:
+                    data:
+                        debug: false
+                files: [{
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.node %>/views/public/templates'
+                    src: ['**/*.jade']
+                    dest: '<%= pkg.config.build.app.node %>/views/public/templates'
+                    ext: '.html'
+                }]
+
         copy:
             views:
-                files: [
-                    {
-                        expand: true
-                        cwd: '<%= pkg.config.build.src.node %>/views'
-                        src: ['**/*', '!**/*.coffee', '!**/*.md']
-                        dest: '<%= pkg.config.build.app.node %>/views'
-                    }
-                ]
+                files: [{
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.node %>/views/public'
+                    src: ['**/*', '!**/*.jade', '!**/*.coffee', '!**/*.md']
+                    dest: '<%= pkg.config.build.app.node %>/views/public'
+                }, {
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.node %>/views/templates'
+                    src: ['**/*', '!**/*.md']
+                    dest: '<%= pkg.config.build.app.node %>/views/templates'
+                }]
 
         #coffeelint:
         #    app:
@@ -74,13 +88,11 @@ module.exports= (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-clean'
     grunt.loadNpmTasks 'grunt-contrib-copy'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
+    grunt.loadNpmTasks 'grunt-contrib-jade'
     grunt.loadNpmTasks 'grunt-yaml'
     #grunt.loadNpmTasks 'grunt-coffeelint'
     grunt.loadNpmTasks 'grunt-docco'
 
-    grunt.registerTask 'default', ['clean', 'yaml', 'coffee', 'copy']
+    grunt.registerTask 'default', ['yaml', 'coffee', 'jade', 'copy']
     #grunt.registerTask 'lint', ['coffeelint']
     grunt.registerTask 'doc', ['docco']
-
-
-

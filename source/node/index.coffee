@@ -69,7 +69,8 @@ module.exports= (cfg, log, done) ->
         app.use do express.compress
 
         # Публичные файлы
-        app.use express.static __dirname+'/views/assets'
+        app.use express.static "#{__dirname}/views/public/templates"
+        app.use express.static "#{__dirname}/views/public"
 
         app.use do express.bodyParser
 
@@ -78,7 +79,7 @@ module.exports= (cfg, log, done) ->
         app.use do express.methodOverride
 
         # Шаблоны вида
-        app.set 'views', __dirname + '/views/templates'
+        app.set 'views', "#{__dirname}/views/templates"
         app.set 'view engine', 'jade'
 
 

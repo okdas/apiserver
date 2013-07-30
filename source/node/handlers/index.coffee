@@ -6,54 +6,21 @@ module.exports= (app) ->
         res.redirect '/management/'
 
 
-
     app.get '/management/*', (req, res, next) ->
         return do next if do req.isAuthenticated
-        return res.render 'Management/welcome'
-
+        return res.render 'management'
 
 
     app.get '/management/', (req, res, next) ->
         res.locals
             user: req.user
-        return res.render 'Management/dashboard'
-
-    app.get '/partials/management/store', (req, res, next) ->
-        res.render 'partials/Management/Store'
-
-    app.get '/partials/management/store/items', (req, res, next) ->
-        res.render 'partials/Management/Store/Items'
-
-    app.get '/partials/management/store/items/create', (req, res, next) ->
-        res.render 'partials/Management/Store/Items/ItemCreate'
-
-    app.get '/partials/management/store/items/update', (req, res, next) ->
-        res.render 'partials/Management/Store/Items/ItemUpdate'
-
-    app.get '/partials/management/store/enchantments', (req, res, next) ->
-        res.render 'partials/Management/Store/Enchantments'
-
-    app.get '/partials/management/store/enchantments/create', (req, res, next) ->
-        res.render 'partials/Management/Store/Enchantments/EnchantmentCreate'
-
-    app.get '/partials/management/store/enchantments/update', (req, res, next) ->
-        res.render 'partials/Management/Store/Enchantments/EnchantmentUpdate'
-
+        return res.render 'management/project'
 
 
     app.get '/management/engine/', (req, res, next) ->
         res.locals
             user: req.user
-        return res.render 'Management/Engine/dashboard'
-
-    app.get '/partials/management/engine/users', (req, res, next) ->
-        res.render 'partials/Management/Engine/Users'
-
-    app.get '/partials/management/engine/users/user/create', (req, res, next) ->
-        res.render 'partials/Management/Engine/Users/UserCreate'
-
-    app.get '/partials/management/engine/users/user/update', (req, res, next) ->
-        res.render 'partials/Management/Engine/Users/UserUpdate'
+        return res.render 'management/engine'
 
 
 
@@ -79,6 +46,21 @@ module.exports= (app) ->
 
     ###
 
+    Проект
+
+    ###
+
+    ###
+    Методы API для работы c серверами.
+    ###
+    app.use '/api/v1/servers'
+    ,   require './Api/V1/Minecraft/Servers'
+
+
+
+
+    ###
+
     Содержимое
 
     ###
@@ -94,3 +76,7 @@ module.exports= (app) ->
     ###
     app.use '/api/v1/store/items'
     ,   require './Api/V1/Minecraft/Store/Items'
+
+
+    app.get '/test', (req, res, next) ->
+        res.render 'test.jade'

@@ -26,6 +26,7 @@
     "grunt-contrib-clean": "latest",
     "grunt-contrib-copy": "latest",
     "grunt-contrib-coffee": "latest",
+    "grunt-contrib-jade": "latest",
     "grunt-docco": "latest",
     "grunt-yaml": "latest",
     "grunt-cli": "latest",
