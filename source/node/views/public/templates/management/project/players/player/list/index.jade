@@ -14,17 +14,17 @@ block section-body
     thead
       tr
         th #
-        th.col-flex: .sortable: .sortable-cell Игрок и его группы
-        th: .sortable: .sortable-cell Активность
-        th: .sortable: .sortable-cell Платежеспособность
+        th.col-flex: .table-col: .table-col-sortable Игрок и его группы
+        th: .table-col: .table-col-sortable Активность
+        th: .table-col: .table-col-sortable Платежеспособность
     tbody
       tr(ng-repeat='player in players')
         td {{player.id}}
         td
-          a(href='', ng-click='showDetails(player)') {{player.name}}
+          a.player-name(href='', ng-click='showDetails(player)') {{player.name}}
           span(ng-repeat='group in player.groups')
-              span {{group}}
-              span(ng-if='!$last'),
+            span {{group}}
+            span(ng-if='!$last'), 
         td
         td
 
