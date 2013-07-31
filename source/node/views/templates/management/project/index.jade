@@ -73,7 +73,7 @@ html(ng-app='management')
     - var localsJson= JSON.stringify({user: user});
     body(ng-controller='ViewCtrl', ng-cloak, ng-init='locals=#{localsJson}')
 
-        header
+        header.header
             .navbar.navbar-static-top
                 .container
                     a.navbar-brand(href='./')
@@ -107,5 +107,14 @@ html(ng-app='management')
                                     li: a(href='', ng-click='logout()')
                                         i.icon-signout
                                         span   Выход
+        .view.view-outer(ng-view, ng-cloak)
+        .dialog(ng-show='dialog.overlay', ng-animate='"dialogп"', ng-cloak)
+            .dialog-bg(ng-click='hideDialog()')
+            .container
+                .row: .col-12.dialog-container
+                    .row: .col-12.dialog-head
+                        i.icon-signin
+                        span   Информация об игроке
+                    .row: .col-12.dialog-body(ng-include='dialog.templateUrl')
 
-        .view(ng-view, ng-animate='"view"')
+        .dialog-overlay(ng-show='dialog.overlay', ng-animate='"dialogп-overlay"')

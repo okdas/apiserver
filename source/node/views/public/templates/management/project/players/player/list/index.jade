@@ -1,0 +1,32 @@
+extends ../../../layout
+
+block section-head-title
+  a(href='#/players') Управление игроками
+
+block section-head-nav
+  ul.nav.nav-row
+    li.active: a Игроки
+    li: a(href='#/players/group/list') Группы
+    li: a(href='#/players/permission/list') Разрешения
+
+block section-body
+  table.table.players
+    thead
+      tr
+        th #
+        th.col-flex: .sortable: .sortable-cell Игрок и его группы
+        th: .sortable: .sortable-cell Активность
+        th: .sortable: .sortable-cell Платежеспособность
+    tbody
+      tr(ng-repeat='player in players')
+        td {{player.id}}
+        td
+          a(href='', ng-click='showDetails(player)') {{player.name}}
+          span(ng-repeat='group in player.groups')
+              span {{group}}
+              span(ng-if='!$last'),
+        td
+        td
+
+script(type='text/ng-template', id='ololo.html')
+  include ../dialog.jade
