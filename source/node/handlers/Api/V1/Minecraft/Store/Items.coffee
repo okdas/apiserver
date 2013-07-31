@@ -2,6 +2,7 @@ express= require 'express'
 async= require 'async'
 
 
+
 ###
 Методы API для работы c предметами.
 ###
@@ -13,15 +14,55 @@ app= module.exports= do express
 Отдает список предметов.
 ###
 app.get '/', (req, res, next) ->
-    req.db.getConnection (err, connection) ->
-        return next err if err
+    async.waterfall [
 
-        connection.query 'SELECT * FROM store_item'
-        ,   (err, rows) ->
-                do connection.end
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
 
-                return next err if err
-                return res.json 200, rows
+        (conn, done) ->
+            conn.query 'SELECT * FROM store_item'
+            ,   (err, rows) ->
+                    return done err, conn, rows
+
+    ],  (err, conn, rows) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, rows
+
+
+
+###
+Отдает предмет.
+###
+app.get '/:itemId', (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query 'SELECT * FROM store_item WHERE id = ?'
+            ,   [req.params.itemId]
+            ,   (err, resp) ->
+                    item= do resp.shift if not err
+                    return done err, conn, item
+
+        (conn, item, done) ->
+            conn.query 'SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level` FROM store_item_enchantments as ie JOIN store_enchantment as e ON ie.enchantmentId = e.id WHERE itemId = ? ORDER BY ie.order'
+            ,   [req.params.itemId]
+            ,   (err, resp) ->
+                    item.enchantments= resp
+                    return done err, conn, item
+
+    ],  (err, conn, item) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 404, null if not item
+            return res.json 200, item
 
 
 
@@ -69,40 +110,6 @@ app.post '/', (req, res, next) ->
 
             return next err if err
             return res.json 201, req.body
-
-
-
-
-###
-Отдает предмет.
-###
-app.get '/:itemId', (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
-
-        (conn, done) ->
-            conn.query 'SELECT * FROM store_item WHERE id = ?'
-            ,   [req.params.itemId]
-            ,   (err, resp) ->
-                    item= do resp.shift if not err
-                    return done err, conn, item
-
-        (conn, item, done) ->
-            conn.query 'SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level` FROM store_item_enchantments as ie JOIN store_enchantment as e ON ie.enchantmentId = e.id WHERE itemId = ? ORDER BY ie.order'
-            ,   [req.params.itemId]
-            ,   (err, resp) ->
-                    item.enchantments= resp
-                    return done err, conn, item
-
-    ],  (err, conn, item) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 404, null if not item
-            return res.json 200, item
 
 
 
