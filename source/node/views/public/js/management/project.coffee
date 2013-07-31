@@ -1,10 +1,28 @@
 ### Приложение ###
 app= angular.module 'management', ['ngResource'], ($routeProvider) ->
 
+    # Игроки
+
+    $routeProvider.when '/players',
+        templateUrl: 'project/players/', controller: 'PlayersDashboardCtrl'
+
+    $routeProvider.when '/players/player/list',
+        templateUrl: 'project/players/player/list/', controller: 'PlayersPlayerListCtrl'
+
+    $routeProvider.when '/players/player/:playerId',
+        templateUrl: 'project/players/player/', controller: 'PlayersPlayerCtrl'
+
+    $routeProvider.when '/players/group/list',
+        templateUrl: 'project/players/group/list/', controller: 'PlayersGroupListCtrl'
+
+    $routeProvider.when '/players/permission/list',
+        templateUrl: 'project/players/permission/list/', controller: 'PlayersPermissionListCtrl'
+
+
     # Серверы
 
     $routeProvider.when '/servers',
-        templateUrl: 'project/servers/', controller: 'ServersViewCtrl'
+        templateUrl: 'project/servers/', controller: 'ServerListCtrl'
 
     # Магазин
 
@@ -41,10 +59,14 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
 
 ### Контроллеры ###
 
-app.controller 'ViewCtrl'
-,   ($scope, $location, $http, $window) ->
+app.controller 'ViewCtrl', ($scope, $location, $http, $window) ->
         $scope.view= {}
 
+        $scope.dialog= {overlay:false}
+        $scope.showDialog= (type) ->
+            $scope.dialog.overlay= type
+        $scope.hideDialog= () ->
+            $scope.dialog.overlay= false
 
 
 app.factory 'CurrentUser'
@@ -72,8 +94,56 @@ app.controller 'CurrentUserCtrl'
 
 
 
-app.controller 'StoreViewCtrl'
-,   ($scope, Item) ->
+###
+
+Игроки.
+
+###
+
+app.factory 'PlayerList', ($resource) ->
+    $resource '/api/v1/players', {}
+
+app.factory 'Player', ($resource) ->
+    $resource '/api/v1/players/player/:playerId', {playerId:'@id'}
+
+app.factory 'PlayerGroupList', ($resource) ->
+    $resource '/api/v1/players/groups', {}
+
+app.service 'loadPlayers', ($q, PlayerList, PlayerGroupList) ->
+    d= do $q.defer
+    return d.promise
+
+app.controller 'PlayersDashboardCtrl', ($scope, PlayerList) ->
+    $scope.state= 'loaded'
+
+app.controller 'PlayersPlayerListCtrl', ($scope, PlayerList) ->
+    $scope.state= 'load'
+    $scope.players= PlayerList.query () ->
+        $scope.state= 'loaded'
+        console.log 'Пользователи загружены'
+
+    $scope.showDetails= (player) ->
+        #$scope.dialog.player= player
+        #$scope.dialog.templateUrl= 'ololo.html'
+        $scope.showDialog true
+
+    $scope.hideDetails= () ->
+        #$scope.dialog.player= null
+        do $scope.hideDialog
+
+app.controller 'PlayerCtrl', ($scope, $q, Player) ->
+
+app.controller 'PlayersGroupListCtrl', ($scope) ->
+    $scope.state= 'loaded'
+
+app.controller 'PlayersPermissionListCtrl', ($scope) ->
+    $scope.state= 'loaded'
+
+
+app.controller 'ServerListCtrl', ($scope, $q, Player) ->
+    $scope.state= 'loaded'
+
+app.controller 'StoreViewCtrl', ($scope, Item) ->
 
 
 
