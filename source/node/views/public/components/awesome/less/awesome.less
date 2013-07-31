@@ -1,3 +1,69 @@
+/*!
+ * Bootstrap v3.0.0
+ *
+ * Copyright 2013 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world by @mdo and @fat.
+ */
+
+@import "../../bootstrap/less/variables.less";
+@import "../../bootstrap/less/mixins.less";
+
+// Reset
+@import "../../bootstrap/less/normalize.less";
+@import "../../bootstrap/less/print.less";
+
+// Core CSS
+@import "../../bootstrap/less/scaffolding.less";
+@import "../../bootstrap/less/type.less";
+@import "../../bootstrap/less/code.less";
+@import "../../bootstrap/less/grid.less";
+
+@import "../../bootstrap/less/tables.less";
+@import "../../bootstrap/less/forms.less";
+@import "../../bootstrap/less/buttons.less";
+
+// Components: common
+@import "../../bootstrap/less/component-animations.less";
+@import "../../bootstrap/less/dropdowns.less";
+@import "../../bootstrap/less/list-group.less";
+@import "../../bootstrap/less/panels.less";
+@import "../../bootstrap/less/wells.less";
+@import "../../bootstrap/less/close.less";
+
+// Components: Nav
+@import "../../bootstrap/less/navs.less";
+@import "../../bootstrap/less/navbar.less";
+@import "../../bootstrap/less/button-groups.less";
+@import "../../bootstrap/less/breadcrumbs.less";
+@import "../../bootstrap/less/pagination.less";
+@import "../../bootstrap/less/pager.less";
+
+// Components: Popovers
+@import "../../bootstrap/less/modals.less";
+@import "../../bootstrap/less/tooltip.less";
+@import "../../bootstrap/less/popovers.less";
+
+// Components: Misc
+@import "../../bootstrap/less/alerts.less";
+@import "../../bootstrap/less/thumbnails.less";
+@import "../../bootstrap/less/media.less";
+@import "../../bootstrap/less/labels.less";
+@import "../../bootstrap/less/badges.less";
+@import "../../bootstrap/less/progress-bars.less";
+@import "../../bootstrap/less/accordion.less";
+@import "../../bootstrap/less/carousel.less";
+@import "../../bootstrap/less/jumbotron.less";
+
+// Utility classes
+@import "../../bootstrap/less/utilities.less"; // Has to be last to override when necessary
+@import "../../bootstrap/less/responsive-utilities.less";
+
+
+@import "../../font-awesome/less/font-awesome.less";
+
 body {
     font-size:14px; line-height:1.5em;
     -webkit-backface-visibility:hidden;
@@ -176,45 +242,71 @@ h3 {
     margin:0; margin-right:1em;
 }
 
-.table tr > td:not(:last-child),
-.table tr > th:not(:last-child) {
+table {
+    max-width:100%;
+    background-color:transparent;
+    border-collapse:collapse;
+    border-spacing:0;
+}
+.table {
+    width:100%;
+    margin-bottom:30px;
+}
+.table > thead > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > th,
+.table > tbody > tr > td {
+    padding:12px 15px;
+    font: inherit; font-weight:normal; color:#777;
+    background:#f9f9f9;
+    border-top:1px solid #fff;
+}
+.table > thead > tr > th,
+.table > tbody > tr > th {
+    background:#eee;
+}
+.table > thead > tr > td
+.table > tbody > tr > td {
+    border-top:1px solid #fff;
+}
+.table > thead > tr > th:not(:last-child),
+.table > thead > tr > td:not(:last-child),
+.table > tbody > tr > th:not(:last-child),
+.table > tbody > tr > td:not(:last-child) {
     border-right:1px solid #fff;
 }
-.table thead > tr > th {
-    padding:12px 15px;
-    font-weight:normal;
-    -text-transform:uppercase; -letter-spacing:0.1em;
-    color:#777;
-    background: #eee;
+.table > caption + thead > tr:first-child > th,
+.table > caption + thead > tr:first-child > td,
+.table > thead:first-child > tr:first-child > th,
+.table > thead:first-child > tr:first-child > td,
+.table > tbody:first-child > tr:first-child > th,
+.table > tbody:first-child > tr:first-child > td {
+    border-top:0;
 }
-.table tbody > tr > td {
-    padding:12px 15px;
-    border-top: 1px solid #fff;
-    background: #f9f9f9;
-}
-.table .col-flex {
+
+.col-flex {
     width:100%;
 }
 
-th > .sortable {
+.table-col {
     position:relative;
 }
-.sortable-cell {
+.table-col-sortable {
     padding-right:30px;
     cursor:pointer;
 }
-.sortable-cell:before, .sortable-cell:after {
+.table-col-sortable:before, .table-col-sortable:after {
     content:"\f0dc";
     display:block;
     position:absolute; top:0; right:0;
     font-family:FontAwesome; font-weight:normal;
     color:#f9f9f9;
 }
-.sortable-cell:hover {
-    color:#428bca;
+.table-col-sortable:hover {
+    color:#333;
 }
-.sortable-cell:hover:before, .sortable-cell:hover:after {
-    color:rgba(66,139,202,.5);
+.table-col-sortable:hover:before, .table-col-sortable:hover:after {
+    color:rgba(0,0,0,.3);
 }
 
 

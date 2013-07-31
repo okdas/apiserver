@@ -45,13 +45,28 @@ module.exports= (grunt) ->
                     ext: '.html'
                 }]
 
+        less:
+            compile:
+                files: [{
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.node %>/views/public/less'
+                    src: ['**/*.less']
+                    dest: '<%= pkg.config.build.app.node %>/views/public/css'
+                    ext: '.css'
+                }]
+
         copy:
             views:
                 files: [{
                     expand: true
                     cwd: '<%= pkg.config.build.src.node %>/views/public'
-                    src: ['**/*', '!**/*.jade', '!**/*.coffee', '!**/*.md']
+                    src: ['**/*', '!**/components/**', '!**/less/**', '!**/*.jade', '!**/*.coffee', '!**/*.md']
                     dest: '<%= pkg.config.build.app.node %>/views/public'
+                }, {
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.node %>/views/public/components/font-awesome/font'
+                    src: ['**/*']
+                    dest: '<%= pkg.config.build.app.node %>/views/public/font'
                 }, {
                     expand: true
                     cwd: '<%= pkg.config.build.src.node %>/views/templates'
@@ -89,10 +104,11 @@ module.exports= (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-copy'
     grunt.loadNpmTasks 'grunt-contrib-coffee'
     grunt.loadNpmTasks 'grunt-contrib-jade'
+    grunt.loadNpmTasks 'grunt-contrib-less'
     grunt.loadNpmTasks 'grunt-yaml'
     #grunt.loadNpmTasks 'grunt-coffeelint'
     grunt.loadNpmTasks 'grunt-docco'
 
-    grunt.registerTask 'default', ['yaml', 'coffee', 'jade', 'copy']
+    grunt.registerTask 'default', ['yaml', 'coffee', 'jade', 'less', 'copy']
     #grunt.registerTask 'lint', ['coffeelint']
     grunt.registerTask 'doc', ['docco']

@@ -2,7 +2,6 @@
   "name": "apiserver.builder",
   "repository": { "type": "git", "url": "https://github.com/okdas/apiserver.git" },
   "private": true,
-
   "config": {
     "build": {
       "app": {
@@ -15,24 +14,22 @@
       }
     }
   },
-
   "scripts": {
     "prestart": "grunt.cmd",
     "start": "node app/node.js"
   },
-
   "devDependencies": {
     "grunt": "latest",
     "grunt-contrib-clean": "latest",
     "grunt-contrib-copy": "latest",
     "grunt-contrib-coffee": "latest",
     "grunt-contrib-jade": "latest",
+    "grunt-contrib-less": "~0.6.4",
     "grunt-docco": "latest",
     "grunt-yaml": "latest",
     "grunt-cli": "latest",
     "grunt-coffeelint": "latest"
   },
-
   "engines": {
     "node": "~0.8.x"
   }
