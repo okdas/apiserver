@@ -51,6 +51,12 @@ module.exports= (app) ->
     ###
 
     ###
+    Методы API для работы c игроками.
+    ###
+    app.use '/api/v1/players'
+    ,   require './Api/V1/Minecraft/Players'
+
+    ###
     Методы API для работы c серверами.
     ###
     app.use '/api/v1/servers'
