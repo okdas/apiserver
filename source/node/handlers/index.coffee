@@ -90,7 +90,6 @@ module.exports= (app) ->
     ,   require './Api/V1/Minecraft/Store/Items'
 
 
-<<<<<<< HEAD
 
 
 
