@@ -90,6 +90,7 @@ module.exports= (app) ->
     ,   require './Api/V1/Minecraft/Store/Items'
 
 
+<<<<<<< HEAD
 
 
 
@@ -141,3 +142,7 @@ module.exports= (app) ->
     ###
     app.use '/api/v1/store'
     ,   require './Api/V1/Minecraft/Store'
+
+    app.get '/test', (req, res, next) ->
+        res.render 'test.jade'
+

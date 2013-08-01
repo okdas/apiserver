@@ -1,0 +1,45 @@
+extends ../../../layout
+
+block section-head-title
+  a(href='#/servers') Управление игроками
+
+block section-head-nav
+    ul.nav.nav-row
+        li.active: a Сервера
+        li: a(href='#/players/group/list') Группы
+
+block section-body
+    table.table.players
+        thead
+            tr
+                th #
+                th.col-flex: .sortable: .sortable-cell Название сервера
+                th.col-flex: .sortable: .sortable-cell Хост:порт
+                th
+                    button.btn.btn-primary(ng-click='reloadServers()')
+                        i.icon-refresh
+
+
+        tbody
+            tr(ng-repeat='server in servers')
+                td {{server.id}}
+                td
+                    a(href='', ng-click='showDetails(server)') {{server.name}}
+                td {{server.host}}:{{server.port}}
+                td
+                    button.btn.btn-warning(ng-click='removeServer(server)')
+                        i.icon-remove
+    .row
+        form(ng-submit='createServer()')
+            .col-3
+                input.form-control(type='text',ng-model='server.name',placeholder='name')
+            .col-3
+                input.form-control(type='text',ng-model='server.host',placeholder='host')
+            .col-2
+                input.form-control(type='text',ng-model='server.port',placeholder='port')
+            .col-2
+                button.btn.btn-primary(type='submit')
+                    i.icon-ok
+
+script(type='text/ng-template', id='ololo.html')
+    include ../dialog.jade
