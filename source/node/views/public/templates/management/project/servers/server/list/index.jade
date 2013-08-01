@@ -27,7 +27,7 @@ block section-body
     .row
         form(ng-submit='saveServer()')
             .col-4
-                input.form-control(ng-model='nameServer',placeholder='name')
+                input.form-control(type='text',ng-model='server.name',placeholder='name')
             .col-2
                 button.btn.btn-primary(type='submit')
                     i.icon-ok

@@ -160,7 +160,7 @@ app.controller 'StoreViewCtrl', ($scope, Item) ->
 
 ###
 app.factory 'ServerList', ($resource) ->
-    $resource '/api/v1/servers/:serverId',
+    $resource '/api/v1/servers/:serverId', {},
         create:
             method: 'post'
 
@@ -182,6 +182,7 @@ app.controller 'ServerListCtrl', ($scope, $q, Player) ->
 
 
 app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
+    $scope.server= {}
     $scope.state= 'load'
 
     $scope.servers= ServerList.query ->
@@ -212,10 +213,8 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
 
 
     $scope.saveServer= ->
-        console.log $scope.nameServer
-        ###
         ServerList.create
-            name: $scope.name
+            name: $scope.server.name
         , ->
             $scope.servers= ServerList.query ->
                 console.log 'Сервера загружены'
@@ -223,7 +222,6 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
                 $scope.name= ''
         , ->
             alert 'Ошибка создания'
-        ###
 
 
 
