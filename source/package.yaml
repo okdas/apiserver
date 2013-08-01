@@ -22,6 +22,8 @@ config:
 
         installed: false
 
+        host: local.awesome39.com
+
         db:
             database: apiserver_dev
 
@@ -34,6 +36,8 @@ config:
     production:
 
         installed: true
+
+        host: flydev.awesome39.com
 
         db: # http://red.flydev.net/issues/5#note-3
             database: apiserver
