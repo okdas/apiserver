@@ -185,11 +185,13 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
     $scope.server= {}
     $scope.state= 'load'
 
-    $scope.nameServer= null
 
-    $scope.servers= ServerList.query ->
-        $scope.state= 'loaded'
-        console.log 'Сервера загружены'
+    load= ->
+        $scope.servers= ServerList.query ->
+            $scope.state= 'loaded'
+            console.log 'Сервера загружены'
+
+    do load
 
 
     $scope.removeServer= (server) ->
@@ -197,8 +199,9 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
             serverId: server.id
         , ->
             console.log 'Сервер удален'
-            $scope.servers= ServerList.query ->
-                console.log 'Сервера загружены'
+            $scope.servers.map (val, i) ->
+                if val.id == server.id
+                    $scope.servers.splice i, 1
         , ->
             alert 'Ошибка удаления'
 
@@ -214,16 +217,20 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
         do $scope.hideDialog
 
 
-    $scope.saveServer= ->
-        ServerList.create
+    $scope.createServer= ->
+        newServer= ServerList.create
             name: $scope.server.name
+            host: $scope.server.host
+            port: $scope.server.port
         , ->
-            $scope.servers= ServerList.query ->
-                console.log 'Сервера загружены'
-
-                $scope.name= ''
+            $scope.server.name= ''
         , ->
             alert 'Ошибка создания'
+        $scope.servers.push newServer
+        
+
+    $scope.reloadServers= ->
+        do load
 
 
 

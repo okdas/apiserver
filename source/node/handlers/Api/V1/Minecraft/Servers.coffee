@@ -25,20 +25,22 @@ app.post '/', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'INSERT INTO server (`name`) VALUES (?)'
-            ,   [[req.body.name]]
+            conn.query 'INSERT INTO server (`name`,`host`,`port`) VALUES (?)'
+            ,   [[req.body.name,req.body.host,req.body.port]]
             ,   (err, resp) ->
-                    return done err, conn
+                    server= req.body
+                    server.id= resp.insertId
+                    return done err, conn, server
 
-        (conn, done) ->
+        (conn, server, done) ->
             conn.query 'COMMIT', (err) ->
-                return done err, conn
+                return done err, conn, server
 
-    ],  (err, conn) ->
+    ],  (err, conn, server) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200
+            return res.json 200, server
 
 
 
@@ -152,5 +154,4 @@ app.delete '/:serverId', (req, res, next) ->
 
             return next err if err
             return res.json 200
-
 
