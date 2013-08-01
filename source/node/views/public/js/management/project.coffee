@@ -184,6 +184,8 @@ app.controller 'ServerListCtrl', ($scope, $q, Player) ->
 app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
     $scope.state= 'load'
 
+    $scope.nameServer= null
+
     $scope.servers= ServerList.query ->
         $scope.state= 'loaded'
         console.log 'Сервера загружены'
