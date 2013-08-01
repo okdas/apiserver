@@ -86,3 +86,4 @@ module.exports= (app) ->
 
     app.get '/test', (req, res, next) ->
         res.render 'test.jade'
+
