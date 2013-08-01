@@ -1,0 +1,8 @@
+h1 Сайт проекта
+p: a(href='/player/login') Войти
+P: a(href='/player/register') Зарегистрироваться
+hr
+form(method='post', action='/player/login')
+  input(type='text', name='username', placeholder='Логин')
+  input(type='password', name='password', placeholder='Пароль')
+  button(type='submit') Войти
