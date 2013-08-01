@@ -185,6 +185,8 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
     $scope.server= {}
     $scope.state= 'load'
 
+    $scope.nameServer= null
+
     $scope.servers= ServerList.query ->
         $scope.state= 'loaded'
         console.log 'Сервера загружены'
