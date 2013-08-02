@@ -1,5 +1,23 @@
 .row: .col-12.dialog-head
-  i.icon-signin
-  span   Информация о сервере
+    i.icon-signin
+    span Информация о сервере
+
 .row: .col-12.dialog-body
-  h1 {{dialog.server.name}}
+    h1 {{dialog.server.name}}
+    h3 {{dialog.server.host}}:{{dialog.server.port}}
+
+
+    //
+    //script.
+    //    ff= 'ww'
+    //    data= {
+    //        labels: ["January","February","March","April","May","June","July"],
+    //        datasets: [
+    //            { data: [65,59,90,81,56,55,40] }
+    //        ]
+    //    }
+    //    ctx= $("#serverStatsChart")[0].getContext('2d');
+    //    serverChart= new Chart(ctx).Line(data)
+
+    canvas#serverStatsChart(width='100',height='100')
+    script(src='/js/libs/chart.min.js')

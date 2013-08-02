@@ -1,0 +1,23 @@
+section.dialog-static
+    .container.dialog-container
+        .row
+
+        menu.col-12.col-sm-4.col-lg-4.col-push-8 
+
+        form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='ServerForm')
+            .form-body
+                h3.dialog-title(style='text-align:center') Обновить предмет в магазине
+
+                fieldset
+                    input.input(placeholder='Название сервера', type='text', required, ng-model='server.name')
+                    input.input(placeholder='Адрес сервера', type='text', required, ng-model='server.host')
+                    input.input.input-auto(placeholder='Порт сервера', type='text', required, ng-model='server.port', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
+
+
+            .form-foot: .row.form-row
+                .col-10
+                    button.btn.btn-primary.btn-block(type='submit',ng-click='update(ServerForm)',ng-disabled='!ServerForm.$valid')
+                        span Обновить сервер
+                .col-2
+                    button.btn.btn-link.btn-block.text-left(ng-click='delete(ServerForm)')
+                        span Удалить

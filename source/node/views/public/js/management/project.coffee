@@ -28,6 +28,12 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
     $routeProvider.when '/servers/server/list',
         templateUrl: 'project/servers/servers/', controller: 'ServersServerListCtrl'
 
+    $routeProvider.when '/servers/create',
+        templateUrl: 'project/servers/servers/server/forms/create', controller: 'ServersServerFormCtrl'
+
+    $routeProvider.when '/servers/update/:serverId',
+        templateUrl: 'project/servers/servers/server/forms/update', controller: 'ServersServerFormCtrl'
+
 
 
     # Магазин
@@ -177,6 +183,7 @@ app.factory 'ServerList', ($resource) ->
 
 
 
+
 app.controller 'ServerListCtrl', ($scope, $q, Player) ->
     $scope.state= 'loaded'
 
@@ -195,18 +202,6 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
     do load
 
 
-    $scope.removeServer= (server) ->
-        ServerList.delete
-            serverId: server.id
-        , ->
-            console.log 'Сервер удален'
-            $scope.servers.map (val, i) ->
-                if val.id == server.id
-                    $scope.servers.splice i, 1
-        , ->
-            alert 'Ошибка удаления'
-
-
     $scope.showDetails= (server) ->
         $scope.dialog.server= server
         $scope.dialog.templateUrl= 'server/dialog/'
@@ -218,21 +213,42 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
         do $scope.hideDialog
 
 
-    $scope.createServer= ->
-        newServer= ServerList.create
-            name: $scope.server.name
-            host: $scope.server.host
-            port: $scope.server.port
-        , ->
-            $scope.server.name= ''
-        , ->
-            alert 'Ошибка создания'
-        $scope.servers.push newServer
-
-
     $scope.reloadServers= ->
         do load
 
+
+
+app.controller 'ServersServerFormCtrl', ($scope, $route, $location, ServerList) ->
+    $scope.errors= {}
+
+    if $route.current.params.serverId
+        $scope.server= ServerList.get $route.current.params, ->
+            console.log arguments
+    else
+        $scope.server= new ServerList
+
+    # Действия
+    $scope.create= (ServerForm) ->
+        $scope.server.$create ->
+            $location.path '/servers/server/list'
+        ,   (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        ServerForm[input].$setValidity error.error, false
+
+    $scope.update= (ServerForm) ->
+        $scope.server.$update ->
+            $location.path '/servers/server/list'
+        , (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        ServerForm[input].$setValidity error.error, false
+
+    $scope.delete= ->
+        $scope.server.$delete ->
+            $location.path '/servers/server/list'
 
 
 
