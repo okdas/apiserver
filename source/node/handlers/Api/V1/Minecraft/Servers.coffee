@@ -1,12 +1,44 @@
 express= require 'express'
 async= require 'async'
 
-
-
 ###
 Методы API для работы c серверами.
 ###
 app= module.exports= do express
+
+
+
+###
+Добавляет сервер.
+###
+app.post '/', (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn if err
+                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return done err, conn if err
+                    conn.query 'START TRANSACTION', (err) ->
+                        return done err, conn
+
+        (conn, done) ->
+            conn.query 'INSERT INTO server (`name`,`host`,`port`) VALUES (?)'
+            ,   [[req.body.name,req.body.host,req.body.port]]
+            ,   (err, resp) ->
+                    server= req.body
+                    server.id= resp.insertId
+                    return done err, conn, server
+
+        (conn, server, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn, server
+
+    ],  (err, conn, server) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, server
 
 
 
@@ -60,9 +92,9 @@ app.get '/:serverId', (req, res, next) ->
 
 
 ###
-Добавляет сервер.
+Изменяет сервер
 ###
-app.post '/', (req, res, next) ->
+app.put '/:serverId', (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -74,29 +106,49 @@ app.post '/', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'INSERT INTO server SET ?'
-            ,   [req.body]
+            conn.query 'UPDATE server SET ? WHERE id = ?'
+            ,   [req.body, req.params.serverId]
             ,   (err, resp) ->
-                    id= resp.insertId if not err
-                    return done err, conn, id
-
-        (conn, id, done) ->
-            conn.query 'SHOW TABLES LIKE ?'
-            ,   ["server_#{req.body.name}"]
-            ,   (err, resp) ->
-                    err= 'exists' if not err and resp.length
-                    return done err, conn
-
-        (conn, id, done) ->
-            conn.query 'CREATE TABLE ?? (`id` INT NOT NULL AUTO_INCREMENT, PRIMARY KEY (`id`) )'
-            ,   ["server_#{req.body.name}"]
-            ,   (err, resp) ->
-                    console.log arguments
                     return done err, conn
 
         (conn, done) ->
-            conn.query 'ROLLBACK', (err) ->
+            conn.query 'COMMIT', (err) ->
                 return done err, conn
 
     ],  (err, conn) ->
             do conn.end if conn
+
+            return next err if err
+            return res.json 200
+
+
+
+###
+Удаляет сервер
+###
+app.delete '/:serverId', (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn if err
+                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return done err, conn if err
+                    conn.query 'START TRANSACTION', (err) ->
+                        return done err, conn
+
+        (conn, done) ->
+            conn.query 'DELETE FROM server WHERE id = ?'
+            ,   [req.params.serverId]
+            ,   (err, resp) ->
+                    return done err, conn
+
+        (conn, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn
+
+    ],  (err, conn) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200

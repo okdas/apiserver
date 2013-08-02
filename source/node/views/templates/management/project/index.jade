@@ -105,9 +105,10 @@ html(ng-app='management', ng-cloak)
                                     li: a(href='', ng-click='logout()')
                                         i.icon-signout
                                         span   Выход
+
         .view.view-outer(ng-view)
+
         .dialog(ng-if='dialog.overlay', ng-animate='"dialog"')
             .dialog-bg(ng-click='hideDialog()')
             .container: .row: .col-12.dialog-container(ng-include='dialog.templateUrl')
-
         .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')

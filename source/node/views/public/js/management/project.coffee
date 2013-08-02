@@ -19,10 +19,16 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
         templateUrl: 'project/players/permission/list/', controller: 'PlayersPermissionListCtrl'
 
 
+
     # Серверы
 
     $routeProvider.when '/servers',
         templateUrl: 'project/servers/', controller: 'ServerListCtrl'
+
+    $routeProvider.when '/servers/server/list',
+        templateUrl: 'project/servers/server/list/', controller: 'ServersServerListCtrl'
+
+
 
     # Магазин
 
@@ -40,6 +46,8 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
     $routeProvider.when '/store/items/:itemId',
         templateUrl: 'project/store/items/item/forms/update/', controller: 'StoreItemsFormCtrl'
 
+
+
     # Магазин. Чары
 
     $routeProvider.when '/store/enchantments',
@@ -50,6 +58,7 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
 
     $routeProvider.when '/store/enchantments/:enchantmentId',
         templateUrl:'project/store/enchantments/enchantment/forms/update', controller:'StoreEnchantmentsFormCtrl'
+
 
 
     $routeProvider.otherwise
@@ -140,11 +149,91 @@ app.controller 'PlayersGroupListCtrl', ($scope) ->
 app.controller 'PlayersPermissionListCtrl', ($scope) ->
     $scope.state= 'loaded'
 
+app.controller 'StoreViewCtrl', ($scope, Item) ->
+
+
+
+
+
+###
+
+Сервера
+
+###
+app.factory 'ServerList', ($resource) ->
+    $resource '/api/v1/servers/:serverId', {},
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                serverId:'@id'
+
+        delete:
+            method: 'delete'
+            params:
+                serverId: '@id'
+
+
 
 app.controller 'ServerListCtrl', ($scope, $q, Player) ->
     $scope.state= 'loaded'
 
-app.controller 'StoreViewCtrl', ($scope, Item) ->
+
+
+app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
+    $scope.server= {}
+    $scope.state= 'load'
+
+
+    load= ->
+        $scope.servers= ServerList.query ->
+            $scope.state= 'loaded'
+            console.log 'Сервера загружены'
+
+    do load
+
+
+    $scope.removeServer= (server) ->
+        ServerList.delete
+            serverId: server.id
+        , ->
+            console.log 'Сервер удален'
+            $scope.servers.map (val, i) ->
+                if val.id == server.id
+                    $scope.servers.splice i, 1
+        , ->
+            alert 'Ошибка удаления'
+
+
+    $scope.showDetails= (server) ->
+        #$scope.dialog.player= player
+        #$scope.dialog.templateUrl= 'ololo.html'
+        $scope.showDialog true
+
+
+    $scope.hideDetails= () ->
+        #$scope.dialog.player= null
+        do $scope.hideDialog
+
+
+    $scope.createServer= ->
+        newServer= ServerList.create
+            name: $scope.server.name
+            host: $scope.server.host
+            port: $scope.server.port
+        , ->
+            $scope.server.name= ''
+        , ->
+            alert 'Ошибка создания'
+        $scope.servers.push newServer
+        
+
+    $scope.reloadServers= ->
+        do load
+
+
 
 
 
