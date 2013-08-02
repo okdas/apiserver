@@ -357,40 +357,35 @@ table {
 }
 
 
-.dialog {
-
-}
-.dialog-show, .dialog-hide {
+.animate .dialog-show,
+.animate .dialog-hide {
     transition:all .5s ease;
     -moz-transition:all ease .5s;
 }
-    .dialog-show,
-    .dialog-hide.dialog-hide-active {
+    .animate .dialog-show,
+    .animate .dialog-hide.dialog-hide-active {
         opacity:0;
         -webkit-transform:scale(1.5);
         //transform:scale(1.5);
     }
-    .dialog-hide,
-    .dialog-show.dialog-show-active {
+    .animate .dialog-hide,
+    .animate .dialog-show.dialog-show-active {
         opacity:1;
         -webkit-transform:scale(1);
         //transform:scale(1);
     }
 
-.dialog-overlay-enter, .dialog-overlay-leave {
+.animate .dialog-overlay-enter,
+.animate .dialog-overlay-leave {
     transition:all .5s ease;
 }
-    .dialog-overlay-enter {
+    .animate .dialog-overlay-enter,
+    .animate .dialog-overlay-leave.dialog-overlay-leave-active {
         opacity:0;
     }
-    .dialog-overlay-enter.dialog-overlay-enter-active {
+    .animate .dialog-overlay-leave,
+    .animate .dialog-overlay-enter.dialog-overlay-enter-active {
         opacity:1;
-    }
-    .dialog-overlay-leave {
-        opacity:1;
-    }
-    .dialog-overlay-leave.dialog-overlay-leave-active {
-        opacity:0;
     }
 
 html {

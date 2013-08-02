@@ -7,10 +7,10 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
         templateUrl: 'project/players/', controller: 'PlayersDashboardCtrl'
 
     $routeProvider.when '/players/player/list',
-        templateUrl: 'project/players/player/list/', controller: 'PlayersPlayerListCtrl'
+        templateUrl: 'project/players/players/', controller: 'PlayersPlayerListCtrl'
 
     $routeProvider.when '/players/player/:playerId',
-        templateUrl: 'project/players/player/', controller: 'PlayersPlayerCtrl'
+        templateUrl: 'project/players/players/player/', controller: 'PlayersPlayerCtrl'
 
     $routeProvider.when '/players/group/list',
         templateUrl: 'project/players/group/list/', controller: 'PlayersGroupListCtrl'
@@ -118,17 +118,18 @@ app.controller 'PlayersDashboardCtrl', ($scope, PlayerList) ->
 
 app.controller 'PlayersPlayerListCtrl', ($scope, PlayerList) ->
     $scope.state= 'load'
+
     $scope.players= PlayerList.query () ->
         $scope.state= 'loaded'
         console.log 'Пользователи загружены'
 
     $scope.showDetails= (player) ->
-        #$scope.dialog.player= player
-        #$scope.dialog.templateUrl= 'ololo.html'
+        $scope.dialog.player= player
+        $scope.dialog.templateUrl= 'player/dialog/'
         $scope.showDialog true
 
     $scope.hideDetails= () ->
-        #$scope.dialog.player= null
+        $scope.dialog.player= null
         do $scope.hideDialog
 
 app.controller 'PlayerCtrl', ($scope, $q, Player) ->
