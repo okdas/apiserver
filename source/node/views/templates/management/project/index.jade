@@ -1,5 +1,5 @@
 !!! html
-html(ng-app='management')
+html(ng-app='management', ng-cloak)
 
     head
 
@@ -105,15 +105,10 @@ html(ng-app='management')
                                     li: a(href='', ng-click='logout()')
                                         i.icon-signout
                                         span   Выход
-        .view.view-outer(ng-view, ng-cloak)
-        .dialog(ng-show='dialog.overlay', ng-animate='"dialogп"', ng-cloak)
+
+        .view.view-outer(ng-view)
+
+        .dialog(ng-if='dialog.overlay', ng-animate='"dialog"')
             .dialog-bg(ng-click='hideDialog()')
-            .container
-                .row: .col-12.dialog-container
-                    .row: .col-12.dialog-head
-                        i.icon-signin
-                        span   Информация об игроке
-                    .row: .col-12.dialog-body(ng-include='dialog.templateUrl')
-
-        .dialog-overlay(ng-show='dialog.overlay', ng-animate='"dialogп-overlay"')
-
+            .container: .row: .col-12.dialog-container(ng-include='dialog.templateUrl')
+        .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')

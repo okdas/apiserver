@@ -1,8 +1,6 @@
 express= require 'express'
 async= require 'async'
 
-
-
 ###
 Методы API для работы c серверами.
 ###
@@ -154,4 +152,3 @@ app.delete '/:serverId', (req, res, next) ->
 
             return next err if err
             return res.json 200
-
