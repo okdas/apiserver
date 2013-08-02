@@ -207,8 +207,9 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
 
 
     $scope.showDetails= (server) ->
-        #$scope.dialog.player= player
-        #$scope.dialog.templateUrl= 'ololo.html'
+        $scope.dialog.title= 'Информация о сервере'
+        $scope.dialog.server= server
+        $scope.dialog.templateUrl= 'information'
         $scope.showDialog true
 
 
@@ -227,7 +228,7 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
         , ->
             alert 'Ошибка создания'
         $scope.servers.push newServer
-        
+
 
     $scope.reloadServers= ->
         do load
