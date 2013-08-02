@@ -20,7 +20,7 @@ block section-body
                         i.icon-refresh
 
         tbody
-            tr(ng-repeat='server in servers')
+            tr(ng-repeat='server in instances')
                 td {{server.id}}
                 td
                     a(href='', ng-click='showDetails(server)') {{server.name}}
@@ -32,7 +32,7 @@ block section-body
 
     .row
         .col-12
-            a(href='#/servers/server/create')= 'Создать'
+            a(href='#/servers/create')= 'Создать'
 
     script(type='text/ng-template', id='server/dialog/')
-        include server/dialog/index
+        include instance/dialog/index

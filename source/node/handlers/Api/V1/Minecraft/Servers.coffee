@@ -23,8 +23,8 @@ app.post '/', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'INSERT INTO server (`name`,`host`,`port`) VALUES (?)'
-            ,   [[req.body.name,req.body.host,req.body.port]]
+            conn.query 'INSERT INTO server SET ?'
+            ,   [req.body]
             ,   (err, resp) ->
                     server= req.body
                     server.id= resp.insertId
@@ -152,3 +152,4 @@ app.delete '/:serverId', (req, res, next) ->
 
             return next err if err
             return res.json 200
+

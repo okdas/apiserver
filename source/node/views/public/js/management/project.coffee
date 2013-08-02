@@ -28,11 +28,25 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
     $routeProvider.when '/servers/server/list',
         templateUrl: 'project/servers/servers/', controller: 'ServersServerListCtrl'
 
-    $routeProvider.when '/servers/create',
+    $routeProvider.when '/servers/server/create',
         templateUrl: 'project/servers/servers/server/forms/create', controller: 'ServersServerFormCtrl'
 
-    $routeProvider.when '/servers/update/:serverId',
+    $routeProvider.when '/servers/server/update/:serverId',
         templateUrl: 'project/servers/servers/server/forms/update', controller: 'ServersServerFormCtrl'
+
+
+    # Серверы. Инстансы
+    
+    $routeProvider.when '/servers/instance/list',
+        templateUrl: 'project/servers/instances/', controller: 'ServersInstanceListCtrl'
+
+    $routeProvider.when '/servers/instance/create',
+        templateUrl: 'project/servers/instances/instance/forms/create', controller: 'ServersInstanceFormCtrl'
+
+    $routeProvider.when '/servers/instance/update/:instanceId',
+        templateUrl: 'project/servers/instances/instance/forms/update', controller: 'ServersInstanceFormCtrl'
+    
+
 
 
 
@@ -166,7 +180,7 @@ app.controller 'StoreViewCtrl', ($scope, Item) ->
 Сервера
 
 ###
-app.factory 'ServerList', ($resource) ->
+app.factory 'Server', ($resource) ->
     $resource '/api/v1/servers/:serverId', {},
         create:
             method: 'post'
@@ -174,7 +188,7 @@ app.factory 'ServerList', ($resource) ->
         update:
             method: 'put'
             params:
-                serverId:'@id'
+                serverId: '@id'
 
         delete:
             method: 'delete'
@@ -184,18 +198,18 @@ app.factory 'ServerList', ($resource) ->
 
 
 
-app.controller 'ServerListCtrl', ($scope, $q, Player) ->
+app.controller 'ServerListCtrl', ($scope, $q) ->
     $scope.state= 'loaded'
 
 
 
-app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
+app.controller 'ServersServerListCtrl', ($scope, Server) ->
     $scope.server= {}
     $scope.state= 'load'
 
 
     load= ->
-        $scope.servers= ServerList.query ->
+        $scope.servers= Server.query ->
             $scope.state= 'loaded'
             console.log 'Сервера загружены'
 
@@ -208,7 +222,7 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
         $scope.showDialog true
 
 
-    $scope.hideDetails= () ->
+    $scope.hideDetails= ->
         $scope.dialog.server= null
         do $scope.hideDialog
 
@@ -218,14 +232,14 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
 
 
 
-app.controller 'ServersServerFormCtrl', ($scope, $route, $location, ServerList) ->
+app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
     $scope.errors= {}
 
     if $route.current.params.serverId
-        $scope.server= ServerList.get $route.current.params, ->
+        $scope.server= Server.get $route.current.params, ->
             console.log arguments
     else
-        $scope.server= new ServerList
+        $scope.server= new Server
 
     # Действия
     $scope.create= (ServerForm) ->
@@ -249,6 +263,53 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, ServerList) 
     $scope.delete= ->
         $scope.server.$delete ->
             $location.path '/servers/server/list'
+
+
+
+
+app.factory 'Instance', ($resource) ->
+    $resource '/api/v1/servers/:instanceId', {},
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                instanceId: '@id'
+
+        delete:
+            method: 'delete'
+            params:
+                instanceId: '@id'
+
+
+app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
+    $scope.instance= {}
+    $scope.state= 'load'
+
+
+    load= ->
+        $scope.instances= Instance.query ->
+            $scope.state= 'loaded'
+            console.log 'Сервера загружены'
+
+    do load
+
+
+    $scope.showDetails= (server) ->
+        $scope.dialog.instance= instance
+        $scope.dialog.templateUrl= 'instance/dialog/'
+        $scope.showDialog true
+
+
+    $scope.hideDetails= ->
+        $scope.dialog.instance= null
+        do $scope.hideDialog
+
+
+    $scope.reloadInstances= ->
+        do load
+
 
 
 
