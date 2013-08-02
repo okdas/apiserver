@@ -2,14 +2,14 @@ express= require 'express'
 async= require 'async'
 
 ###
-Методы API для работы c серверами.
+Методы API для работы c инстансами серверов.
 ###
 app= module.exports= do express
 
 
 
 ###
-Добавляет сервер.
+Добавляет инстанс.
 ###
 app.post '/', (req, res, next) ->
     async.waterfall [
@@ -23,27 +23,28 @@ app.post '/', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'INSERT INTO server SET ?'
+            conn.query 'INSERT INTO server_instance SET ?'
             ,   [req.body]
             ,   (err, resp) ->
-                    server= req.body
-                    server.id= resp.insertId
-                    return done err, conn, server
+                    instance= req.body
+                    instance.id= resp.insertId
 
-        (conn, server, done) ->
+                    return done err, conn, instance
+
+        (conn, instance, done) ->
             conn.query 'COMMIT', (err) ->
-                return done err, conn, server
+                return done err, conn, instance
 
-    ],  (err, conn, server) ->
+    ],  (err, conn, instance) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200, server
+            return res.json 200, instance
 
 
 
 ###
-Отдает список серверов.
+Отдает список инстансов.
 ###
 app.get '/', (req, res, next) ->
     async.waterfall [
@@ -53,7 +54,7 @@ app.get '/', (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM server'
+            conn.query 'SELECT * FROM server_instance'
             ,   (err, rows) ->
                     return done err, conn, rows
 
@@ -66,9 +67,9 @@ app.get '/', (req, res, next) ->
 
 
 ###
-Отдает сервер.
+Отдает инстанс.
 ###
-app.get '/:serverId', (req, res, next) ->
+app.get '/:instanceId', (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -76,25 +77,25 @@ app.get '/:serverId', (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM server WHERE id = ?'
-            ,   [req.params.serverId]
+            conn.query 'SELECT * FROM server_instance WHERE id = ?'
+            ,   [req.params.instanceId]
             ,   (err, resp) ->
-                    server= do resp.shift if not err
-                    return done err, conn, server
+                    instance= do resp.shift if not err
+                    return done err, conn, instance
 
-    ],  (err, conn, server) ->
+    ],  (err, conn, instance) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 404, null if not server
-            return res.json 200, server
+            return res.json 404, null if not instance
+            return res.json 200, instance
 
 
 
 ###
-Изменяет сервер
+Изменяет инстанс
 ###
-app.put '/:serverId', (req, res, next) ->
+app.put '/:instanceId', (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -106,29 +107,29 @@ app.put '/:serverId', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'UPDATE server SET ? WHERE id = ?'
-            ,   [req.body, req.params.serverId]
+            conn.query 'UPDATE server_instance SET ? WHERE id = ?'
+            ,   [req.body, req.params.instanceId]
             ,   (err, resp) ->
-                    server= req.body
-                    server.id= req.params.serverId
-                    return done err, conn
+                    instance= req.body
+                    instance.id= req.params.instanceId
+                    return done err, conn, instance
 
-        (conn, done) ->
+        (conn, instance, done) ->
             conn.query 'COMMIT', (err) ->
-                return done err, conn
+                return done err, conn, instance
 
-    ],  (err, conn) ->
+    ],  (err, conn, instance) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200
+            return res.json 200, instance
 
 
 
 ###
-Удаляет сервер
+Удаляет инстанс
 ###
-app.delete '/:serverId', (req, res, next) ->
+app.delete '/:instanceId', (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -140,8 +141,8 @@ app.delete '/:serverId', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'DELETE FROM server WHERE id = ?'
-            ,   [req.params.serverId]
+            conn.query 'DELETE FROM server_instance WHERE id = ?'
+            ,   [req.params.instanceId]
             ,   (err, resp) ->
                     return done err, conn
 

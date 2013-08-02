@@ -36,7 +36,7 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
 
 
     # Серверы. Инстансы
-    
+
     $routeProvider.when '/servers/instance/list',
         templateUrl: 'project/servers/instances/', controller: 'ServersInstanceListCtrl'
 
@@ -45,7 +45,7 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
 
     $routeProvider.when '/servers/instance/update/:instanceId',
         templateUrl: 'project/servers/instances/instance/forms/update', controller: 'ServersInstanceFormCtrl'
-    
+
 
 
 
@@ -267,8 +267,14 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
 
 
 
+
+###
+
+Инстансы
+
+###
 app.factory 'Instance', ($resource) ->
-    $resource '/api/v1/servers/:instanceId', {},
+    $resource '/api/v1/instances/:instanceId', {},
         create:
             method: 'post'
 
@@ -291,12 +297,12 @@ app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
     load= ->
         $scope.instances= Instance.query ->
             $scope.state= 'loaded'
-            console.log 'Сервера загружены'
+            console.log 'Инстансы загружены'
 
     do load
 
 
-    $scope.showDetails= (server) ->
+    $scope.showDetails= (instance) ->
         $scope.dialog.instance= instance
         $scope.dialog.templateUrl= 'instance/dialog/'
         $scope.showDialog true
@@ -309,6 +315,41 @@ app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
 
     $scope.reloadInstances= ->
         do load
+
+
+app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, Server) ->
+    $scope.errors= {}
+
+    if $route.current.params.instanceId
+        $scope.instance= Instance.get $route.current.params, ->
+            console.log arguments
+    else
+        $scope.instance= new Instance
+
+    $scope.servers= Server.query ->
+
+    # Действия
+    $scope.create= (InstanceForm) ->
+        $scope.instance.$create ->
+            $location.path '/servers/instance/list'
+        ,   (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        InstanceForm[input].$setValidity error.error, false
+
+    $scope.update= (InstanceForm) ->
+        $scope.instance.$update ->
+            $location.path '/servers/instance/list'
+        , (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        InstanceForm[input].$setValidity error.error, false
+
+    $scope.delete= ->
+        $scope.instance.$delete ->
+            $location.path '/servers/instance/list'
 
 
 
@@ -463,3 +504,4 @@ app.controller 'StoreEnchantmentsFormCtrl', ($scope, $route, $location, Enchantm
         $scope.enchantment.$delete () ->
             $location.path '/store/enchantments'
         ,   () ->
+

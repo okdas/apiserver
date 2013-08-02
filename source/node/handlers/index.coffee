@@ -70,6 +70,12 @@ module.exports= (app) ->
     app.use '/api/v1/servers'
     ,   require './Api/V1/Minecraft/Servers'
 
+    ###
+    Методы API для работы c инстансами.
+    ###
+    app.use '/api/v1/instances'
+    ,   require './Api/V1/Minecraft/Instances'
+
 
     ###
 

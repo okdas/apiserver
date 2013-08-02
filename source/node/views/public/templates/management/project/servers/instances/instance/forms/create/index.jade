@@ -4,15 +4,19 @@ section.dialog-static
 
         menu.col-12.col-sm-4.col-lg-4.col-push-8 
 
-        form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='ServerForm')
+        form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='InstanceForm')
             .form-body
                 h3.dialog-title(style='text-align:center') Обновить предмет в магазине
 
                 fieldset
-                    input.input(placeholder='Имя сервера', type='text', required, ng-model='server.name')
-                    input.input(placeholder='Название', type='text', required, ng-model='server.title')
+                    select.form-control(ng-model='instance.serverId')
+                        option(ng-repeat='server in servers',value='{{server.id}}') {{server.name}}
+
+                    input.input(placeholder='Имя сервера', type='text', required, ng-model='instance.title')
+                    input.input(placeholder='Название сервера', type='text', required, ng-model='instance.host')
+                    input.input.input-auto(placeholder='Название сервера', type='text', required, ng-model='instance.port')
 
             .form-foot: .row.form-row
                 .col-12
-                    button.btn.btn-primary.btn-block(type='submit', ng-click='create(SeverForm)', ng-disabled='!ServerForm.$valid')
-                        span Обновить предмет
+                    button.btn.btn-primary.btn-block(type='submit',ng-click='create(InstanceForm)',ng-disabled='!InstanceForm.$valid')
+                        span Обновить инстанс
