@@ -26,7 +26,7 @@ app= angular.module 'management', ['ngResource'], ($routeProvider) ->
         templateUrl: 'project/servers/', controller: 'ServerListCtrl'
 
     $routeProvider.when '/servers/server/list',
-        templateUrl: 'project/servers/server/list/', controller: 'ServersServerListCtrl'
+        templateUrl: 'project/servers/servers/', controller: 'ServersServerListCtrl'
 
 
 
@@ -208,14 +208,13 @@ app.controller 'ServersServerListCtrl', ($scope, ServerList) ->
 
 
     $scope.showDetails= (server) ->
-        $scope.dialog.title= 'Информация о сервере'
         $scope.dialog.server= server
-        $scope.dialog.templateUrl= 'information'
+        $scope.dialog.templateUrl= 'server/dialog/'
         $scope.showDialog true
 
 
     $scope.hideDetails= () ->
-        #$scope.dialog.player= null
+        $scope.dialog.server= null
         do $scope.hideDialog
 
 
