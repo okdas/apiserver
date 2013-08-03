@@ -4,20 +4,7 @@ html(ng-app='management', ng-cloak)
     head
 
         link(rel='stylesheet', href='/css/bootcraft.css')
-
-        style.
-
-            .navbar-brand span {
-                letter-spacing:2px;
-            }
-            .navbar-brand sup {
-                font-size:small;
-                opacity:.5;
-            }
-
-            abbr {
-                letter-spacing:2px;
-            }
+        link(rel='stylesheet', href='/css/management/project/index.css')
 
         script(src='/js/libs/jquery/1.10.2/jquery.min.js')
         script(src='/js/libs/angularjs/1.1.5/angular.min.js')
@@ -91,17 +78,23 @@ html(ng-app='management', ng-cloak)
                                 b.caret
 
                         ul.nav.navbar-nav.pull-right
+
                             li: a(href='engine/') Управление системой
+
                             li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
+
                                 a.dropdown-toggle(href='', ng-click='toggleDropdown()')
                                     strong {{user.username}} 
                                     b.caret
 
                                 ul.dropdown-menu
+
                                     li: a(href='#/user')
                                         i.icon-user
                                         span   Аккаунт
+
                                     li.divider
+
                                     li: a(href='', ng-click='logout()')
                                         i.icon-signout
                                         span   Выход
@@ -111,4 +104,6 @@ html(ng-app='management', ng-cloak)
         .dialog(ng-if='dialog.overlay', ng-animate='"dialog"')
             .dialog-bg(ng-click='hideDialog()')
             .container: .row: .col-12.dialog-container(ng-include='dialog.templateUrl')
+
         .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')
+

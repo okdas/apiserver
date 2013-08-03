@@ -1,3 +1,15 @@
+extends ../layout
+
+block section-head-title
+    span Управление содержимым
+
+block section-head-nav
+    ul.nav.nav-row
+        li: a(href='#/players/player/list') Предметы
+        li: a(href='#/players/group/list') Чары
+
+
+
 section.container
   .row
     aside.col-12.col-sm-3.col-lg-3.col-push-9
@@ -8,13 +20,13 @@ section.container
           hr
 
         li: a(href='#/store/items')
-          span Предметы
+            span Предметы
 
         li: a(href='#/store/enchantments')
-          span Чары
+            span Чары
 
 
 
     article.col-12.col-sm-9.col-lg-9.col-pull-3
-      h3.toolbar-title Продажа игрового содержимого
-      hr
+        h3.toolbar-title Продажа игрового содержимого
+        hr

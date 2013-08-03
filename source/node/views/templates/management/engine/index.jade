@@ -241,25 +241,30 @@ html(ng-app='management')
 
 
                         ul.nav.navbar-nav
-                            
+
                             li: a(href='#/users') Пользователи 
                                 b.caret
 
 
                         ul.nav.navbar-nav.pull-right
+
                             li: a(href='../') Управление проектом
+
                             li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
                                 a.dropdown-toggle(href='', ng-click='toggleDropdown()')
                                     strong {{user.username}} 
                                     b.caret
-                                
+
                                 ul.dropdown-menu
                                     li: a(href='#/user')
                                         i.icon-user
                                         span   Аккаунт
+
                                     li.divider
+
                                     li: a(href='', ng-click='logout()')
                                         i.icon-signout
                                         span   Выход
 
         .view(ng-view, ng-animate='"view"')
+

@@ -3,62 +3,12 @@ html(ng-app='management')
 
     head
 
-        link(rel='stylesheet', href='/css/bootstrap.css')
         link(rel='stylesheet', href='/css/bootcraft.css')
-        link(rel='stylesheet', href='/css/font-awesome.min.css')
+        link(rel='stylesheet', href='/css/management/index.css')
 
         script(src='/js/libs/jquery/1.7.2/jquery.min.js')
         script(src='/js/libs/angularjs/1.1.5/angular.min.js')
         script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
-
-        style.
-            body {
-                -webkit-backface-visibility: hidden;
-            }
-            .navbar-brand span {
-                letter-spacing:2px;
-            }
-            .navbar-brand sup {
-                font-size:small;
-                opacity:.5;
-            }
-            header h1 {
-                margin-right:-0.25em;
-                font-size:4em; line-height:1.25em; letter-spacing:.25em;
-                text-align:center;
-            }
-            header hr {
-                width:8em;
-            }
-            header p {
-                margin-top:1em;
-                font-size:1.5em; line-height:1.5em;
-                text-align:center;
-            }
-            .fly {
-                margin-top:2em;
-                font-size:4em;
-            }
-            .fly .icon-rocket {
-                position:relative;
-                transition:0.3s ease opacity;
-                opacity:1;
-            }
-            .fly:hover .icon-rocket {
-                transition:0.3s ease-out all;
-                top:-300px; right:-300px;
-                opacity:0;
-            }
-            .navbar-fixed-bottom {
-                background-color:transparent;
-            }
-            .by {
-                padding:15px;
-                text-align:center;
-            }
-            abbr {
-                letter-spacing:2px;
-            }
 
         script.
             var app= angular.module('management', ['ngResource']);
@@ -112,6 +62,7 @@ html(ng-app='management')
     body(ng-controller='ViewCtrl', ng-cloak)
 
         header
+
             .navbar.navbar-static-top
                 .container
                     a.navbar-brand(href='/')
@@ -138,6 +89,7 @@ html(ng-app='management')
                         a(href='//awesome39.com') При поддержке 
                             abbr AWESOME{39}
 
+
         section
 
             .dialog(ng-if='"login" == dialog.overlay', ng-animate='"dialog"')
@@ -145,19 +97,26 @@ html(ng-app='management')
                 .dialog-container.container
                     .user-delete-form
                         .row: .col-12
+
                             .row: .col-12.dialog-head
                                 i.icon-signin
-                                span   Контрольно-пропускной пункт
+                                span Контрольно-пропускной пункт
+
                             .row: .col-12.dialog-body
+
                                 .row: .col-8.col-offset-2
                                     h2.dialog-title Представьтесь, пожалуйста
+
                                 .row: .col-8.col-offset-2
+
                                     form.form-large(name='loginForm', ng-submit='send(loginForm)').dialog-form
                                         input.input(type='text', name='username', placeholder='Пользователь', required, ng-model='user.username')
                                         input.input(type='password', name='password', placeholder='Пароль', required, ng-model='user.password')
+
                                         .form-actions
                                             button.btn.btn-primary(type='submit', ng-disabled='!loginForm.$valid')
                                                 i.icon-signin
-                                                span   Представиться
+                                                span Представиться
 
             .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')
+
