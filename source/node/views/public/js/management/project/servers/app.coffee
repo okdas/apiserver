@@ -127,19 +127,21 @@ app.controller 'ServersServerListCtrl', ($scope, Server) ->
 
 app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
     $scope.errors= {}
+    $scope.state= 'load'
 
     if $route.current.params.serverId
         $scope.server= Server.get $route.current.params, ->
+            $scope.state= 'loaded'
             console.log arguments
     else
         $scope.server= new Server
+        $scope.state= 'loaded'
 
 
     # Действия
     $scope.create= (ServerForm) ->
         $scope.server.$create ->
-            $location.path '/servers/server/list'
-        ,   (err) ->
+            $location.path '/servers/server/list', (err) ->
                 $scope.errors= err.data.errors
                 if 400 == err.status
                     angular.forEach err.data.errors, (error, input) ->
@@ -148,8 +150,7 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
 
     $scope.update= (ServerForm) ->
         $scope.server.$update ->
-            $location.path '/servers/server/list'
-        , (err) ->
+            $location.path '/servers/server/list', (err) ->
                 $scope.errors= err.data.errors
                 if 400 == err.status
                     angular.forEach err.data.errors, (error, input) ->
@@ -194,12 +195,15 @@ app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
 
 app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, Server) ->
     $scope.errors= {}
+    $scope.state= 'load'
 
     if $route.current.params.instanceId
         $scope.instance= Instance.get $route.current.params, ->
+            $scope.state= 'loaded'
             console.log arguments
     else
         $scope.instance= new Instance
+        $scope.state= 'loaded'
 
 
     $scope.servers= Server.query ->

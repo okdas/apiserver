@@ -30,10 +30,10 @@ app.config ($routeProvider) ->
     $routeProvider.when '/store/enchantments/list',
         templateUrl: 'project/store/enchantments/', controller: 'StoreEnchantmentsCtrl'
 
-    $routeProvider.when '/store/enchantments/create',
+    $routeProvider.when '/store/enchantments/enchantment/create',
         templateUrl: 'project/store/enchantments/enchantment/forms/create', controller: 'StoreEnchantmentsFormCtrl'
 
-    $routeProvider.when '/store/enchantments/:enchantmentId',
+    $routeProvider.when '/store/enchantments/enchantment/update/:enchantmentId',
         templateUrl:'project/store/enchantments/enchantment/forms/update', controller:'StoreEnchantmentsFormCtrl'
 
 
@@ -137,19 +137,23 @@ app.controller 'StoreItemsListCtrl', ($scope, $location, Item) ->
 ### Контроллер редактора предмета. ###
 app.controller 'StoreItemsFormCtrl', ($scope, $route, $location, Item, Enchantment) ->
     $scope.errors= {}
+    $scope.enchantment= {}
+    $scope.state= 'load'
 
     if $route.current.params.itemId
-        $scope.item= Item.get $route.current.params, () ->
+        $scope.item= Item.get $route.current.params, ->
+            $scope.state= 'loaded'
             console.log arguments
     else
         $scope.item= new Item
         $scope.item.enchantments= []
+        $scope.state= 'loaded'
 
     # Чары предмета
 
-    $scope.enchantments= Enchantment.query () ->
+    $scope.enchantments= Enchantment.query ->
 
-    $scope.addEnchantment= () ->
+    $scope.addEnchantment= (enchantment) ->
         return if not $scope.enchantment
         enchantment= angular.copy $scope.enchantment
         $scope.enchantment= null
@@ -165,26 +169,24 @@ app.controller 'StoreItemsFormCtrl', ($scope, $route, $location, Item, Enchantme
     # Действия
 
     $scope.create= (ItemForm) ->
-        $scope.item.$create () ->
-            $location.path '/store/items'
-        ,   (err) ->
+        $scope.item.$create ->
+            $location.path '/store/items/list', (err) ->
                 $scope.errors= err.data.errors
                 if 400 == err.status
                     angular.forEach err.data.errors, (error, input) ->
                         ItemForm[input].$setValidity error.error, false
 
     $scope.update= (ItemForm) ->
-        $scope.item.$update () ->
-            $location.path '/store/items'
-        , (err) ->
+        $scope.item.$update ->
+            $location.path '/store/items/list', (err) ->
                 $scope.errors= err.data.errors
                 if 400 == err.status
                     angular.forEach err.data.errors, (error, input) ->
                         ItemForm[input].$setValidity error.error, false
 
-    $scope.delete= () ->
-        $scope.item.$delete () ->
-            $location.path '/store/items'
+    $scope.delete= ->
+        $scope.item.$delete ->
+            $location.path '/store/items/list'
 
 
 
@@ -221,37 +223,40 @@ app.controller 'StoreEnchantmentsCtrl', ($scope, $location, Enchantment) ->
 ### Контроллер редактора чар. ###
 app.controller 'StoreEnchantmentsFormCtrl', ($scope, $route, $location, Enchantment) ->
     $scope.errors= {}
+    $scope.state= 'load'
 
     # Чары
 
     if $route.current.params.enchantmentId
-        $scope.enchantment= Enchantment.get $route.current.params, () ->
+        $scope.enchantment= Enchantment.get $route.current.params, ->
+            $scope.state= 'loaded'
     else
         $scope.enchantment= new Enchantment
+        $scope.state= 'loaded'
 
     # Действия
 
-    $scope.create= (Form) ->
-        $scope.enchantment.$create () ->
-            $location.path '/store/enchantments'
+    $scope.create= (EnchantmentForm) ->
+        $scope.enchantment.$create ->
+            $location.path '/store/enchantments/list'
         ,  (err) ->
             $scope.errors= err.data.errors
             if 400 == err.status
                 angular.forEach err.data.errors, (error, input) ->
-                    Form[input].$setValidity error.error, false
+                    EnchantmentForm[input].$setValidity error.error, false
 
-    $scope.update= (Form) ->
-        $scope.enchantment.$update () ->
-            $location.path '/store/enchantments'
+    $scope.update= (EnchantmentForm) ->
+        $scope.enchantment.$update ->
+            $location.path '/store/enchantments/list'
         ,  (err) ->
                 $scope.errors= err.data.errors
                 if 400 == err.status
                     angular.forEach err.data.errors, (error, input) ->
-                        Form[input].$setValidity error.error, false
+                        EnchantmentForm[input].$setValidity error.error, false
 
-    $scope.delete= () ->
-        $scope.enchantment.$delete () ->
-            $location.path '/store/enchantments'
+    $scope.delete= ->
+        $scope.enchantment.$delete ->
+            $location.path '/store/enchantments/list'
         ,   () ->
 
 

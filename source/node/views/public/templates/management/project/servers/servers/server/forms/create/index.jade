@@ -1,18 +1,22 @@
-section.dialog-static
-    .container.dialog-container
-        .row
+extends ../../../../../layout
 
-        menu.col-12.col-sm-4.col-lg-4.col-push-8 
+block section-head-title
+  a(href='#/servers') Управление серверами
 
-        form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='ServerForm')
-            .form-body
-                h3.dialog-title(style='text-align:center') Обновить предмет в магазине
+block section-head-nav
+    ul.nav.nav-row
+        li: a(ng-href='#/servers/server/list') Сервера
+        li: a(ng-href='#/servers/instance/list') Инстансы
 
-                fieldset
-                    input.input(placeholder='Имя сервера', type='text', required, ng-model='server.name')
-                    input.input(placeholder='Название', type='text', required, ng-model='server.title')
+block section-body
+    form(name='ServerForm')
+        h3(style='text-align:center') Создание сервера
 
-            .form-foot: .row.form-row
-                .col-12
-                    button.btn.btn-primary.btn-block(type='submit', ng-click='create(SeverForm)', ng-disabled='!ServerForm.$valid')
-                        span Создать сервер
+        fieldset
+            input.input(placeholder='Имя сервера', type='text', required, ng-model='server.name')
+            input.input(placeholder='Название', type='text', required, ng-model='server.title')
+
+        fieldset
+            button.btn.btn-primary.btn-block(type='submit', ng-click='create(SeverForm)', ng-disabled='!ServerForm.$valid')
+                span Создать сервер
+
