@@ -11,53 +11,11 @@ html(ng-app='management', ng-cloak)
         script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
         script(src='/js/libs/jquery-ui-1.10.3.custom.min.js')
 
+        include js/project.coffee
+        include js/project-players.coffee
+        include js/project-servers.coffee
+        include js/project-store.coffee
 
-
-        script(src='/js/management/project/store/app.js')
-        script(src='/js/management/project/store/routes.js')
-
-        script(src='/js/management/project/store/items/filters.js')
-        script(src='/js/management/project/store/items/resources.js')
-        script(src='/js/management/project/store/items/controllers.js')
-
-        script(src='/js/management/project/store/enchantments/filters.js')
-        script(src='/js/management/project/store/enchantments/resources.js')
-        script(src='/js/management/project/store/enchantments/controllers.js')
-
-
-
-        script(src='/js/management/project/servers/app.js')
-        script(src='/js/management/project/servers/routes.js')
-
-        script(src='/js/management/project/servers/servers/filters.js')
-        script(src='/js/management/project/servers/servers/resources.js')
-        script(src='/js/management/project/servers/servers/controllers.js')
-
-        script(src='/js/management/project/servers/instances/filters.js')
-        script(src='/js/management/project/servers/instances/resources.js')
-        script(src='/js/management/project/servers/instances/controllers.js')
-
-
-
-        script(src='/js/management/project/app.js')
-
-
-
-        script(src='/js/management/app.js')
-        script(src='/js/management/routes.js')
-        script(src='/js/management/filters.js')
-        script(src='/js/management/resources.js')
-        script(src='/js/management/directives.js')
-        script(src='/js/management/controllers.js')
-
-
-
-
-
-
-
-
-    - var localsJson= JSON.stringify({user: user});
     body(ng-controller='ViewCtrl', ng-cloak, ng-init='locals=#{localsJson}')
 
         header.header
@@ -81,7 +39,7 @@ html(ng-app='management', ng-cloak)
 
                         ul.nav.navbar-nav.pull-right
 
-                            li: a(href='engine/') Управление системой
+                            li: a(href='../engine/') Управление системой
 
                             li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
 
