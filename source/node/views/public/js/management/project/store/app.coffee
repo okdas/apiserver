@@ -190,7 +190,31 @@ app.controller 'StoreItemsFormCtrl', ($scope, $route, $location, Item, Enchantme
 
 ### Контроллер списка чар. ###
 app.controller 'StoreEnchantmentsCtrl', ($scope, $location, Enchantment) ->
-    $scope.enchantments= Enchantment.query () ->
+    $scope.enchantments= {}
+    $scope.state= 'load'
+
+
+    load= ->
+        $scope.enchantments= Enchantment.query ->
+            $scope.state= 'loaded'
+            console.log 'Чары загружены'
+
+    do load
+
+
+    $scope.showDetails= (enchantment) ->
+        $scope.dialog.enchantment= enchantment
+        $scope.dialog.templateUrl= 'enchantment/dialog/'
+        $scope.showDialog true
+
+
+    $scope.hideDetails= ->
+        $scope.dialog.enchantment= null
+        do $scope.hideDialog
+
+
+    $scope.reload= ->
+        do load
 
 
 

@@ -1,13 +1,37 @@
-section
-  .container
+extends ../../layout
+
+block section-head-title
+  a(href='#/store') Управление содержимым
+
+block section-head-nav
+    ul.nav.nav-row
+        li: a(href='#/store/items/list') Предметы
+        li.active: a Чары
+
+block section-body
+    table.table
+        thead
+            tr
+                th #
+                th.col-flex: .sortable: .sortable-cell Название чара
+                th ID
+                th Max
+                th
+                    button.btn.btn-info(ng-click='reload()')
+                        i.icon-refresh
+
+        tbody
+            tr(ng-repeat='enchantment in enchantments')
+                td {{enchantment.id}}
+                td: a(ng-click='showDetails(enchantment)') {{enchantment.title}}
+                td {{enchantment.identity}}
+                td {{enchantment.levelmax}}
+                td
+                    a(ng-href='#/store/enchantments/enchantment/update/{{enchantment.id}}')
+                        button.btn.btn-success
+                            i.icon-wrench
+
     .row
-      .col-12.col-sm-4.col-lg-4.col-push-8
-      .col-12.col-sm-8.col-lg-8.col-pull-4
-        .toolbar
-          h3.toolbar-title Чары в магазине
-          a.btn.btn-primary.btn-small.toolbar-btn(ng-href='#/store/enchantments/create') Добавить чары
-        hr
-        ul.enchantments
-          li(ng-repeat='enchantment in enchantments')
-            a(ng-href='#/store/enchantments/{{enchantment.id}}') {{enchantment}}
-      
+        .col-12
+            a(href='#/store/enchantments/enchantment/create')= 'Создать'
+
