@@ -1,3 +1,3 @@
 ### Приложение ###
-angular.module('management.project', ['project.servers', 'project.store'])
+angular.module('management.project', ['project.servers', 'project.store', 'project.players'])
 

@@ -14,9 +14,9 @@ block section-body
             tr
                 th
                 th.col-flex: .sortable: .sortable-cell Имя сервера
-                th.col-flex: .sortable: .sortable-cell Название
+                th: .sortable: .sortable-cell Название
                 th
-                    button.btn.btn-info(ng-click='reloadServers()')
+                    button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
 
         tbody
