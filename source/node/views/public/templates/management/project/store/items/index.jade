@@ -1,20 +1,35 @@
-section
-  .container
+extends ../../layout
+
+block section-head-title
+  a(href='#/store') Управление серверами
+
+block section-head-nav
+    ul.nav.nav-row
+        li.active: a Предметы
+        li: a(href='#/store/enchantments/list') Чары
+
+block section-body
+    table.table.players
+        thead
+            tr
+                th
+                th Икона
+                th.col-flex: .sortable: .sortable-cell Название предмета
+                th
+                    button.btn.btn-info(ng-click='reloadItems()')
+                        i.icon-refresh
+
+        tbody
+            tr(ng-repeat='item in items')
+                td {{item.id}}
+                td: img.img(ng-src='{{item.imageUrl}}')
+                td: a(ng-click='showDetails(item)') {{item.title}}
+                td
+                    a(href='#/store/items/item/update/{{item.id}}')
+                        button.btn.btn-success
+                            i.icon-wrench
+
     .row
-      .col-12.col-sm-4.col-lg-4.col-push-8
-      .col-12.col-sm-8.col-lg-8.col-pull-4
-        .toolbar
-          h3.toolbar-title Предметы в магазине
-          a.btn.btn-primary.btn-small.toolbar-btn(ng-href='#/store/items/create') Добавить предмет
-        hr
-        style.
-          .item .img {
-            margin-right:1em;
-          }
-        .items
-          p.item(ng-repeat='item in items')
-            a(ng-href='#/store/items/{{item.id}}')
-              img.img(ng-src='{{item.imageUrl}}')
-              span {{item.title}}
-            hr
-      
+        .col-12
+            a(href='#/store/items/item/create')= 'Создать'
+

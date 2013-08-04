@@ -11,49 +11,51 @@ html(ng-app='management', ng-cloak)
         script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
         script(src='/js/libs/jquery-ui-1.10.3.custom.min.js')
 
-        script(src='/js/management/project.js')
 
-        script.
-            angular.module('management').directive('bSortable', function ($parse) {
-                return {
-                    controller: function bSortable($scope) {
-                        $scope.bSortable= {};
-                        $scope.bSortableUpdate= function () {
-                            var list= $scope.bSortable.getter($scope);
-                            var sorted= [];
-                            $scope.bSortable.element.children().each(function () {
-                                var id= $(this).attr('id');
-                                angular.forEach(list, function (item, i) {
-                                    if (id == item.id) {
-                                        sorted.push(item);
-                                    }
-                                });
-                            });
-                            console.log(sorted);
-                            angular.forEach(list, function (item, i) {
-                                list[i]= sorted[i];
-                            });
-                            console.log(list);
-                            $scope.$digest();
-                        }
-                    },
-                    link: function ($scope, $e, $a) {
-                        $scope.bSortable.getter= $parse($a.bSortable);
-                        $scope.bSortable.element= $e;
-                    },
-                }
-            });
-            angular.module('management').directive('bSortableItem', function () {
-                return {
-                    require:'^bSortable',
-                    link: function ($scope, $e, $a) {
-                        $scope.bSortable.element.sortable({axis:'y', helper:'clone', forceHelperSize:false, forcePlaceholderSize:false, tolerance:'pointer'}).off('sortupdate').
-                        on('sortupdate', function (evt, target) {
-                            $scope.bSortableUpdate()
-                        })
-                    },
-                }
-            })
+
+        script(src='/js/management/project/store/app.js')
+        script(src='/js/management/project/store/routes.js')
+
+        script(src='/js/management/project/store/items/filters.js')
+        script(src='/js/management/project/store/items/resources.js')
+        script(src='/js/management/project/store/items/controllers.js')
+
+        script(src='/js/management/project/store/enchantments/filters.js')
+        script(src='/js/management/project/store/enchantments/resources.js')
+        script(src='/js/management/project/store/enchantments/controllers.js')
+
+
+
+        script(src='/js/management/project/servers/app.js')
+        script(src='/js/management/project/servers/routes.js')
+
+        script(src='/js/management/project/servers/servers/filters.js')
+        script(src='/js/management/project/servers/servers/resources.js')
+        script(src='/js/management/project/servers/servers/controllers.js')
+
+        script(src='/js/management/project/servers/instances/filters.js')
+        script(src='/js/management/project/servers/instances/resources.js')
+        script(src='/js/management/project/servers/instances/controllers.js')
+
+
+
+        script(src='/js/management/project/app.js')
+
+
+
+        script(src='/js/management/app.js')
+        script(src='/js/management/routes.js')
+        script(src='/js/management/filters.js')
+        script(src='/js/management/resources.js')
+        script(src='/js/management/directives.js')
+        script(src='/js/management/controllers.js')
+
+
+
+
+
+
+
 
     - var localsJson= JSON.stringify({user: user});
     body(ng-controller='ViewCtrl', ng-cloak, ng-init='locals=#{localsJson}')
