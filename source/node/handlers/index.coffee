@@ -142,6 +142,18 @@ module.exports= (app) ->
     app.use '/api/v1/store'
     ,   require './Api/V1/Minecraft/Store'
 
+
+    ###
+    Ищем сервер по переданному ключу key
+    ###
+    app.use '/api/v1/server', require './Api/V1/Minecraft/MiddlewareSecret'
+
+
+    app.use '/api/v1/server/test', (req, res, next) ->
+        res.send req.instance
+
+
+
     app.get '/test', (req, res, next) ->
         res.render 'test.jade'
 
