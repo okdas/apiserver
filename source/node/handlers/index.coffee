@@ -150,7 +150,7 @@ module.exports= (app) ->
 
 
     app.use '/api/v1/server/test', (req, res, next) ->
-        res.send req.instance
+        res.send req.server
 
 
 

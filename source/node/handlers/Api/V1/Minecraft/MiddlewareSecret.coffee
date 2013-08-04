@@ -13,15 +13,15 @@ module.exports= (req, res, next) ->
             conn.query 'SELECT * FROM server_instance WHERE `key` = ?'
             ,   [req.query.key]
             ,   (err, resp) ->
-                    instance= do resp.shift if not err
-                    return done err, conn, instance
+                    server= do resp.shift if not err
+                    return done err, conn, server
 
-    ],  (err, conn, instance) ->
+    ],  (err, conn, server) ->
             do conn.end if conn
 
             return res.json 400, err if err
-            return res.json 404, null if not instance
+            return res.json 404, null if not server
 
-            req.instance= instance
+            req.server= server
             return do next
 
