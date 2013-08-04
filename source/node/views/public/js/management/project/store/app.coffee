@@ -3,6 +3,7 @@ app= angular.module 'project.store', ['ngResource']
 
 
 
+#=============Маршруты=============
 app.config ($routeProvider) ->
     # Магазин
 
@@ -39,6 +40,7 @@ app.config ($routeProvider) ->
 
 
 
+#=============Ресурсы==============
 app.factory 'Item', ($resource) ->
     $resource '/api/v1/store/items/:itemId',
         itemId:'@id'
@@ -58,8 +60,7 @@ app.factory 'Item', ($resource) ->
 
 
 
-### Модель чар.
-###
+### Модель чар. ###
 app.factory 'Enchantment', ($resource) ->
     $resource '/api/v1/store/enchantments/:enchantmentId',
         enchantmentId:'@id'
@@ -78,8 +79,11 @@ app.factory 'Enchantment', ($resource) ->
                 enchantmentId:'@id'
 
 
-### Фильтр чар в редакторе для предмета.
-###
+
+
+
+#=============Фильтры==============
+#### Фильтр чар в редакторе для предмета. ###
 app.filter 'filterItemEnchantment', ->
     (enchantments, item) ->
         filtered= []
@@ -95,6 +99,7 @@ app.filter 'filterItemEnchantment', ->
 
 
 
+#=============Контроллеры==========
 app.controller 'StoreDashboardCtrl', ($scope, Item) ->
     $scope.state= 'loaded'
 
@@ -129,8 +134,7 @@ app.controller 'StoreItemsListCtrl', ($scope, $location, Item) ->
 
 
 
-### Контроллер редактора предмета.
-###
+### Контроллер редактора предмета. ###
 app.controller 'StoreItemsFormCtrl', ($scope, $route, $location, Item, Enchantment) ->
     $scope.errors= {}
 
@@ -184,17 +188,13 @@ app.controller 'StoreItemsFormCtrl', ($scope, $route, $location, Item, Enchantme
 
 
 
-
-
-
-### Контроллер списка чар.
-###
+### Контроллер списка чар. ###
 app.controller 'StoreEnchantmentsCtrl', ($scope, $location, Enchantment) ->
     $scope.enchantments= Enchantment.query () ->
 
 
-### Контроллер редактора чар.
-###
+
+### Контроллер редактора чар. ###
 app.controller 'StoreEnchantmentsFormCtrl', ($scope, $route, $location, Enchantment) ->
     $scope.errors= {}
 

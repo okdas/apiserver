@@ -2,4 +2,4 @@ source/node/views/public/components
 node_modules/*
 *.log
 app/*
-.pid
+*.pid

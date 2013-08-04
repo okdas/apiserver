@@ -3,6 +3,7 @@ app= angular.module 'project.players', ['ngResource']
 
 
 
+#=============Маршруты=============
 app.config ($routeProvider) ->
     # Игроки
 
@@ -31,6 +32,8 @@ app.config ($routeProvider) ->
 
 
 
+
+#=============Ресурсы==============
 app.factory 'PlayerList', ($resource) ->
     $resource '/api/v1/players', {}
 
@@ -44,7 +47,7 @@ app.factory 'PlayerGroupList', ($resource) ->
 
 
 
-
+#=============Контроллеры==========
 app.controller 'PlayersDashboardCtrl', ($scope) ->
     $scope.state= 'loaded'
 

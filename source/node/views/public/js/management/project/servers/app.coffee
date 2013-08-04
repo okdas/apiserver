@@ -2,6 +2,8 @@
 app= angular.module 'project.servers', ['ngResource']
 
 
+
+#=============Маршруты=============
 app.config ($routeProvider) ->
     # Серверы
 
@@ -34,6 +36,7 @@ app.config ($routeProvider) ->
 
 
 
+#=============Ресурсы==============
 app.factory 'Server', ($resource) ->
     $resource '/api/v1/servers/:serverId', {},
         create:
@@ -86,6 +89,8 @@ app.factory 'Instance', ($resource) ->
 
 
 
+
+#=============Контроллеры==========
 app.controller 'ServersDashboardCtrl', ($scope, $q) ->
     $scope.state= 'loaded'
 
@@ -129,6 +134,7 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
     else
         $scope.server= new Server
 
+
     # Действия
     $scope.create= (ServerForm) ->
         $scope.server.$create ->
@@ -139,6 +145,7 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
                     angular.forEach err.data.errors, (error, input) ->
                         ServerForm[input].$setValidity error.error, false
 
+
     $scope.update= (ServerForm) ->
         $scope.server.$update ->
             $location.path '/servers/server/list'
@@ -148,18 +155,14 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
                     angular.forEach err.data.errors, (error, input) ->
                         ServerForm[input].$setValidity error.error, false
 
+
     $scope.delete= ->
         $scope.server.$delete ->
             $location.path '/servers/server/list'
 
 
 
-
-###
-
-Инстансы
-
-###
+### Инстансы ###
 app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
     $scope.instance= {}
     $scope.state= 'load'
@@ -188,6 +191,7 @@ app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
         do load
 
 
+
 app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, Server) ->
     $scope.errors= {}
 
@@ -196,6 +200,7 @@ app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, 
             console.log arguments
     else
         $scope.instance= new Instance
+
 
     $scope.servers= Server.query ->
 
@@ -209,6 +214,7 @@ app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, 
                     angular.forEach err.data.errors, (error, input) ->
                         InstanceForm[input].$setValidity error.error, false
 
+
     $scope.update= (InstanceForm) ->
         $scope.instance.$update ->
             $location.path '/servers/instance/list'
@@ -217,6 +223,7 @@ app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, 
                 if 400 == err.status
                     angular.forEach err.data.errors, (error, input) ->
                         InstanceForm[input].$setValidity error.error, false
+
 
     $scope.delete= ->
         $scope.instance.$delete ->

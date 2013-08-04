@@ -2,6 +2,8 @@
 app= angular.module('management', ['management.project'])
 
 
+
+#=============Маршруты=============
 app.config ($routeProvider) ->
     $routeProvider.otherwise
         redirectTo: '/'
@@ -9,6 +11,8 @@ app.config ($routeProvider) ->
 
 
 
+
+#=============Ресурсы==============
 app.factory 'CurrentUser', ($resource) ->
     $resource '/api/v1/user/:action', {},
         logout:
@@ -19,6 +23,8 @@ app.factory 'CurrentUser', ($resource) ->
 
 
 
+
+#=============Директивы============
 app.directive 'bSortable', ($parse) ->
     controller: bSortable= ($scope) ->
         $scope.bSortable= {}
@@ -63,6 +69,7 @@ app.directive 'bSortableItem', ->
 
 
 
+#=============Контроллеры==========
 app.controller 'ViewCtrl', ($scope, $location, $http, $window) ->
         $scope.view= {}
 
@@ -72,13 +79,6 @@ app.controller 'ViewCtrl', ($scope, $location, $http, $window) ->
         $scope.hideDialog= () ->
             $scope.dialog.overlay= false
 
-
-app.factory 'CurrentUser', ($resource) ->
-        $resource '/api/v1/user/:action', {},
-            logout:
-                method:'post'
-                params:
-                    action:'logout'
 
 
 app.controller 'CurrentUserCtrl', ($scope, $window, CurrentUser) ->
