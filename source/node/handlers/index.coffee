@@ -151,3 +151,9 @@ module.exports= (app) ->
     app.get '/test', (req, res, next) ->
         res.render 'test.jade'
 
+
+
+    app.use '/api/v1/forum/forum', require './Api/V1/Forum/Forum'
+    app.use '/api/v1/forum/section', require './Api/V1/Forum/Section'
+    app.use '/api/v1/forum/thread', require './Api/V1/Forum/Thread'
+    app.use '/api/v1/forum/comment', require './Api/V1/Forum/Comment'
