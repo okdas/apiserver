@@ -61,3 +61,28 @@ module.exports= (app) ->
     ###
     app.use '/api/v1/store/items'
     ,   require './Api/V1/Minecraft/Store/Items'
+
+
+    ###
+
+    Игрок
+
+    ###
+
+    ###
+    Методы API для работы c аутентифицированным игроком.
+    ###
+    app.use '/api/v1/player'
+    ,   require './Api/V1/Minecraft/Player'
+
+    ###
+    Методы API для работы игрока с магазином.
+    ###
+    app.use '/api/v1/store'
+    ,   require './Api/V1/Minecraft/Store'
+
+
+    ###
+    Ищем сервер по переданному ключу key
+    ###
+    app.use '/api/v1/server', require './Api/V1/Minecraft/MiddlewareSecret'
