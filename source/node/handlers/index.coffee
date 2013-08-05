@@ -78,8 +78,8 @@ module.exports= (app) ->
     ###
     Методы API для работы игрока с магазином.
     ###
-    app.use '/api/v1/store'
-    ,   require './Api/V1/Minecraft/Store'
+    app.use '/api/v1/player/store'
+    ,   require './Api/V1/Minecraft/Player/Store'
 
 
     ###
