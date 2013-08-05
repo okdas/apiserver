@@ -1,97 +1,101 @@
-section.dialog-static
-  .container.dialog-container
-    .row
+extends ../../../../../layout
 
-      menu.col-12.col-sm-4.col-lg-4.col-push-8 
+block section-head-title
+  a(href='#/store') Управление содержимым
 
-      form.form.col-12.col-sm-8.col-lg-8.col-pull-4(name='ItemForm')
-          .form-body
-            h3.dialog-title(style='text-align:center') Добавить предмет в магазин
-              p: img.img(ng-show='item.imageUrl', ng-src='{{item.imageUrl}}', width='32', height='32')
+block section-head-nav
+    ul.nav.nav-row
+        li: a(ng-href='#/store/items/list') Предметы
+        li: a(ng-href='#/store/enchantments/list') Чары
 
-            fieldset
-              input.input(placeholder='Название предмета в магазине', type='text', required, ng-model='item.title')
-              input.input(placeholder='Ссылка на изображение предмета в магазине', type='text', required, ng-model='item.imageUrl')
+block section-body
+    form(name='ItemForm')
+        h3(style='text-align:center') Добавить предмет в магазин
+            p: img.img(ng-show='item.imageUrl', ng-src='{{item.imageUrl}}', width='32', height='32')
 
-            fieldset
-              input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='item.material', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
-              input.input(placeholder='Название предмета в игре (необязательно)', type='text', ng-model='item.name')
+        fieldset
+            input.input(placeholder='Название предмета в магазине', type='text', required, ng-model='item.title')
+            input.input(placeholder='Ссылка на изображение предмета в магазине', type='text', required, ng-model='item.imageUrl')
 
-          fieldset(name='ItemEnchantmentForm')
-            legend Предмет зачарован чарами:
+        fieldset
+            input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='item.material', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
+            input.input(placeholder='Название предмета в игре (необязательно)', type='text', ng-model='item.name')
+
+        fieldset(name='ItemEnchantmentForm')
+            legend Чары предмета
             style.
-              .enchantment {
-                transition:opacity .5s ease;
-              }
-              .enchantment.ui-sortable-helper {
-                opacity:.5;
-              } .enchantment.ui-sortable-helper .col-2 {
-                opacity:.0;
-              }
+                .enchantment {
+                    transition:opacity .5s ease;
+                }
+                .enchantment.ui-sortable-helper {
+                    opacity:.5;
+                } .enchantment.ui-sortable-helper .col-2 {
+                    opacity:.0;
+                }
             .enchantments(b-sortable='item.enchantments')
-              .enchantment(ng-repeat='enchantment in item.enchantments', b-sortable-item, id='{{enchantment.id}}')
-                .row.form-row
-                  .col-8
-                    label(style='cursor:ns-resize;color:#357ebd;') {{enchantment.title}}
-                  .col-2
-                    input.input(type='text', ng-model='enchantment.level')
-                  .col-2
-                    button.btn.btn-link.btn-block.text-left(ng-click='remEnchantment(enchantment)') Удалить
+                .enchantment(ng-repeat='enchantment in item.enchantments', b-sortable-item, id='{{enchantment.id}}')
+                    .row.form-row
+                        .col-8
+                            label(style='cursor:ns-resize;color:#357ebd;') {{enchantment.title}}
+                        .col-2
+                            input.input(type='text', ng-model='enchantment.level')
+                        .col-2
+                            button.btn.btn-link.btn-block.text-left(ng-click='remEnchantment(enchantment)') Удалить
             .row.form-row
-              .col-8
-                select.input(ng-model='enchantment', ng-options='e.title for e in enchantments | filterItemEnchantment:item')
-              .col-4
-                a.btn.btn-primary.btn-block.text-left(ng-click='addEnchantment(enchantment)', ng-disabled='!enchantment.id') Добавить чары на предмет
+                .col-8
+                    select.input(ng-model='enchantment', ng-options='e.title for e in enchantments | filterItemEnchantment:item')
+                .col-4
+                    a.btn.btn-primary.btn-block.text-left(ng-click='addEnchantment(enchantment)', ng-disabled='!enchantment.id') Добавить чары на предмет
 
-          fieldset(name='ItemServersForm')
+        fieldset(name='ItemServersForm')
             legend Предмет продается на серверах:
             .servers
-              style.
-                .btn-dropdown {
-                    position:relative;
-                }   .btn-dropdown:hover .dropdown-menu {
-                        display:block;
-                        position:absolute; top:0; right:0;
-                        margin:-6px; padding:5px;
-                        background:#eee;
-                        border-radius:1px;
-                        box-shadow:0 1px 3px -1px rgba(0, 0, 0, 0.3);
-                }
-                .dropdown-menu li:not(:last-child) > a{
-                  margin-bottom:1px;
-                }
-                .dropdown-menu li > a {
-                  padding:5px 15px;
-                  line-height:normal;
-                  color:#777;
-                }
-                .dropdown-menu li > a:hover {
-                  color:#333;
-                  background:#ccc;
-                }
-                .dropdown-menu li > a.selected:hover {
-                  color:#fff;
-                  background:#357ebd;
-                }
-                .menu-servers .selected {
-                  color:#eee;
-                  background:#428bca;
-                }
-                .item-servers--server {
-                  margin-top:5px;
-                  padding:12px 15px;
-                  line-height:normal;
-                  background:#eee;
-                }
-              .btn-group.btn-dropdown
-                a.btn.btn-primary Выбрать серверы
-                ul.dropdown-menu.menu-servers
-                  li(ng-repeat='server in servers')
-                   a(ng-class='{selected:server.selected}', ng-click='selectServer(server)') {{server.title}}
-              .item-servers
+                style.
+                    .btn-dropdown {
+                        position:relative;
+                    }   .btn-dropdown:hover .dropdown-menu {
+                            display:block;
+                            position:absolute; top:0; right:0;
+                            margin:-6px; padding:5px;
+                            background:#eee;
+                            border-radius:1px;
+                            box-shadow:0 1px 3px -1px rgba(0, 0, 0, 0.3);
+                    }
+                    .dropdown-menu li:not(:last-child) > a{
+                      margin-bottom:1px;
+                    }
+                    .dropdown-menu li > a {
+                      padding:5px 15px;
+                      line-height:normal;
+                      color:#777;
+                    }
+                    .dropdown-menu li > a:hover {
+                      color:#333;
+                      background:#ccc;
+                    }
+                    .dropdown-menu li > a.selected:hover {
+                      color:#fff;
+                      background:#357ebd;
+                    }
+                    .menu-servers .selected {
+                      color:#eee;
+                      background:#428bca;
+                    }
+                    .item-servers--server {
+                      margin-top:5px;
+                      padding:12px 15px;
+                      line-height:normal;
+                      background:#eee;
+                    }
+                .btn-group.btn-dropdown
+                    a.btn.btn-primary Выбрать серверы
+                    ul.dropdown-menu.menu-servers
+                        li(ng-repeat='server in servers')
+                            a(ng-class='{selected:server.selected}', ng-click='selectServer(server)') {{server.title}}
+                .item-servers
                 .item-servers--server(ng-repeat='server in item.servers')
-                  strong {{server}}
+                    strong {{server}}
 
-          .form-foot
+        fieldset.form-foot
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
-              span Добавить предмет
+                span Добавить предмет

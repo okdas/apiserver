@@ -15,7 +15,7 @@ block section-body
                 th
                 th.col-flex: .sortable: .sortable-cell Предмет в магазине
                 th
-                    button.btn.btn-info(ng-click='reloadItems()')
+                    button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
         tbody
             tr(ng-repeat='item in items')
@@ -27,9 +27,6 @@ block section-body
                     a(href='#/store/items/item/update/{{item.id}}')
                         button.btn.btn-success
                             i.icon-wrench
-
     .row
         .col-12
-            a(href='#/store/items/item/create')= 'Создать'
-
-    script: include test.coffee
+            a(href='#/store/items/item/create') Создать

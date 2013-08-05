@@ -1,48 +1,42 @@
-app= angular.module 'management', ['ngResource'], ($routeProvider) ->
+app= angular.module 'management.project'
+,   ['project.servers', 'project.store', 'project.players']
+,   ($routeProvider) ->
 
-    # Магазин
-
-    $routeProvider.when '/store',
-        templateUrl: 'partials/store/', controller: 'StoreViewCtrl'
-
-    # Магазин. Предметы
-
-    $routeProvider.when '/store/items/list',
-        templateUrl: 'partials/store/items/', controller: 'StoreItemsListCtrl'
-
-    $routeProvider.when '/store/items/item/create',
-        templateUrl: 'partials/store/items/item/forms/create/', controller: 'StoreItemsFormCtrl'
-
-    $routeProvider.when '/store/items/item/update/:itemId',
-        templateUrl: 'partials/store/items/item/forms/update/', controller: 'StoreItemsFormCtrl'
-
-    # Магазин. Чары
-
-    $routeProvider.when '/store/enchantments/list',
-        templateUrl: 'partials/store/enchantments/', controller: 'StoreEnchantmentsCtrl'
-
-    $routeProvider.when '/store/enchantments/create',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/create', controller: 'StoreEnchantmentsFormCtrl'
-
-    $routeProvider.when '/store/enchantments/:enchantmentId',
-        templateUrl:'partials/store/enchantments/enchantment/forms/update', controller:'StoreEnchantmentsFormCtrl'
+        $routeProvider.otherwise
+            redirectTo: '/'
 
 
 
-app.controller 'ViewCtrl', ($scope, $location, $http, $window) ->
-    $scope.view= {}
+###
 
-    $scope.dialog= {overlay:false}
-    $scope.showDialog= (type) ->
-        $scope.dialog.overlay= type
-    $scope.hideDialog= () ->
-        $scope.dialog.overlay= false
+Ресурсы
 
+###
 
 
 app.factory 'CurrentUser', ($resource) ->
     $resource '/api/v1/user/:action', {},
-        logout: { method:'post', params:{ action:'logout' } }
+        logout: {method:'post', params:{action:'logout'}}
+
+
+
+
+
+###
+
+Контроллеры
+
+###
+
+
+app.controller 'ViewCtrl', ($scope, $location, $http, $window) ->
+        $scope.view= {}
+
+        $scope.dialog= {overlay:false}
+        $scope.showDialog= (type) ->
+            $scope.dialog.overlay= type
+        $scope.hideDialog= () ->
+            $scope.dialog.overlay= false
 
 
 app.controller 'CurrentUserCtrl', ($scope, $window, CurrentUser) ->
@@ -52,13 +46,22 @@ app.controller 'CurrentUserCtrl', ($scope, $window, CurrentUser) ->
         $scope.toggleDropdown= () ->
             $scope.dropdown.isOpen= !$scope.dropdown.isOpen
 
-        $scope.user= $scope.locals.user or CurrentUser.get () ->
+        $scope.user= CurrentUser.get () ->
             console.log 'пользователь получен', arguments
 
         $scope.logout= () ->
             CurrentUser.logout $scope.user, () ->
                 do $window.location.reload
 
+
+
+
+
+###
+
+Директивы
+
+###
 
 
 app.directive 'bSortable', ($parse) ->
@@ -86,7 +89,6 @@ app.directive 'bSortable', ($parse) ->
     link: ($scope, $e, $a) ->
         $scope.bSortable.getter= $parse $a.bSortable
         $scope.bSortable.element= $e
-
 
 
 app.directive 'bSortableItem', ->
