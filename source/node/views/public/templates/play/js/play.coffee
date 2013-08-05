@@ -1,7 +1,7 @@
 app= angular.module 'store', ['ngResource']
 
 app.factory 'Store', ($resource) ->
-    $resource '/api/v1/store'
+    $resource '/api/v1/player/store'
 
 
 app.controller 'StoreCtrl', ['$scope', 'Store', ($scope, Store) ->

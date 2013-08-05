@@ -4,13 +4,14 @@ html(ng-app='store', ng-cloak)
     script(src='/js/libs/jquery/1.10.2/jquery.min.js')
     script(src='/js/libs/angularjs/1.1.5/angular.min.js')
     script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
-    script(src='/js/play/store.js')
+
+    include js/play.coffee
 
   body
     h1 Магазин
     hr
     .store(ng-controller='StoreCtrl')
-      form(method='post', action='/api/v1/store/order').storage
+      form(method='post', action='/api/v1/player/store/order').storage
         .storage--total
           span.storage--total-value {{total}}
           button(type='submit', ng-disabled='!total') Купить
@@ -38,4 +39,5 @@ html(ng-app='store', ng-cloak)
               input.item--amount(ng-model='amount', name='amount', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
               button.item--btn-buy(ng-click='buyItem(item)') +
         hr
+
     .view(ng-view)
