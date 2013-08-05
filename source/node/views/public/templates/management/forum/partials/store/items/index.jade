@@ -1,0 +1,32 @@
+extends ../../layout
+
+block section-head-title
+  a(href='#/store') Управление магазином
+
+block section-head-nav
+    ul.nav.nav-row
+        li.active: a Предметы
+        li: a(href='#/store/enchantments/list') Чары
+
+block section-body
+    table.table.items
+        thead
+            tr
+                th
+                th.col-flex: .sortable: .sortable-cell Предмет в магазине
+                th
+                    button.btn.btn-info(ng-click='reload()')
+                        i.icon-refresh
+        tbody
+            tr(ng-repeat='item in items')
+                td {{item.id}}
+                td
+                    img.img(ng-src='{{item.imageUrl}}')
+                    a(ng-click='showDetails(item)') {{item.title}}
+                td
+                    a(href='#/store/items/item/update/{{item.id}}')
+                        button.btn.btn-success
+                            i.icon-wrench
+    .row
+        .col-12
+            a(href='#/store/items/item/create') Создать
