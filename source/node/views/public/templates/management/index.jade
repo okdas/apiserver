@@ -48,11 +48,11 @@ html(ng-app='management')
 
                 $scope.user= new CurrentUser();
 
-                $scope.send= function (form) {
-                    $scope.user.$login(function () {
-                        $scope.hide();
-                        $window.location.replace($scope.referer);
-                        $window.location.reload(true);
+                $scope.login= function (loginForm) {
+                    $scope.user.$login(function (user) {
+                        user.pass= loginForm.password.$modelValue;
+                        $window.location.href= 'project/';
+                        //$window.location.reload(true);
                     }, function () {
                         $scope.user.password= '';
                     });
@@ -109,9 +109,9 @@ html(ng-app='management')
 
                                 .row: .col-8.col-offset-2
 
-                                    form.form-large(name='loginForm', ng-submit='send(loginForm)').dialog-form
-                                        input.input(type='text', name='username', placeholder='Пользователь', required, ng-model='user.username')
-                                        input.input(type='password', name='password', placeholder='Пароль', required, ng-model='user.password')
+                                    form.form-large(name='loginForm', ng-submit='login(loginForm)').dialog-form
+                                        input.input(type='text', name='username', placeholder='Пользователь', required, ng-model='user.name')
+                                        input.input(type='password', name='password', placeholder='Пароль', required, ng-model='user.pass')
 
                                         .form-actions
                                             button.btn.btn-primary(type='submit', ng-disabled='!loginForm.$valid')

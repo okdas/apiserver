@@ -2,39 +2,6 @@ module.exports= (app) ->
 
     ###
 
-    Интерфейс системы управления
-
-    ###
-
-    app.get '/', (req, res, next) ->
-        res.redirect '/management/'
-
-    ###
-    Интерфейс аутентификации в системе управления
-    ###
-    app.get '/management/*', (req, res, next) ->
-        return do next if do req.isAuthenticated
-        return res.render 'management'
-
-    ###
-    Интерфейс управления проектом
-    ###
-    app.get '/management/', (req, res, next) ->
-        res.locals
-            user: req.user
-        return res.render 'management/project'
-
-    ###
-    Интерфейс управления системой
-    ###
-    app.get '/management/engine/', (req, res, next) ->
-        res.locals
-            user: req.user
-        return res.render 'management/engine'
-
-
-    ###
-
     Пользователи
 
     ###
@@ -96,40 +63,6 @@ module.exports= (app) ->
     ,   require './Api/V1/Minecraft/Store/Items'
 
 
-
-
-
-    ###
-
-    Интерфейс игрока
-
-    ###
-
-    ###
-    Интерфейс аутентификации в личном кабинете
-    ###
-    app.get '/play/', (req, res, next) ->
-        res.locals
-            user: req.user
-        return res.render 'play'
-
-    ###
-    Интерфейс личного кабинета
-    ###
-    app.get '/play/player', (req, res, next) ->
-        res.locals
-            user: req.user
-        return res.render 'play/player'
-
-    ###
-    Интерфейс магазина
-    ###
-    app.get '/play/store', (req, res, next) ->
-        res.locals
-            user: req.user
-        return res.render 'play/store'
-
-
     ###
 
     Игрок
@@ -148,9 +81,11 @@ module.exports= (app) ->
     app.use '/api/v1/store'
     ,   require './Api/V1/Minecraft/Store'
 
-    app.get '/test', (req, res, next) ->
-        res.render 'test.jade'
 
+    ###
+    Ищем сервер по переданному ключу key
+    ###
+    app.use '/api/v1/server', require './Api/V1/Minecraft/MiddlewareSecret'
 
 
     app.use '/api/v1/forum/forum', require './Api/V1/Forum/Forum'

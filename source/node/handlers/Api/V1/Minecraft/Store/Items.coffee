@@ -51,10 +51,33 @@ app.get '/:itemId', (req, res, next) ->
                     return done err, conn, item
 
         (conn, item, done) ->
-            conn.query 'SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level` FROM store_item_enchantments as ie JOIN store_enchantment as e ON ie.enchantmentId = e.id WHERE itemId = ? ORDER BY ie.order'
+            conn.query "
+                SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level`
+                FROM store_item_enchantments as ie
+                JOIN store_enchantment as e
+                    ON ie.enchantmentId = e.id
+                WHERE ie.itemId = ?
+                ORDER BY ie.order
+                "
             ,   [req.params.itemId]
             ,   (err, resp) ->
                     item.enchantments= resp
+                    return done err, conn, item
+
+        (conn, item, done) ->
+            conn.query "
+                SELECT
+                    Server.`id`,
+                    Server.`name`,
+                    Server.`title`
+                FROM store_item_servers as StoreItem
+                JOIN server as Server
+                    ON StoreItem.serverId = Server.id
+                WHERE StoreItem.itemId = ?
+                "
+            ,   [req.params.itemId]
+            ,   (err, resp) ->
+                    item.servers= resp
                     return done err, conn, item
 
     ],  (err, conn, item) ->
@@ -85,7 +108,9 @@ app.post '/', (req, res, next) ->
                 title: req.body.title
                 imageUrl: req.body.imageUrl
                 material: req.body.material
-            conn.query 'INSERT INTO store_item SET ?'
+            conn.query "
+                INSERT INTO store_item SET ?
+                "
             ,   [data]
             ,   (err, resp) ->
                     id= resp.insertId if not err
@@ -95,11 +120,27 @@ app.post '/', (req, res, next) ->
             bulk= []
             for enchantment, order in req.body.enchantments
                 bulk.push [id, enchantment.id, enchantment.level, order]
-            conn.query 'INSERT INTO store_item_enchantments (`itemId`, `enchantmentId`, `level`, `order`) VALUES ?'
+            conn.query "
+                INSERT INTO store_item_enchantments
+                    (`itemId`, `enchantmentId`, `level`, `order`)
+                VALUES ?
+                "
+            ,   [bulk]
+            ,   (err, resp) ->
+                    return done err, conn, id
+
+        (conn, id, done) ->
+            bulk= []
+            for server in req.body.servers
+                bulk.push [id, server.id]
+            conn.query "
+                INSERT INTO store_item_servers
+                    (`itemId`, `serverId`)
+                VALUES ?
+                "
             ,   [bulk]
             ,   (err, resp) ->
                     return done err, conn
-
 
         (conn, done) ->
             conn.query 'COMMIT', (err) ->
@@ -118,6 +159,17 @@ app.post '/', (req, res, next) ->
 ###
 app.put '/:itemId', (req, res, next) ->
 
+    itemId= req.params.itemId
+    delete req.body.id
+
+    item= req.body
+
+    enchantments= item.enchantments or []
+    delete item.enchantments
+
+    servers= item.servers or []
+    delete item.servers
+
     async.waterfall [
 
         (done) ->
@@ -129,29 +181,44 @@ app.put '/:itemId', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            if req.body.enchantments
-                (enchantments= req.body.enchantments) and delete req.body.enchantments
             conn.query 'UPDATE store_item SET ? WHERE id = ?'
-            ,   [req.body, req.params.itemId]
+            ,   [item, itemId]
             ,   (err, resp) ->
-                    if enchantments
-                        req.body.enchantments= enchantments
+                    console.log arguments
                     return done err, conn
 
         (conn, done) ->
             conn.query 'DELETE FROM store_item_enchantments WHERE itemId = ?'
-            ,   [req.params.itemId]
+            ,   [itemId]
             ,   (err, resp) ->
-                    return done err, conn
+                    return done err, conn if err
+                    return done err, conn if not enchantments.length
+
+                    bulk= []
+                    for enchantment, order in enchantments
+                        bulk.push [itemId, enchantment.id, enchantment.level, order]
+                    conn.query "
+                        INSERT INTO store_item_enchantments (`itemId`, `enchantmentId`, `level`, `order`) VALUES ?
+                        "
+                    ,   [bulk]
+                    ,   (err, resp) ->
+                            return done err, conn
 
         (conn, done) ->
-            bulk= []
-            for enchantment, order in req.body.enchantments
-                bulk.push [req.params.itemId, enchantment.id, enchantment.level, order]
-            conn.query 'INSERT INTO store_item_enchantments (`itemId`, `enchantmentId`, `level`, `order`) VALUES ?'
-            ,   [bulk]
+            conn.query 'DELETE FROM store_item_servers WHERE itemId = ?'
+            ,   [itemId]
             ,   (err, resp) ->
-                    return done err, conn
+                    return done err, conn if err
+                    return done err, conn if not servers.length
+
+                    bulk= []
+                    for server in servers
+                        bulk.push [itemId, server.id]
+                    conn.query 'INSERT INTO store_item_servers (`itemId`, `serverId`) VALUES ?'
+                    ,   [bulk]
+                    ,   (err, resp) ->
+                            return done err, conn
+
 
         (conn, done) ->
             conn.query 'COMMIT', (err) ->

@@ -12,6 +12,8 @@ module.exports= (cfg, log, done) ->
     ###
     app= do express
 
+    app.use do express.compress
+
 
     ###
     Конфиг приложения
@@ -56,57 +58,22 @@ module.exports= (cfg, log, done) ->
             do next
 
 
-    ###
-    Прослойки приложения
-    ###
-    app.configure ->
-
-        app.use do express.compress
-
-        # Публичные файлы
-        app.use express.static "#{__dirname}/views/public/templates"
-        app.use express.static "#{__dirname}/views/public"
-
-        app.use do express.bodyParser
-
-        app.use do express.cookieParser
-
-        app.use do express.methodOverride
-
-        # Шаблоны вида
-        app.set 'views', "#{__dirname}/views/templates"
-        app.set 'view engine', 'jade'
-
-
-    ###
-    База данных приложения
-    ###
-    maria= require 'mysql'
-
-    app.configure ->
-        config= app.get 'config'
-
-        app.db= maria.createPool config.db
-
-        app.use (req, res, next) ->
-            req.db= app.db
-            return do next
-
 
     passport= require 'passport'
 
     passport.serializeUser (user, done) ->
-        done null, user.username
+        done null, user
 
-    passport.deserializeUser (username, done) ->
-        done null,
-            username: username
+    passport.deserializeUser (id, done) ->
+        done null, id
 
 
     ###
     Сессии пользователей приложения
     ###
     app.configure ->
+        app.use do express.cookieParser
+
         #MariaStore= require('connect-mysql-session')(express)
         #handler= express.session
         #    secret: 'apiserver'
@@ -125,6 +92,46 @@ module.exports= (cfg, log, done) ->
         handler= do passport.session
         app.use '/management', handler
         app.use '/api', handler
+
+
+    app.get '/management/', (req, res, next) ->
+        return do next if do req.isUnauthenticated
+        return res.redirect '/management/project/'
+
+    app.get '/management/project/', (req, res, next) ->
+        return do next if do req.isAuthenticated
+        return res.redirect '/management/'
+
+    app.get '/management/engine/', (req, res, next) ->
+        return do next if do req.isAuthenticated
+        return res.redirect '/management/'
+
+
+    ###
+    Прослойки приложения
+    ###
+    app.configure ->
+
+        # Публичные файлы
+        app.use express.static "#{__dirname}/views/public/templates"
+        app.use express.static "#{__dirname}/views/public"
+
+        app.use do express.bodyParser
+
+
+    ###
+    База данных приложения
+    ###
+    maria= require 'mysql'
+
+    app.configure ->
+        config= app.get 'config'
+
+        app.db= maria.createPool config.db
+
+        app.use (req, res, next) ->
+            req.db= app.db
+            return do next
 
 
     ###

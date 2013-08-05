@@ -1,5 +1,5 @@
 !!! html
-html(ng-app='management', ng-cloak)
+html(ng-app='management.project', ng-cloak)
 
     head
 
@@ -11,23 +11,11 @@ html(ng-app='management', ng-cloak)
         script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
         script(src='/js/libs/jquery-ui-1.10.3.custom.min.js')
 
+        include js/players/players.coffee
+        include js/servers/servers.coffee
+        include js/store/store.coffee
+        include js/project.coffee
 
-
-        script(src='/js/management/project/players/app.js')
-        script(src='/js/management/project/store/app.js')
-        script(src='/js/management/project/servers/app.js')
-
-        script(src='/js/management/project/app.js')
-
-        script(src='/js/management/app.js')
-
-
-
-
-
-
-
-    - var localsJson= JSON.stringify({user: user});
     body(ng-controller='ViewCtrl', ng-cloak, ng-init='locals=#{localsJson}')
 
         header.header
@@ -51,7 +39,7 @@ html(ng-app='management', ng-cloak)
 
                         ul.nav.navbar-nav.pull-right
 
-                            li: a(href='engine/') Управление системой
+                            li: a(href='../engine/') Управление системой
 
                             li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
 
@@ -78,4 +66,3 @@ html(ng-app='management', ng-cloak)
             .container: .row: .col-12.dialog-container(ng-include='dialog.templateUrl')
 
         .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')
-
