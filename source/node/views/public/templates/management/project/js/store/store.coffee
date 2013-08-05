@@ -8,24 +8,24 @@ app= angular.module 'project.store', ['ngResource'], ($routeProvider) ->
     # Магазин. Предметы
 
     $routeProvider.when '/store/items/list',
-        templateUrl: 'partials/store/items/', controller: 'StoreItemsListCtrl'
+        templateUrl: 'partials/store/items/', controller: 'StoreItemListCtrl'
 
     $routeProvider.when '/store/items/item/create',
-        templateUrl: 'partials/store/items/item/forms/create/', controller: 'StoreItemsFormCtrl'
+        templateUrl: 'partials/store/items/item/forms/create/', controller: 'StoreItemFormCtrl'
 
     $routeProvider.when '/store/items/item/update/:itemId',
-        templateUrl: 'partials/store/items/item/forms/update/', controller: 'StoreItemsFormCtrl'
+        templateUrl: 'partials/store/items/item/forms/update/', controller: 'StoreItemFormCtrl'
 
     # Магазин. Чары
 
     $routeProvider.when '/store/enchantments/list',
-        templateUrl: 'partials/store/enchantments/', controller: 'StoreEnchantmentsCtrl'
+        templateUrl: 'partials/store/enchantments/', controller: 'StoreEnchantmentCtrl'
 
     $routeProvider.when '/store/enchantments/enchantment/create',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/create', controller: 'StoreEnchantmentsFormCtrl'
+        templateUrl: 'partials/store/enchantments/enchantment/forms/create', controller: 'StoreEnchantmentFormCtrl'
 
     $routeProvider.when '/store/enchantments/enchantment/update/:enchantmentId',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/update', controller:'StoreEnchantmentsFormCtrl'
+        templateUrl: 'partials/store/enchantments/enchantment/forms/update', controller: 'StoreEnchantmentFormCtrl'
 
 
 
@@ -58,6 +58,36 @@ app.factory 'Item', ($resource) ->
             method:'delete'
             params:
                 itemId:'@id'
+
+
+app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
+
+    @loadEnchantments= () ->
+        dfd= do $q.defer
+        Enchantment.query (enchantments) ->
+            dfd.resolve enchantments
+        dfd.promise
+
+    @loadServers= () ->
+        dfd= do $q.defer
+        Server.query (servers) ->
+            dfd.resolve servers
+        dfd.promise
+
+    @load= () =>
+        dfd= do $q.defer
+        result= $q.all [
+            @loadEnchantments()
+            @loadServers()
+        ]
+        result.then (data) ->
+            data=
+                enchantments: data[0]
+                servers: data[1]
+            dfd.resolve data
+        dfd.promise
+
+    @
 
 
 ###
@@ -126,7 +156,7 @@ app.controller 'StoreDashboardCtrl', ($scope) ->
 ###
 Контроллер списка предметов.
 ###
-app.controller 'StoreItemsListCtrl', ($scope, $location, Item) ->
+app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
     $scope.items= {}
     $scope.state= 'load'
 
@@ -153,23 +183,27 @@ app.controller 'StoreItemsListCtrl', ($scope, $location, Item) ->
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemsFormCtrl', ($scope, $route, $location, Item, Enchantment) ->
+app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Enchantment, ItemForm) ->
     $scope.errors= {}
     $scope.enchantment= {}
     $scope.state= 'load'
 
-    if $route.current.params.itemId
-        $scope.item= Item.get $route.current.params, ->
+    $scope.form= do ItemForm.load
+    $scope.form.then (form) ->
+        console.log 'form loaded', form
+
+        $scope.enchantments= form.enchantments
+        $scope.servers= form.servers
+
+        if $route.current.params.itemId
+            $scope.item= Item.get $route.current.params, ->
+                $scope.state= 'loaded'
+        else
+            $scope.item= new Item
+            $scope.item.enchantments= []
             $scope.state= 'loaded'
-            console.log arguments
-    else
-        $scope.item= new Item
-        $scope.item.enchantments= []
-        $scope.state= 'loaded'
 
     # Чары предмета
-
-    $scope.enchantments= Enchantment.query ->
 
     $scope.addEnchantment= (enchantment) ->
         return if not $scope.enchantment
@@ -210,7 +244,7 @@ app.controller 'StoreItemsFormCtrl', ($scope, $route, $location, Item, Enchantme
 ###
 Контроллер списка чар.
 ###
-app.controller 'StoreEnchantmentsCtrl', ($scope, $location, Enchantment) ->
+app.controller 'StoreEnchantmentCtrl', ($scope, $location, Enchantment) ->
     $scope.enchantments= {}
     $scope.state= 'load'
 
@@ -241,7 +275,7 @@ app.controller 'StoreEnchantmentsCtrl', ($scope, $location, Enchantment) ->
 ###
 Контроллер формы чар.
 ###
-app.controller 'StoreEnchantmentsFormCtrl', ($scope, $route, $location, Enchantment) ->
+app.controller 'StoreEnchantmentFormCtrl', ($scope, $route, $location, Enchantment) ->
     $scope.errors= {}
     $scope.state= 'load'
 
