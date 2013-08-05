@@ -30,14 +30,14 @@ app.get '/', (req, res, next) ->
 Выполняет вход пользователя.
 ###
 app.post '/login', (req, res, next) ->
-    username= req.body.username
-    password= req.body.password
+    username= req.body.name
+    password= req.body.pass
 
     req.db.getConnection (err, connection) ->
         return next err if err
 
-        connection.query 'SELECT * FROM users_user WHERE username = ?'
-        ,   [req.body.username]
+        connection.query 'SELECT * FROM users_user WHERE name = ?'
+        ,   [username]
         ,   (err, rows) ->
                 do connection.end
 
@@ -45,7 +45,9 @@ app.post '/login', (req, res, next) ->
                 return res.json 400, null if not rows.length
 
                 user= do rows.shift
-                return res.json 400, null if user.password != sha1 password
+                return res.json 400, null if user.pass != sha1 password
+
+                delete user.password
 
                 req.login user, (err) ->
                     return next err if err
