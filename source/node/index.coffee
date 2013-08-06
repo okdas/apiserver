@@ -78,7 +78,13 @@ module.exports= (cfg, log, done) ->
             return do next
 
 
-    handlers= require './handlers'
+    ###
+    Обработчики маршрутов приложения
+    ###
+    app.configure ->
+        config= app.get 'config'
 
-    app.use App.vhost 'play.local.awesome39.com', do handlers.play
-    app.use App.vhost 'management.local.awesome39.com', do handlers.management
+        handlers= require './handlers'
+
+        app.use App.vhost "play.#{config.host}", do handlers.play
+        app.use App.vhost "management.#{config.host}", do handlers.management
