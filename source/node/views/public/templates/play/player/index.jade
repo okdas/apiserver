@@ -22,5 +22,7 @@ append header
       .nav-collapse.collapse
         ul.nav.navbar-nav
           li: a(href='#/store') Магазин
+        ul.nav.navbar-nav
+          li: a(href='#/storage') Склад
         ul.nav.navbar-nav.pull-right
-          li(ng-if='player'): a(href='') {{player.name}}
+          li(ng-if='player'): a(href='', ng-click='logout()') {{player.name}}

@@ -1,0 +1,10 @@
+extends ./layout
+
+block section-head-title
+  span Добро пожаловать на склад
+
+block section-body
+  h3 История покупок
+  .storage--orderList
+    .storage--order(ng-repeat='order in orders')
+      a(ng-href='#/store/order/{{order.id}}') {{order}}

@@ -7,15 +7,19 @@ app= angular.module 'play', ['ngResource'], ($routeProvider) ->
         templateUrl: 'partials/store/', controller: 'StoreCtrl'
 
     $routeProvider.when '/store/:server',
-        templateUrl: 'partials/store/', controller: 'StoreCtrl'
+        templateUrl: 'partials/store/server/', controller: 'StoreServerCtrl'
 
-    $routeProvider.when '/store/order',
-        templateUrl: 'partials/store/order/:orderId', controller: 'StoreOrderCtrl'
+    $routeProvider.when '/store/order/:orderId',
+        templateUrl: 'partials/store/order/', controller: 'StoreOrderCtrl'
+
+    $routeProvider.when '/storage',
+        templateUrl: 'partials/storage/', controller: 'StorageCtrl'
 
 
 app.factory 'Player', ($resource) ->
     $resource '/api/v1/player/:action', {},
         login: {method:'post', params:{action:'login'}}
+        logout: {method:'post', params:{action:'logout'}}
 
 
 app.factory 'Store', ($resource) ->
@@ -30,23 +34,22 @@ app.factory 'StoreOrder', ($resource) ->
         create: {method:'post'}
 
 
-app.controller 'ViewCtrl', ($scope, $location, Player) ->
-        $scope.dialog=
-            overlay: null
+app.controller 'ViewCtrl', ($scope, $location, $window, Player, Store, StoreOrder) ->
+    $scope.dialog=
+        overlay: null
 
-        $scope.player= Player.get () ->
-
-        $scope.showDialog= () ->
-            $scope.dialog.overlay= true
-
-        $scope.hideDialog= () ->
-            $scope.dialog.overlay= null
+    $scope.player= Player.get () ->
+    $scope.logout= () ->
+        $scope.player.$logout () ->
+            $window.location.href= '../'
 
 
-app.controller 'PlayerCtrl', ($scope, Player) ->
+    $scope.showDialog= () ->
+        $scope.dialog.overlay= true
 
+    $scope.hideDialog= () ->
+        $scope.dialog.overlay= null
 
-app.controller 'StoreCtrl', ['$scope', '$location', 'Store', 'StoreOrder', ($scope, $location, Store, StoreOrder) ->
     $scope.state= 'load'
 
     $scope.total= 0
@@ -54,7 +57,10 @@ app.controller 'StoreCtrl', ['$scope', '$location', 'Store', 'StoreOrder', ($sco
         $scope.state= 'loaded'
 
     $scope.updateTotal= (value) =>
-        $scope.total= Math.round(($scope.total + value) * 100) / 100
+        $scope.total= 0
+        for server in $scope.store.servers
+            total= server.storage.total
+            $scope.total= Math.round(($scope.total + total) * 100) / 100
 
     $scope.order= () ->
         order=
@@ -66,16 +72,33 @@ app.controller 'StoreCtrl', ['$scope', '$location', 'Store', 'StoreOrder', ($sco
                 id: server.id
                 items: server.storage.items
         StoreOrder.create order, (order) ->
-            console.log 'заказ создан'
             $location.path "/store/order/#{order.id}"
+
+
+app.controller 'PlayerCtrl', ($scope, Player) ->
+
+
+app.controller 'StoreCtrl', ['$scope', '$location', 'Store', 'StoreOrder', ($scope, $location, Store, StoreOrder) ->
+
+]
+
+
+app.controller 'StoreServerCtrl', ['$scope', '$route', 'Store', ($scope, $route, Store) ->
+    $scope.server= null
+    $scope.store.$then () ->
+        for server in $scope.store.servers
+            if server.name == $route.current.params.server
+                $scope.server= server
+                break
+
 ]
 
 
 app.controller 'ServerStorageCtrl', ['$scope', ($scope) ->
     $scope.server.storage.total= 0
 
-    $scope.$watch 'server.storage.total', (newVal, oldVal) ->
-        $scope.$parent.updateTotal newVal - oldVal
+    $scope.$watch 'server.storage.total', () ->
+        do $scope.$parent.updateTotal
 
     $scope.$watchCollection 'server.storage.items', (items) ->
         $scope.server.storage.total= 0
@@ -125,4 +148,27 @@ app.controller 'ServerStoreItemCtrl', ['$scope', ($scope) ->
         amount= (found.amount|0) + ($scope.amount|0)
         found.amount= if amount > 99999 then 99999 else amount
         #$scope.amount= 1
+]
+
+
+app.controller 'StorageCtrl', ['$scope', '$route', 'StoreOrder', ($scope, $route, StoreOrder) ->
+    $scope.state= 'load'
+
+    $scope.orders= StoreOrder.query () ->
+        $scope.state= 'loaded'
+
+    $scope.server= null
+    $scope.store.$then () ->
+        for server in $scope.store.servers
+            if server.name == $route.current.params.server
+                $scope.server= server
+                break
+
+]
+
+
+app.controller 'StoreOrderCtrl', ['$scope', '$route', 'StoreOrder', ($scope, $route, StoreOrder) ->
+    $scope.state= 'load'
+    $scope.order= StoreOrder.get $route.current.params, (order) ->
+        $scope.state= 'loaded'
 ]
