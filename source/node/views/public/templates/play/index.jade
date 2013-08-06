@@ -1,43 +1,41 @@
 !!!
-html(ng-app='store', ng-cloak)
+html(ng-app='play', ng-cloak)
   head
+
+    link(rel='stylesheet', href='/css/bootcraft.css')
+
     script(src='/js/libs/jquery/1.10.2/jquery.min.js')
     script(src='/js/libs/angularjs/1.1.5/angular.min.js')
     script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
 
     include js/play.coffee
 
-  body
-    h1 Магазин
-    hr
-    .store(ng-controller='StoreCtrl')
-      form(method='post', action='/api/v1/player/store/order').storage
-        .storage--total
-          span.storage--total-value {{total}}
-          button(type='submit', ng-disabled='!total') Купить
-        .storage--serverList(ng-repeat='server in store.servers', ng-controller='ServerStorageCtrl')
-          input(type='hidden', ng-init="s= $index", name='servers[{{s}}][id]', value='{{server.id}}')
-          .storage--server
-            h3.storage--server-title {{server.name}}
-            .storage--items
-              .storage--item(ng-repeat='item in server.storage.items', ng-controller='ServerStorageItemCtrl as StorageItem')
-                input(type='hidden', ng-init="i= $index", name='servers[{{s}}][items[{{i}}][id]', value='{{item.id}}')
-                img.item--image(ng-src='item.imgUrl')
-                span.item--title {{item.title}}
-                input.item--amount(ng-model='item.amount', name='servers[{{s}}][items[{{i}}][amount]', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
-                button.item--btn-del(ng-click='remItem(item)') -
-            .server--storage-total {{server.storage.total}}
-      hr
-      hr
-      .servers(ng-repeat='server in store.servers', ng-controller='ServerStoreCtrl')
-        .server
-          .server--title {{server.name}}
-          .server--items
-            .server--item(ng-repeat='item in server.store.items', ng-controller='ServerStoreItemCtrl as StoreItem')
-              img.item--image(ng-src='item.imgUrl')
-              span.item--title {{item.title}}
-              input.item--amount(ng-model='amount', name='amount', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
-              button.item--btn-buy(ng-click='buyItem(item)') +
-        hr
+    script(type='text/ng-template', id='partials/'): include partials/index
+    script(type='text/ng-template', id='partials/login/dialog/'): include partials/login/dialog/index
 
-    .view(ng-view)
+  body(ng-controller='ViewCtrl')
+
+    header
+      style.
+        html {
+          background:#563d7c;
+          background-image:none;
+        }
+        .navbar {
+          background-color:#563d7c;
+        }
+      .navbar.navbar-inverse.navbar-static-top
+        .container
+          a.navbar-brand(href='./')
+            span FLYDEV
+          .nav-collapse.collapse
+            ul.nav.navbar-nav.pull-right
+              li: a(href='#/login') Контрольно-пропускной пункт
+
+    .view.view-outer(ng-view)
+
+    .dialog(ng-if='dialog.overlay', ng-animate='"dialog"')
+        .dialog-bg(ng-click='hideDialog()')
+        .container: .row: .col-12.dialog-container(ng-include='dialog.templateUrl')
+
+    .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')
