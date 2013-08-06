@@ -1,6 +1,9 @@
 express= require 'express'
+async= require 'async'
 
-
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
 
 crypto= require 'crypto'
 sha1= (string) ->
@@ -20,7 +23,7 @@ app= module.exports= do express
 ###
 Отдает аутентифицированного пользователя.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     return res.json 401, null if do req.isUnauthenticated
     return res.json 200, req.user
 
@@ -71,7 +74,7 @@ app.post '/login', (req, res, next) ->
 ###
 Выполняет выход пользователя.
 ###
-app.post '/logout', (req, res, next) ->
+app.post '/logout', access, (req, res, next) ->
     return res.json 400, null if req.user.name != req.body.name
 
     do req.logout

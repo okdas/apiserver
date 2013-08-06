@@ -68,18 +68,17 @@ exports.management= () ->
     app.use do passport.session
 
 
-    app.get '/management/', (req, res, next) ->
-        console.log 'auth user', req.session
+    app.get '/', (req, res, next) ->
         return do next if do req.isUnauthenticated
-        return res.redirect '/management/project/'
+        return res.redirect '/project/'
 
-    app.get '/management/project', (req, res, next) ->
+    app.get '/project', (req, res, next) ->
         return do next if do req.isAuthenticated
-        return res.redirect '/management/'
+        return res.redirect '/'
 
-    app.get '/management/engine', (req, res, next) ->
+    app.get '/engine', (req, res, next) ->
         return do next if do req.isAuthenticated
-        return res.redirect '/management/'
+        return res.redirect '/'
 
 
     app.use App.static "#{__dirname}/../views/public/templates/management"

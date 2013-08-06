@@ -1,5 +1,8 @@
 express= require 'express'
 
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
 
 
 ###
@@ -12,7 +15,7 @@ app= module.exports= do express
 ###
 Отдает список чар.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -28,7 +31,7 @@ app.get '/', (req, res, next) ->
 ###
 Добавляет чару.
 ###
-app.post '/', (req, res, next) ->
+app.post '/', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -46,7 +49,7 @@ app.post '/', (req, res, next) ->
 ###
 Отдает чару.
 ###
-app.get '/:enchantmentId', (req, res, next) ->
+app.get '/:enchantmentId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -64,7 +67,7 @@ app.get '/:enchantmentId', (req, res, next) ->
 ###
 Обновляет чару.
 ###
-app.patch '/:enchantmentId', (req, res, next) ->
+app.patch '/:enchantmentId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -81,7 +84,7 @@ app.patch '/:enchantmentId', (req, res, next) ->
 ###
 Удаляет чару.
 ###
-app.delete '/:enchantmentId', (req, res, next) ->
+app.delete '/:enchantmentId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 

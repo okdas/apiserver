@@ -1,5 +1,8 @@
 express= require 'express'
 
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
 
 
 ###
@@ -12,7 +15,7 @@ app= module.exports= do express
 ###
 Отдает список пользователей.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -28,7 +31,7 @@ app.get '/', (req, res, next) ->
 ###
 Добавляет пользователя.
 ###
-app.post '/', (req, res, next) ->
+app.post '/', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -46,7 +49,7 @@ app.post '/', (req, res, next) ->
 ###
 Отдает пользователя.
 ###
-app.get '/user/:userId', (req, res, next) ->
+app.get '/user/:userId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -64,7 +67,7 @@ app.get '/user/:userId', (req, res, next) ->
 ###
 Обновляет пользователя.
 ###
-app.patch '/user/:userId', (req, res, next) ->
+app.patch '/user/:userId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -82,7 +85,7 @@ app.patch '/user/:userId', (req, res, next) ->
 ###
 Удаляет пользователя.
 ###
-app.delete '/user/:userId', (req, res, next) ->
+app.delete '/user/:userId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 

@@ -1,6 +1,10 @@
 express= require 'express'
 async= require 'async'
 
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
+
 ###
 Методы API для работы c заказами магазина.
 ###
@@ -11,7 +15,7 @@ app= module.exports= do express
 ###
 Отдает список заказов.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->

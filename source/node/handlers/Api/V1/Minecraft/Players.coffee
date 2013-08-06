@@ -1,7 +1,9 @@
 express= require 'express'
 async= require 'async'
 
-
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
 
 ###
 Методы API для работы c игроками.
@@ -12,7 +14,7 @@ app= module.exports= do express
 ###
 Отдает список разрешений.
 ###
-app.get '/permissions', (req, res, next) ->
+app.get '/permissions', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -76,7 +78,7 @@ app.get '/permissions', (req, res, next) ->
 ###
 Отдает список игроков.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -119,7 +121,7 @@ app.get '/', (req, res, next) ->
 ###
 Отдает игрока.
 ###
-app.get '/:playerId', (req, res, next) ->
+app.get '/:playerId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -145,7 +147,7 @@ app.get '/:playerId', (req, res, next) ->
 ###
 Добавляет игрока.
 ###
-app.post '/', (req, res, next) ->
+app.post '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
