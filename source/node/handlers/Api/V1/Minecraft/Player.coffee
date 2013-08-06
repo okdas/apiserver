@@ -1,6 +1,12 @@
 express= require 'express'
 async= require 'async'
 
+crypto= require 'crypto'
+sha1= (string) ->
+    hash= crypto.createHash 'sha1'
+    hash.update string
+    return hash.digest 'hex'
+
 ###
 Методы API для работы c аутентифицированным игроком.
 ###
@@ -32,6 +38,59 @@ app.get '/', (req, res, next) ->
             return next err if err
             return res.render 'play/player',
                 player: player
+
+
+
+###
+Выполняет вход игрока.
+###
+app.post '/login', (req, res, next) ->
+
+    name= req.body.name
+    pass= sha1 req.body.pass
+
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query "
+                SELECT
+                    p.id,
+                    p.name
+                FROM
+                    player as p
+                WHERE
+                    name = ?
+                    AND pass = ?
+                "
+            ,   [name, pass]
+            ,   (err, rows) ->
+                    player= do rows.shift if not err
+                    return done err, conn, player
+
+    ],  (err, conn, player) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 400, player if not player
+
+            req.login player, (err) ->
+                return next err if err
+                return res.json 200, player
+
+
+
+###
+Выполняет выход игрока.
+###
+app.post '/logout', (req, res, next) ->
+    return res.json 400, null if req.user.username != req.body.name
+
+    do req.logout
+    return res.json 200, true
 
 
 

@@ -30,28 +30,41 @@ app.get '/', (req, res, next) ->
 Выполняет вход пользователя.
 ###
 app.post '/login', (req, res, next) ->
-    username= req.body.name
-    password= req.body.pass
 
-    req.db.getConnection (err, connection) ->
-        return next err if err
+    name= req.body.name
+    pass= sha1 req.body.pass
 
-        connection.query 'SELECT * FROM users_user WHERE name = ?'
-        ,   [username]
-        ,   (err, rows) ->
-                do connection.end
+    async.waterfall [
 
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query "
+                SELECT
+                    u.id,
+                    u.name
+                FROM
+                    users_user as u
+                WHERE
+                    name = ?
+                    AND pass = ?
+                "
+            ,   [name, pass]
+            ,   (err, rows) ->
+                    user= do rows.shift if not err
+                    return done err, conn, user
+
+    ],  (err, conn, user) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 400, user if not user
+
+            req.login user, (err) ->
                 return next err if err
-                return res.json 400, null if not rows.length
-
-                user= do rows.shift
-                return res.json 400, null if user.pass != sha1 password
-
-                delete user.password
-
-                req.login user, (err) ->
-                    return next err if err
-                    return res.json 200, user
+                return res.json 200, user
 
 
 
@@ -59,10 +72,7 @@ app.post '/login', (req, res, next) ->
 Выполняет выход пользователя.
 ###
 app.post '/logout', (req, res, next) ->
-    return res.json 401, null if do req.isUnauthenticated
-
-    username= req.body.username
-    return res.json 400, null if req.user.username != username
+    return res.json 400, null if req.user.name != req.body.name
 
     do req.logout
     return res.json 200, true
