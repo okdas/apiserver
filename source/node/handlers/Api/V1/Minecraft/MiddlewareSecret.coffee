@@ -10,7 +10,7 @@ module.exports= (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM server_instance WHERE `key` = ?'
+            conn.query 'SELECT * FROM server WHERE `key` = ?'
             ,   [req.query.key]
             ,   (err, resp) ->
                     server= do resp.shift if not err
