@@ -64,7 +64,9 @@ dependencies:
 
     passport: latest
 
+    socket.io: latest
     connect-redis: latest
+
     redis: latest
     mysql: latest
 
