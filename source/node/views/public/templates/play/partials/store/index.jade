@@ -1,16 +1,19 @@
-!!!
-html(ng-app='store', ng-cloak)
-  head
-    script(src='/js/libs/jquery/1.10.2/jquery.min.js')
-    script(src='/js/libs/angularjs/1.1.5/angular.min.js')
-    script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
-    script(src='/js/play/store.js')
-
-  body
-    h1 Магазин
-    hr
-    .store(ng-controller='StoreCtrl')
-      form(method='post', action='/api/v1/store/order').storage
+h1 Магазин
+hr
+.container(ng-controller='StoreCtrl')
+  .row
+    .col-8
+      .servers(ng-repeat='server in store.servers', ng-controller='ServerStoreCtrl')
+        .server
+          .server--title {{server.name}}
+          .server--items
+            .server--item(ng-repeat='item in server.store.items', ng-controller='ServerStoreItemCtrl as StoreItem')
+              img.item--image(ng-src='item.imgUrl')
+              span.item--title {{item.title}}
+              input.item--amount(ng-model='amount', name='amount', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
+              button.item--btn-buy(ng-click='buyItem(item)') +
+    .col-4
+      form(ng-submit='order()').storage
         .storage--total
           span.storage--total-value {{total}}
           button(type='submit', ng-disabled='!total') Купить
@@ -26,16 +29,3 @@ html(ng-app='store', ng-cloak)
                 input.item--amount(ng-model='item.amount', name='servers[{{s}}][items[{{i}}][amount]', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
                 button.item--btn-del(ng-click='remItem(item)') -
             .server--storage-total {{server.storage.total}}
-      hr
-      hr
-      .servers(ng-repeat='server in store.servers', ng-controller='ServerStoreCtrl')
-        .server
-          .server--title {{server.name}}
-          .server--items
-            .server--item(ng-repeat='item in server.store.items', ng-controller='ServerStoreItemCtrl as StoreItem')
-              img.item--image(ng-src='item.imgUrl')
-              span.item--title {{item.title}}
-              input.item--amount(ng-model='amount', name='amount', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
-              button.item--btn-buy(ng-click='buyItem(item)') +
-        hr
-    .view(ng-view)

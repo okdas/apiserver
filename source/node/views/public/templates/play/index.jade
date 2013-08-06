@@ -1,0 +1,41 @@
+!!!
+html(ng-app='play', ng-cloak)
+  head
+
+    link(rel='stylesheet', href='/css/bootcraft.css')
+
+    script(src='/js/libs/jquery/1.10.2/jquery.min.js')
+    script(src='/js/libs/angularjs/1.1.5/angular.min.js')
+    script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+
+    include js/play.coffee
+
+    script(type='text/ng-template', id='partials/'): include partials/index
+    script(type='text/ng-template', id='partials/login/dialog/'): include partials/login/dialog/index
+
+  body(ng-controller='ViewCtrl')
+
+    header
+      style.
+        html {
+          background:#563d7c;
+          background-image:none;
+        }
+        .navbar {
+          background-color:#563d7c;
+        }
+      .navbar.navbar-inverse.navbar-static-top
+        .container
+          a.navbar-brand(href='./')
+            span FLYDEV
+          .nav-collapse.collapse
+            ul.nav.navbar-nav.pull-right
+              li: a(href='#/login') Контрольно-пропускной пункт
+
+    .view.view-outer(ng-view)
+
+    .dialog(ng-if='dialog.overlay', ng-animate='"dialog"')
+        .dialog-bg(ng-click='hideDialog()')
+        .container: .row: .col-12.dialog-container(ng-include='dialog.templateUrl')
+
+    .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')

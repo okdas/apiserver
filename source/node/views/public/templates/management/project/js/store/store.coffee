@@ -5,6 +5,11 @@ app= angular.module 'project.store', ['ngResource'], ($routeProvider) ->
     $routeProvider.when '/store',
         templateUrl: 'partials/store/', controller: 'StoreDashboardCtrl'
 
+    # Магазин. История покупок
+
+    $routeProvider.when '/store/orders/list',
+        templateUrl: 'partials/store/orders/', controller: 'StoreOrderListCtrl'
+
     # Магазин. Предметы
 
     $routeProvider.when '/store/items/list',
@@ -39,6 +44,14 @@ app= angular.module 'project.store', ['ngResource'], ($routeProvider) ->
 
 
 ###
+Модель заказа.
+###
+app.factory 'Order', ($resource) ->
+    $resource '/api/v1/store/orders/:orderId',
+        orderId:'@id'
+
+
+###
 Модель предмета.
 ###
 app.factory 'Item', ($resource) ->
@@ -60,6 +73,9 @@ app.factory 'Item', ($resource) ->
                 itemId:'@id'
 
 
+###
+Модель формы предмета.
+###
 app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
 
     @loadEnchantments= () ->
@@ -151,6 +167,20 @@ app.filter 'filterItemEnchantment', ->
 ###
 app.controller 'StoreDashboardCtrl', ($scope) ->
     $scope.state= 'loaded'
+
+
+###
+Контроллер списка покупок.
+###
+app.controller 'StoreOrderListCtrl', ($scope, $location, Order) ->
+    $scope.state= 'load'
+
+    load= ->
+        $scope.orders= Order.query (orders) ->
+            $scope.state= 'loaded'
+            console.log 'Заказы загружены', orders
+
+    do load
 
 
 ###
