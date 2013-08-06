@@ -73,6 +73,19 @@ app.get '/', (req, res, next) ->
 Выставляет счет на покупку переданных предметов аутентифицированному игроку.
 ###
 app.post '/order', (req, res, next) ->
+    return res.json 400, null if not req.body.servers or not req.body.servers.length
+
+    order=
+        id: null
+        items: []
+    for server in req.body.servers
+        continue if not server.items or not server.items.length
+        for item in server.items
+            order.items.push
+                serverId: server.id
+                itemId: item.id
+                itemAmount: item.amount
+
     async.waterfall [
 
         (done) ->
@@ -83,21 +96,65 @@ app.post '/order', (req, res, next) ->
                     conn.query 'START TRANSACTION', (err) ->
                         return done err, conn
 
-        (conn, done) ->
-            data=
-                playerId: req.user.id
-            conn.query 'INSERT INTO store_order SET ?'
+        (conn, done) -> # получить доступные для покупки предметы и подсчитать стоимость
+
+            serverIds= []
+            itemIds= []
+            for item in order.items
+                serverId= item.serverId
+                itemId= item.itemId
+                serverIds.push serverId if not ~serverIds.indexOf serverId
+                itemIds.push itemId if not ~itemIds.indexOf itemId
+
+            conn.query "
+                SELECT
+                    item.id,
+                    item.price
+                FROM store_item as item
+                JOIN store_item_servers as itemServers
+                    ON itemServers.itemId = item.id AND itemServers.serverId IN (?)
+                JOIN server as itemServer
+                    ON itemServer.id = itemServers.serverId
+                WHERE item.id IN (?)
+                GROUP BY
+                    item.id
+                "
+            ,   [serverIds, itemIds]
+            ,   (err, items) ->
+                    return done err, conn if err
+
+                    price= 0
+                    for item, i in order.items
+                        found= false
+                        for itm in items
+                            if itm.id == item.itemId
+                                price= price + item.itemAmount * itm.price
+                                found= true
+                                break
+                        if not found
+                            order.items.splice i, 1
+
+                    return done err, conn, price
+
+        (conn, price, done) ->
+            data= [[req.user.id, price]]
+            conn.query "
+                INSERT INTO store_order (playerId, price)
+                VALUES ?
+                "
             ,   [data]
             ,   (err, resp) ->
-                    id= resp.insertId if not err
-                    return done err, conn, id
+                    orderId= resp.insertId if not err
+                    return done err, conn, orderId
 
-        (conn, id, done) ->
+        (conn, orderId, done) ->
             bulk= []
-            for server in req.body.servers
-                for item in server.items
-                    bulk.push [req.user.id, server.id, id, item.id, item.amount]
-            conn.query 'INSERT INTO storage_item (`playerId`, `serverId`, `orderId`, `itemId`, `amount`) VALUES ?'
+            for item in order.items
+                bulk.push [orderId, item.itemId, item.serverId, item.itemAmount]
+            conn.query "
+                INSERT INTO store_order_items (orderId, itemId, serverId, amount)
+                VALUES ?
+                "
             ,   [bulk]
             ,   (err, resp) ->
                     done err, conn
@@ -109,3 +166,5 @@ app.post '/order', (req, res, next) ->
     ],  (err, conn) ->
             do conn.end if conn
             return next err if err
+
+            return res.json 201, {}
