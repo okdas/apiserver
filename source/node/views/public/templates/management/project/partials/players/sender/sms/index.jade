@@ -1,0 +1,33 @@
+extends ../../../layout
+
+block section-head-title
+    a(href='#/players') Управление игроками
+
+block section-head-nav
+    ul.nav.nav-row
+        li: a(href='#/players/player/list') Игроки
+        li: a(href='#/players/group/list') Группы
+        li: a(href='#/players/permission/list') Разрешения
+        li.active: a Рассылка
+
+block section-body
+    table.table.players
+        thead
+            tr
+                th #
+                th.col-flex: .table-col: .table-col-sortable Игрок
+                th: .table-col: .table-col-sortable Почта
+                th: .table-col: .table-col-sortable
+                    input.input(type='checkbox')
+
+        tbody
+            tr(ng-repeat='player in players')
+                td {{player.id}}
+                td
+                    a.player-name(href='', ng-click='showDetails(player)') {{player.name}}
+                td {{player.email}}
+                td
+
+block section-side
+    span Nyaaa
+
