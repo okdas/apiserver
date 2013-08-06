@@ -106,6 +106,7 @@ app.controller 'PlayersPlayerListCtrl', ($scope, PlayerList) ->
 app.controller 'PlayersSenderMailCtrl', ($scope, PlayerList, PlayerSenderMail) ->
     $scope.players= {}
     $scope.state= 'load'
+    $scope.mail= {}
 
     load= ->
         $scope.players= PlayerList.query ->
@@ -113,6 +114,15 @@ app.controller 'PlayersSenderMailCtrl', ($scope, PlayerList, PlayerSenderMail) -
             console.log 'Пользователи загружены'
 
     do load
+
+    $scope.send= (MailForm) ->
+        console.log mail.subject
+#        $location.path '/store/items/list', (err) ->
+#                $scope.errors= err.data.errors
+#                if 400 == err.status
+#                    angular.forEach err.data.errors, (error, input) ->
+#                        ItemForm[input].$setValidity error.error, false
+
 
     $scope.reload= ->
         do load
