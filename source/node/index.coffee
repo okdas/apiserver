@@ -55,6 +55,16 @@ module.exports= (cfg, log, done) ->
             do next
 
 
+    ###
+    Реалтайм
+    ###
+    app.configure ->
+        redis= require 'redis'
+        app.set 'redis', do redis.createClient
+        app.set 'pub', do redis.createClient
+        app.set 'sub', do redis.createClient
+
+
     app.use do App.compress
 
     app.use App.static "#{__dirname}/views/public"
@@ -84,7 +94,7 @@ module.exports= (cfg, log, done) ->
     app.configure ->
         config= app.get 'config'
 
-        handlers= require './handlers'
+        app.set 'handlers', handlers= require './handlers'
 
         app.use App.vhost "play.#{config.host}", do handlers.play
         app.use App.vhost "management.#{config.host}", do handlers.management

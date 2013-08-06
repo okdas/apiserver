@@ -56,12 +56,16 @@ scripts:
 
 dependencies:
 
+    async: latest
     extend: latest
 
     express: latest
     jade: latest
 
     passport: latest
+
+    socket.io: latest
+    connect-redis: latest
 
     redis: latest
     mysql: latest

@@ -1,6 +1,11 @@
 cluster= require 'cluster'
 os= require 'os'
 
+http= require 'http'
+
+io= require 'socket.io'
+ioStore= require 'socket.io/lib/stores/redis'
+
 fs= require 'fs'
 Log= require 'log'
 
@@ -32,7 +37,17 @@ if cluster.isWorker
     d= do domain.create
 
     d.run ->
-        App= require './node/index'
-        app= App cfg, log
-        app.listen cfg.default.port, ->
+
+        app= require './node/index'
+        app= app cfg, log
+
+        srv= http.createServer app
+        app.set 'io', io= io.listen srv
+
+        io.set 'store', new ioStore
+            redisClient: app.get 'redis'
+            redisPub: app.get 'pub'
+            redisSub: app.get 'sub'
+
+        srv.listen cfg.default.port, ->
             log.info "apiserver listening on #{cfg.default.port}, worker #{cluster.worker.id}"
