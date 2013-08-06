@@ -1,17 +1,26 @@
 app= angular.module 'play', ['ngResource'], ($routeProvider) ->
 
     $routeProvider.when '/',
-        templateUrl: 'partials/', controller: 'PlayCtrl'
+        templateUrl: 'partials/', controller: 'PlayerCtrl'
 
-    $routeProvider.when '/login',
-        templateUrl: 'partials/', controller: 'PlayCtrl'
+    $routeProvider.when '/store',
+        templateUrl: 'partials/store/', controller: 'StoreCtrl'
+
+    $routeProvider.when '/store/:server',
+        templateUrl: 'partials/store/', controller: 'StoreCtrl'
 
     $routeProvider.when '/store/order',
         templateUrl: 'partials/store/order/:orderId', controller: 'StoreOrderCtrl'
 
 
+app.factory 'Player', ($resource) ->
+    $resource '/api/v1/player/:action', {},
+        login: {method:'post', params:{action:'login'}}
+
+
 app.factory 'Store', ($resource) ->
     $resource '/api/v1/player/store'
+
 
 app.factory 'StoreOrder', ($resource) ->
     $resource '/api/v1/player/store/order/:orderId'
@@ -21,59 +30,28 @@ app.factory 'StoreOrder', ($resource) ->
         create: {method:'post'}
 
 
-app.controller 'ViewCtrl', ($scope, $location) ->
+app.controller 'ViewCtrl', ($scope, $location, Player) ->
         $scope.dialog=
             overlay: null
+
+        $scope.player= Player.get () ->
 
         $scope.showDialog= () ->
             $scope.dialog.overlay= true
 
         $scope.hideDialog= () ->
-            $location.path '/'
             $scope.dialog.overlay= null
 
 
-app.factory 'Player', ($resource) ->
-    $resource '/api/v1/player/:action', {},
-        login: {method:'post', params:{action:'login'}}
-
-
-app.controller 'PlayCtrl', ($scope, $location, Player) ->
-
-    $scope.player= new Player
-
-    init= () ->
-        path= do $location.path
-        switch path
-            when '/login'
-                $scope.dialog.templateUrl= 'partials/login/dialog/'
-                $scope.dialog.player= $scope.player
-                $scope.showDialog 'login'
-            else
-                do $scope.hideDialog
-                $scope.dialog.templateUrl= null
-                $scope.dialog.player= null
-
-    $scope.$on '$locationChangeSuccess', init
-
-    do init
-
-
-app.controller 'PlayerLoginDialogCtrl', ($scope, $window) ->
-    console.log 'login dialog ctrl', $scope.dialog.player
-    $scope.player= $scope.dialog.player
-
-    $scope.login= () ->
-        $scope.player.$login () ->
-                do $scope.hideDialog
-                $window.location.href= 'player/'
-        ,   () ->
-                $scope.player.pass= ''
+app.controller 'PlayerCtrl', ($scope, Player) ->
 
 
 app.controller 'StoreCtrl', ['$scope', '$location', 'Store', 'StoreOrder', ($scope, $location, Store, StoreOrder) ->
+    $scope.state= 'load'
+
     $scope.total= 0
     $scope.store= Store.get () ->
+        $scope.state= 'loaded'
 
     $scope.updateTotal= (value) =>
         $scope.total= Math.round(($scope.total + value) * 100) / 100
