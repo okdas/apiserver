@@ -1,6 +1,10 @@
 express= require 'express'
 async= require 'async'
 
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
+
 ###
 Методы API для работы c магазином.
 ###
@@ -11,7 +15,7 @@ app= module.exports= do express
 ###
 Отдает магазин аутентифицированному игроку.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -24,7 +28,9 @@ app.get '/', (req, res, next) ->
                 SELECT
                     item.id as itemId,
                     item.title as itemTitle,
+                    item.price as itemPrice,
                     server.id as serverId,
+                    server.name as serverName,
                     server.title as serverTitle
                 FROM store_item as item
                 LEFT OUTER JOIN store_item_servers as itemServers
@@ -44,6 +50,7 @@ app.get '/', (req, res, next) ->
                 if not server
                     server= serversIndex[row.serverId]=
                         id: row.serverId
+                        name: row.serverName
                         title: row.serverTitle
                         store:
                             items: []
@@ -56,7 +63,7 @@ app.get '/', (req, res, next) ->
                     item= serversItemsIndex[row.serverId][row.itemId]=
                         id: row.itemId
                         title: row.itemTitle
-                        price: 1
+                        price: row.itemPrice
                     server.store.items.push item
             return done null, conn, servers
 
@@ -72,7 +79,7 @@ app.get '/', (req, res, next) ->
 ###
 Выставляет счет на покупку переданных предметов аутентифицированному игроку.
 ###
-app.post '/order', (req, res, next) ->
+app.post '/order', access, (req, res, next) ->
     return res.json 400, null if not req.body.servers or not req.body.servers.length
 
     order=
@@ -144,13 +151,13 @@ app.post '/order', (req, res, next) ->
                 "
             ,   [data]
             ,   (err, resp) ->
-                    orderId= resp.insertId if not err
-                    return done err, conn, orderId
+                    order.id= resp.insertId if not err
+                    return done err, conn
 
-        (conn, orderId, done) ->
+        (conn, done) ->
             bulk= []
             for item in order.items
-                bulk.push [orderId, item.itemId, item.serverId, item.itemAmount]
+                bulk.push [order.id, item.itemId, item.serverId, item.itemAmount]
             conn.query "
                 INSERT INTO store_order_items (orderId, itemId, serverId, amount)
                 VALUES ?
@@ -167,4 +174,102 @@ app.post '/order', (req, res, next) ->
             do conn.end if conn
             return next err if err
 
-            return res.json 201, {}
+            return res.json 201, order
+
+
+
+###
+Отдает список заказов.
+###
+app.get '/order', access, (req, res, next) ->
+
+    playerId= req.user.id
+
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query "
+                SELECT
+                    o.id,
+                    o.price,
+                    o.createdAt
+                FROM store_order as o
+                WHERE o.playerId = ?
+                ORDER BY o.createdAt DESC
+                "
+            ,   [playerId]
+            ,   (err, orders) ->
+                    return done err, conn, orders
+
+    ],  (err, conn, orders) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, orders
+
+
+
+###
+Отдает заказ.
+###
+app.get '/order/:orderId', access, (req, res, next) ->
+
+    order=
+        id: req.params.orderId
+        playerId: req.user.id
+        servers: []
+
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query "
+                SELECT
+                    o.id as orderId,
+                    o.price as orderPrice,
+                    i.id as itemId,
+                    i.title as itemTitle,
+                    oi.amount as itemAmount,
+                    server.id as serverId
+                FROM store_order as o
+                JOIN store_order_items as oi
+                    ON oi.orderId = o.id
+                JOIN store_item as i
+                    ON oi.itemId = i.id
+                JOIN server
+                    ON oi.serverId = server.id
+                WHERE
+                    o.id = ?
+                    AND o.playerId = ?
+                "
+            ,   [order.id, order.playerId]
+            ,   (err, rows) ->
+                    return done err, conn if err
+                    serverIds= {}
+                    for row in rows
+                        serverId= row.serverId
+                        server= serverIds[serverId]
+                        if not server
+                            server= serverIds[serverId]=
+                                id: serverId
+                                items: []
+                            order.servers.push server
+                        server.items.push
+                            id: row.itemId
+                            title: row.itemTitle
+                            amount: row.itemAmount
+                    order.price= row.orderPrice
+                    return done err, conn, order
+
+    ],  (err, conn, order) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, order

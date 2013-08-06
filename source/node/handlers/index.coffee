@@ -5,7 +5,6 @@ SessionStore= require 'connect-redis'
 SessionStore= SessionStore App
 
 
-
 exports.play= () ->
     app= do App
 
@@ -25,9 +24,12 @@ exports.play= () ->
 
 
     app.get '/', (req, res, next) ->
-        return do next if do req.isUnauthenticated
-        return res.redirect '/player'
+        return res.redirect '/player/' if do req.isAuthenticated
+        return res.redirect '/welcome/'
 
+    app.get '/player', (req, res, next) ->
+        return res.redirect '/welcome/' if do req.isUnauthenticated
+        return do next
 
     app.use App.static "#{__dirname}/../views/public/templates/play"
 

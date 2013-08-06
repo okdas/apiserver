@@ -7,6 +7,10 @@ sha1= (string) ->
     hash.update string
     return hash.digest 'hex'
 
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
+
 ###
 Методы API для работы c аутентифицированным игроком.
 ###
@@ -17,7 +21,7 @@ app= module.exports= do express
 ###
 Отдает аутентифицированного игрока.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -26,7 +30,13 @@ app.get '/', (req, res, next) ->
 
         (conn, done) ->
             conn.query "
-                SELECT * FROM player WHERE id = ?
+                SELECT
+                    p.name,
+                    p.balance
+                FROM
+                    player as p
+                WHERE
+                    p.id = ?
                 "
             ,   [req.user.id]
             ,   (err, resp) ->
@@ -35,9 +45,10 @@ app.get '/', (req, res, next) ->
 
     ],  (err, conn, player) ->
             do conn.end if conn
+
             return next err if err
-            return res.render 'play/player',
-                player: player
+            return res.json 400, player if not player
+            return res.json 200, player
 
 
 
@@ -63,8 +74,8 @@ app.post '/login', (req, res, next) ->
                 FROM
                     player as p
                 WHERE
-                    name = ?
-                    AND pass = ?
+                    p.name = ?
+                    AND p.pass = ?
                 "
             ,   [name, pass]
             ,   (err, rows) ->
@@ -86,8 +97,8 @@ app.post '/login', (req, res, next) ->
 ###
 Выполняет выход игрока.
 ###
-app.post '/logout', (req, res, next) ->
-    return res.json 400, null if req.user.username != req.body.name
+app.post '/logout', access, (req, res, next) ->
+    return res.json 400, null if req.user.name != req.body.name
 
     do req.logout
     return res.json 200, true
@@ -97,7 +108,7 @@ app.post '/logout', (req, res, next) ->
 ###
 Пополняет счет аутетифицированного игрока.
 ###
-app.post '/donate', (req, res, next) ->
+app.post '/donate', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
