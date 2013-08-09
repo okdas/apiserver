@@ -86,3 +86,9 @@ module.exports= (app) ->
     Ищем сервер по переданному ключу key
     ###
     app.use '/api/v1/server', require './Api/V1/Minecraft/MiddlewareSecret'
+
+
+    ###
+    API для плагина
+    ###
+    app.use '/api/v1/server/storage', require './Api/V1/Minecraft/Storage'
