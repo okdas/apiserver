@@ -1,6 +1,10 @@
 express= require 'express'
 async= require 'async'
 
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
+
 ###
 Методы API для работы c серверами.
 ###
@@ -11,7 +15,7 @@ app= module.exports= do express
 ###
 Добавляет сервер.
 ###
-app.post '/', (req, res, next) ->
+app.post '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -45,7 +49,7 @@ app.post '/', (req, res, next) ->
 ###
 Отдает список серверов.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -68,7 +72,7 @@ app.get '/', (req, res, next) ->
 ###
 Отдает сервер.
 ###
-app.get '/:serverId', (req, res, next) ->
+app.get '/:serverId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -94,7 +98,7 @@ app.get '/:serverId', (req, res, next) ->
 ###
 Изменяет сервер
 ###
-app.put '/:serverId', (req, res, next) ->
+app.put '/:serverId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -128,7 +132,7 @@ app.put '/:serverId', (req, res, next) ->
 ###
 Удаляет сервер
 ###
-app.delete '/:serverId', (req, res, next) ->
+app.delete '/:serverId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -154,4 +158,3 @@ app.delete '/:serverId', (req, res, next) ->
 
             return next err if err
             return res.json 200
-

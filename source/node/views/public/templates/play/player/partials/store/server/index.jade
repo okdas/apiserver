@@ -1,0 +1,29 @@
+extends ./layout
+
+block section-head-title
+  a(href='#/store') Добро пожаловать в магазин
+
+append section-body
+  .store--server
+    h3.store--server-title.pull-left {{server.title}}
+    .server--items
+      table.table.items
+        tbody
+          tr(ng-repeat='item in server.store.items', ng-controller='ServerStoreItemCtrl as StoreItem')
+            td(ng-src='item.imgUrl')
+            td.col-flex {{item.title}}
+            td: input.item--amount(ng-model='amount', name='amount', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
+            td: button.item--btn-buy(ng-click='buyItem(item)') +
+
+append section-side
+  .storage
+    h3.storage--server-total.pull-right {{server.storage.total}}
+    .storage--server(ng-controller='ServerStorageCtrl')
+      .storage--items
+        table.table.items
+          tbody
+            tr(ng-repeat='item in server.storage.items', ng-controller='ServerStorageItemCtrl as StorageItem')
+              td(ng-src='item.imageUrl')
+              td.col-flex {{item.title}}
+              td: input.item--amount(ng-model='item.amount', name='servers[{{s}}][items[{{i}}][amount]', type='number', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
+              td: button.item--btn-del(ng-click='remItem(item)') -

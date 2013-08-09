@@ -1,4 +1,88 @@
-module.exports= (app) ->
+App= require 'express'
+{Passport}= require 'passport'
+
+SessionStore= require 'connect-redis'
+SessionStore= SessionStore App
+
+
+exports.play= () ->
+    app= do App
+
+    passport= new Passport
+    passport.serializeUser (user, done) ->
+        console.log 'serialize player', user
+        done null, user
+    passport.deserializeUser (id, done) ->
+        console.log 'deserialize player', id
+        done null, id
+
+    app.use App.session
+        key:'play.sid', secret:'player'
+        store: new SessionStore
+    app.use do passport.initialize
+    app.use do passport.session
+
+
+    app.get '/', (req, res, next) ->
+        return res.redirect '/player/' if do req.isAuthenticated
+        return res.redirect '/welcome/'
+
+    app.get '/player', (req, res, next) ->
+        return res.redirect '/welcome/' if do req.isUnauthenticated
+        return do next
+
+    app.use App.static "#{__dirname}/../views/public/templates/play"
+
+
+    ###
+    Методы API для работы c аутентифицированным игроком.
+    ###
+    app.use '/api/v1/player'
+    ,   require './Api/V1/Minecraft/Player'
+
+    ###
+    Методы API для работы игрока с магазином.
+    ###
+    app.use '/api/v1/player/store'
+    ,   require './Api/V1/Minecraft/Player/Store'
+
+    app
+
+
+
+exports.management= () ->
+    app= do App
+
+    passport= new Passport
+    passport.serializeUser (user, done) ->
+        console.log 'serialize user', user
+        done null, user
+    passport.deserializeUser (id, done) ->
+        console.log 'deserialize user', id
+        done null, id
+
+    app.use App.session
+        key:'management.sid', secret:'user'
+        store: new SessionStore
+    app.use do passport.initialize
+    app.use do passport.session
+
+
+    app.get '/', (req, res, next) ->
+        return do next if do req.isUnauthenticated
+        return res.redirect '/project/'
+
+    app.get '/project', (req, res, next) ->
+        return do next if do req.isAuthenticated
+        return res.redirect '/'
+
+    app.get '/engine', (req, res, next) ->
+        return do next if do req.isAuthenticated
+        return res.redirect '/'
+
+
+    app.use App.static "#{__dirname}/../views/public/templates/management"
+
 
     ###
 
@@ -46,9 +130,15 @@ module.exports= (app) ->
 
     ###
 
-    Содержимое
+    Магазин
 
     ###
+
+    ###
+    Методы API для работы c заказами магазина.
+    ###
+    app.use '/api/v1/store/orders'
+    ,   require './Api/V1/Minecraft/Store/Orders'
 
     ###
     Методы API для работы c чарами.
@@ -65,28 +155,22 @@ module.exports= (app) ->
 
     ###
 
-    Игрок
+    Сервер
 
     ###
 
     ###
-    Методы API для работы c аутентифицированным игроком.
-    ###
-    app.use '/api/v1/player'
-    ,   require './Api/V1/Minecraft/Player'
-
-    ###
-    Методы API для работы игрока с магазином.
-    ###
-    app.use '/api/v1/player/store'
-    ,   require './Api/V1/Minecraft/Player/Store'
-
-
-    ###
-    Ищем сервер по переданному ключу key
+    Методы API для работы c аутентифицированным сервером.
     ###
     app.use '/api/v1/server', require './Api/V1/Minecraft/MiddlewareSecret'
 
+
+
+    ###
+
+    Рассылка    
+
+    ###
 
     ###
     Отсылаем письма почтой россии на Аляску
@@ -97,3 +181,7 @@ module.exports= (app) ->
     Отсылаем смску о то что срочно нужно перевести на этот номер тыщу рублей, потом все объясним, подпись дочь.
     ###
     app.use '/api/v1/sender/sms', require './Api/V1/Sender/SMS'
+
+
+
+    app
