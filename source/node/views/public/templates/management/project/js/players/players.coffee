@@ -51,7 +51,9 @@ app.factory 'PlayerGroupList', ($resource) ->
 
 
 app.factory 'PlayerSenderMail', ($resource) ->
-    $resource '/api/v1/sender/mail', {}
+    $resource '/api/v1/sender/mail', {},
+        send:
+            method: 'post'
 
 
 app.factory 'PlayerSenderSMS', ($resource) ->
@@ -103,7 +105,7 @@ app.controller 'PlayersPlayerListCtrl', ($scope, PlayerList) ->
 
 
 
-app.controller 'PlayersSenderMailCtrl', ($scope, PlayerList, PlayerSenderMail) ->
+app.controller 'PlayersSenderMailCtrl', ($scope, $location, PlayerList, PlayerSenderMail) ->
     $scope.players= {}
     $scope.state= 'load'
     $scope.mail= new PlayerSenderMail
@@ -122,12 +124,17 @@ app.controller 'PlayersSenderMailCtrl', ($scope, PlayerList, PlayerSenderMail) -
 
 
     $scope.send= (MailForm) ->
-        console.log mail.subject
-#        $location.path '/store/items/list', (err) ->
-#                $scope.errors= err.data.errors
-#                if 400 == err.status
-#                    angular.forEach err.data.errors, (error, input) ->
-#                        ItemForm[input].$setValidity error.error, false
+        $scope.mail.to= []
+        $scope.players.map (val, i) ->
+            if val.selected == true
+                $scope.mail.to.push val.email
+
+        $scope.mail.$send ->
+            $location.path '/players/player/list', (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        MailForm[input].$setValidity error.error, false
 
 
     $scope.reload= ->
