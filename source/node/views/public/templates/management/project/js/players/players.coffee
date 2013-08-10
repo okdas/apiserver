@@ -106,7 +106,8 @@ app.controller 'PlayersPlayerListCtrl', ($scope, PlayerList) ->
 app.controller 'PlayersSenderMailCtrl', ($scope, PlayerList, PlayerSenderMail) ->
     $scope.players= {}
     $scope.state= 'load'
-    $scope.mail= {}
+    $scope.mail= new PlayerSenderMail
+
 
     load= ->
         $scope.players= PlayerList.query ->
@@ -114,6 +115,11 @@ app.controller 'PlayersSenderMailCtrl', ($scope, PlayerList, PlayerSenderMail) -
             console.log 'Пользователи загружены'
 
     do load
+
+
+    $scope.togglePlayer= (player) ->
+        player.selected= !player.selected
+
 
     $scope.send= (MailForm) ->
         console.log mail.subject

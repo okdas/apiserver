@@ -17,16 +17,13 @@ block section-body
                 th #
                 th.col-flex: .table-col: .table-col-sortable Игрок
                 th: .table-col: .table-col-sortable Почта
-                th: .table-col
-                    input.input(type='checkbox')
 
         tbody
-            tr(ng-repeat='player in players')
+            tr(ng-repeat='player in players', ng-click='togglePlayer(player)', ng-class='{"selected success":player.selected}')
                 td {{player.id}}
                 td {{player.name}}
                 td {{player.email}}
-                td
-                    input.input(type='checkbox')
+
 
 block section-side
     form(name='MailForm')
