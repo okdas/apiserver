@@ -8,7 +8,8 @@ block section-head-nav
         li: a(href='#/players/player/list') Игроки
         li: a(href='#/players/group/list') Группы
         li: a(href='#/players/permission/list') Разрешения
-        li.active: a Рассылка
+        li: a(href='#/plyers/sender/mail') Рассылка
+        li.active: a Рассылка sms
 
 block section-body
     table.table.players
@@ -16,18 +17,20 @@ block section-body
             tr
                 th #
                 th.col-flex: .table-col: .table-col-sortable Игрок
-                th: .table-col: .table-col-sortable Почта
-                th: .table-col: .table-col-sortable
-                    input.input(type='checkbox')
+                th: .table-col: .table-col-sortable Телефон
 
         tbody
-            tr(ng-repeat='player in players')
+            tr(ng-repeat='player in players', ng-click='togglePlayer(player)', ng-class='{"selected success":player.selected}')
                 td {{player.id}}
-                td
-                    a.player-name(href='', ng-click='showDetails(player)') {{player.name}}
-                td {{player.email}}
-                td
+                td {{player.name}}
+                td {{player.phone}}
+
 
 block section-side
-    span Nyaaa
+    form(name='SmsForm')
+        fieldset
+            textarea.input(placeholder='Тело', type='text', required, ng-model='sms.text')
 
+        fieldset
+            button.btn.btn-primary.btn-block(type='submit', ng-click='send(SmsForm)', ng-disabled='!SmsForm.$valid')
+                span Отправить

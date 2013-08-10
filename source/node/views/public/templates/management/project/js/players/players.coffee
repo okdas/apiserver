@@ -27,7 +27,7 @@ app= angular.module 'project.players', ['ngResource'], ($routeProvider) ->
         templateUrl: 'partials/players/sender/mail/', controller: 'PlayersSenderMailCtrl'
 
     $routeProvider.when '/players/sender/sms',
-        templateUrl: 'partials/players/sender/sms/', controller: 'PlayersSenderSMSCtrl'
+        templateUrl: 'partials/players/sender/sms/', controller: 'PlayersSenderSmsCtrl'
 
 
 
@@ -56,8 +56,10 @@ app.factory 'PlayerSenderMail', ($resource) ->
             method: 'post'
 
 
-app.factory 'PlayerSenderSMS', ($resource) ->
-    $resource '/api/v1/sender/sms', {}
+app.factory 'PlayerSenderSms', ($resource) ->
+    $resource '/api/v1/sender/sms', {},
+        send:
+            method: 'post'
 
 
 
@@ -135,6 +137,43 @@ app.controller 'PlayersSenderMailCtrl', ($scope, $location, PlayerList, PlayerSe
                 if 400 == err.status
                     angular.forEach err.data.errors, (error, input) ->
                         MailForm[input].$setValidity error.error, false
+
+
+    $scope.reload= ->
+        do load
+
+
+
+app.controller 'PlayersSenderSmsCtrl', ($scope, $location, PlayerList, PlayerSenderSms) ->
+    $scope.players= {}
+    $scope.state= 'load'
+    $scope.sms= new PlayerSenderSms
+
+
+    load= ->
+        $scope.players= PlayerList.query ->
+            $scope.state= 'loaded'
+            console.log 'Пользователи загружены'
+
+    do load
+
+
+    $scope.togglePlayer= (player) ->
+        player.selected= !player.selected
+
+
+    $scope.send= (SmsForm) ->
+        $scope.sms.to= []
+        $scope.players.map (val, i) ->
+            if val.selected == true
+                $scope.sms.to.push val.phone
+
+        $scope.sms.$send ->
+            $location.path '/players/player/list', (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        SmsForm[input].$setValidity error.error, false
 
 
     $scope.reload= ->
