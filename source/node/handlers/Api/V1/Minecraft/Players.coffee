@@ -87,7 +87,7 @@ app.get '/', access, (req, res, next) ->
 
         (conn, done) ->
             q= "
-            SELECT p.`id`, p.`name`, pi.`parent`
+            SELECT p.`id`, p.`name`, pi.`parent`, p.`email`
             FROM player as p
             LEFT OUTER JOIN permissions_inheritance as pi ON p.name = pi.child
             ORDER BY p.`name`
@@ -103,7 +103,11 @@ app.get '/', access, (req, res, next) ->
                 player= playersByName[row.name]
                 if not player
                     player= playersByName[row.name]=
-                        id:row.id, name:row.name, groups:[]
+                        id: row.id
+                        name: row.name
+                        groups: []
+                        email: row.email
+                    
                     players.push player
                 player.groups.push row.parent if row.parent
             return done null, conn, players

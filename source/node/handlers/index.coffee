@@ -164,4 +164,24 @@ exports.management= () ->
     ###
     app.use '/api/v1/server', require './Api/V1/Minecraft/MiddlewareSecret'
 
+
+
+    ###
+
+    Рассылка
+
+    ###
+
+    ###
+    Отсылаем письма почтой россии на Аляску
+    ###
+    app.use '/api/v1/sender/mail', require './Api/V1/Sender/Mail'
+
+    ###
+    Отсылаем смску о то что срочно нужно перевести на этот номер тыщу рублей, потом все объясним, подпись дочь.
+    ###
+    app.use '/api/v1/sender/sms', require './Api/V1/Sender/SMS'
+
+
+
     app
