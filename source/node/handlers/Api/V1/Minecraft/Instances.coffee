@@ -1,6 +1,10 @@
 express= require 'express'
 async= require 'async'
 
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
+
 ###
 Методы API для работы c инстансами серверов.
 ###
@@ -11,7 +15,7 @@ app= module.exports= do express
 ###
 Добавляет инстанс.
 ###
-app.post '/', (req, res, next) ->
+app.post '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -46,7 +50,7 @@ app.post '/', (req, res, next) ->
 ###
 Отдает список инстансов.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -69,7 +73,7 @@ app.get '/', (req, res, next) ->
 ###
 Отдает инстанс.
 ###
-app.get '/:instanceId', (req, res, next) ->
+app.get '/:instanceId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -95,7 +99,7 @@ app.get '/:instanceId', (req, res, next) ->
 ###
 Изменяет инстанс
 ###
-app.put '/:instanceId', (req, res, next) ->
+app.put '/:instanceId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -129,7 +133,7 @@ app.put '/:instanceId', (req, res, next) ->
 ###
 Удаляет инстанс
 ###
-app.delete '/:instanceId', (req, res, next) ->
+app.delete '/:instanceId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->

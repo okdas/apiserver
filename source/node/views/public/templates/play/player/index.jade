@@ -1,0 +1,28 @@
+extends ../layout
+
+append head-scripts
+
+  include js/player.coffee
+
+append header
+
+  style.
+    html {
+      background:#563d7c;
+      background-image:none;
+    }
+    .navbar {
+      background-color:#563d7c;
+    }
+
+  .navbar.navbar-inverse.navbar-static-top
+    .container
+      a.navbar-brand(href='./')
+        span FLYDEV
+      .nav-collapse.collapse
+        ul.nav.navbar-nav
+          li: a(href='#/store') Магазин
+        ul.nav.navbar-nav
+          li: a(href='#/storage') Склад
+        ul.nav.navbar-nav.pull-right
+          li(ng-if='player'): a(href='', ng-click='logout()') {{player.name}}

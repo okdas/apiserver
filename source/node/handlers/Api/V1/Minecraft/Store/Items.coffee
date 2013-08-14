@@ -1,7 +1,9 @@
 express= require 'express'
 async= require 'async'
 
-
+access= (req, res, next) ->
+    return next 401 if do req.isUnauthenticated
+    return do next
 
 ###
 Методы API для работы c предметами.
@@ -13,7 +15,7 @@ app= module.exports= do express
 ###
 Отдает список предметов.
 ###
-app.get '/', (req, res, next) ->
+app.get '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -36,7 +38,7 @@ app.get '/', (req, res, next) ->
 ###
 Отдает предмет.
 ###
-app.get '/:itemId', (req, res, next) ->
+app.get '/:itemId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -92,7 +94,7 @@ app.get '/:itemId', (req, res, next) ->
 ###
 Добавляет предмет.
 ###
-app.post '/', (req, res, next) ->
+app.post '/', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -157,7 +159,7 @@ app.post '/', (req, res, next) ->
 ###
 Обновляет предмет.
 ###
-app.put '/:itemId', (req, res, next) ->
+app.put '/:itemId', access, (req, res, next) ->
 
     itemId= req.params.itemId
     delete req.body.id
@@ -235,7 +237,7 @@ app.put '/:itemId', (req, res, next) ->
 ###
 Удаляет предмет.
 ###
-app.delete '/:itemId', (req, res, next) ->
+app.delete '/:itemId', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
