@@ -61,9 +61,26 @@ app.get '/:playerName/list', (req, res, next) ->
 ###
 Открывает шипмент
 ###
-app.get '/:playerName/shipment/open', (req, res, next) ->
-    # сначала смотрим запрошенные товары
+app.post '/:playerName/shipments/open', (req, res, next) ->
+    ###
+    прислали кучу айтемов что делать:
+    1. проверить имеем ли мы такие айтемы на складе этого игрока
+    2. проверить количество, если запросили больше выдать сколько можно
+    3. открыть шипмент с теми айтемами которые мы выдадим
+    4. записать в storage_shipment_item айтемы которые выдадим
 
+    req.body= [
+        {
+            materialId: '5',
+            amount: 10
+        },
+        {
+            materialId: '7',
+            amount: '2'
+        }
+    ]
+    нахер это все, перево
+    ###
     async.waterfall [
 
         (done) ->
@@ -75,53 +92,100 @@ app.get '/:playerName/shipment/open', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM server'
+            materialIdArr= []
+            req.body.map (val, i) ->
+                materialIdArr.push val.materialId
+
+            # выбираем айтемы игрока
+            conn.query '
+                SELECT
+    	            player.name AS playerName,
+                    item.id,
+                	item.materialId,
+                    item.amount
+                FROM player AS player
+                JOIN storage_item AS item
+                    ON item.playerId = player.id AND item.serverId = ? AND item.materialId IN (?)
+                WHERE player.name = ?'
+            ,   [req.server.id, materialIdArr, req.params.playerName]
             ,   (err, rows) ->
-                    return done err, conn, rows
+                    # теперь нам нужно посчитать количество айтемов которые отдадим
+                    playerResItems=
+                        playerName: ''
+                        shipmentId: ''
+                        items: []
 
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
+                    rows.map (row, i) ->
+                        playerResItems.playerName= row.playerName
 
+                        # ищем нужный айтем в массиве который получили от плагина
+                        reqEqualItem= {}
+                        req.body.map (item, i) ->
+                            reqEqualItem= item if item.materialId == row.materialId
 
-    ],  (err, conn, rows) ->
-            do conn.end if conn
+                        # смотрим amount, если больше даем сколько есть иначе сколько запросили
+                        realAmount= parseInt (if reqEqualItem.amount > row.amount then row.materialId else reqEqualItem.amount)
 
-            return next err if err
-            return res.json 200, rows
+                        # пихаем в массив, айтем
+                        playerResItems.items.push
+                            id: row.id
+                            materialId: row.materialId
+                            amount: realAmount
 
+                    return done err, conn, playerResItems
 
-
-###
-Отдает сервер.
-###
-app.get '/:serverId', (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
-
-        (conn, done) ->
-            conn.query 'SELECT * FROM server WHERE id = ?'
-            ,   [req.params.serverId]
+        (conn, playerResItems, done) ->
+            # выборку сделали, открываем шипмент
+            conn.query '
+                INSERT INTO storage_shipment
+                SET
+                    playerId = (SELECT id FROM player WHERE name = ?),
+                    serverId = ?'
+            ,   [req.params.playerName, req.server.id]
             ,   (err, resp) ->
-                    server= do resp.shift if not err
-                    return done err, conn, server
+                    # как открыли шипмент дадут id шипмента
+                    playerResItems.shipmentId= resp.insertId
+                    return done err, conn, playerResItems
 
-    ],  (err, conn, server) ->
+        (conn, playerResItems, done) ->
+            # подготовим массив для инсерта
+            shipmentItems= []
+            playerResItems.items.map (item, i) ->
+                shipmentItems.push [playerResItems.shipmentId, item.id, item.amount]
+
+            console.log shipmentItems
+
+            # выборку сделали, открываем шипмент
+            conn.query '
+                INSERT INTO
+                    storage_shipment_item (`shipmentId`, `itemId`, `amount`)
+                VALUES ?'
+            ,   [shipmentItems]
+            ,   (err, resp) ->
+                    # айтемы пихнули в шипмент теперь можно этот массив игроку отослать
+                    return done err, conn, playerResItems
+        
+        (conn, playerResItems, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn, playerResItems
+
+    ],  (err, conn, playerResItems) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 404, null if not server
-            return res.json 200, server
+            return res.json 200, playerResItems
 
 
 
 ###
-Изменяет сервер
+Закрывает шипмент
 ###
-app.put '/:serverId', (req, res, next) ->
+app.post '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
+    ###
+    1. надо получить все айтемы шипмента, записать количество в массив
+    2. вычест количество из storage_item
+    3. закрыть шипмент
+    ###
     async.waterfall [
 
         (done) ->
@@ -133,52 +197,77 @@ app.put '/:serverId', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'UPDATE server SET ? WHERE id = ?'
-            ,   [req.body, req.params.serverId]
+            # ищем айтемы шипмента
+            conn.query '
+                SELECT
+                	itemId,
+                    amount
+                FROM storage_shipment_item
+                WHERE shipmentId = ?'
+            ,   [req.params.shipmentId]
+            ,   (err, rows) ->
+                    # теперь нам нужно посчитать количество айтемов которые отдадим
+                    playerResItems=
+                        playerName: ''
+                        shipmentId: ''
+                        items: []
+
+                    rows.map (row, i) ->
+                        playerResItems.playerName= row.playerName
+
+                        # ищем нужный айтем в массиве который получили от плагина
+                        reqEqualItem= {}
+                        req.body.map (item, i) ->
+                            reqEqualItem= item if item.materialId == row.materialId
+
+                        # смотрим amount, если больше даем сколько есть иначе сколько запросили
+                        realAmount= parseInt (if reqEqualItem.amount > row.amount then row.materialId else reqEqualItem.amount)
+
+                        # пихаем в массив, айтем
+                        playerResItems.items.push
+                            id: row.id
+                            materialId: row.materialId
+                            amount: realAmount
+
+                    return done err, conn, playerResItems
+
+        (conn, playerResItems, done) ->
+            # выборку сделали, открываем шипмент
+            conn.query '
+                INSERT INTO storage_shipment
+                SET
+                    playerId = (SELECT id FROM player WHERE name = ?),
+                    serverId = ?'
+            ,   [req.params.playerName, req.server.id]
             ,   (err, resp) ->
-                    server= req.body
-                    server.id= req.params.serverId
-                    return done err, conn
+                    # как открыли шипмент дадут id шипмента
+                    playerResItems.shipmentId= resp.insertId
+                    return done err, conn, playerResItems
 
-        (conn, done) ->
+        (conn, playerResItems, done) ->
+            # подготовим массив для инсерта
+            shipmentItems= []
+            playerResItems.items.map (item, i) ->
+                shipmentItems.push [playerResItems.shipmentId, item.id, item.amount]
+
+            console.log shipmentItems
+
+            # выборку сделали, открываем шипмент
+            conn.query '
+                INSERT INTO
+                    storage_shipment_item (`shipmentId`, `itemId`, `amount`)
+                VALUES ?'
+            ,   [shipmentItems]
+            ,   (err, resp) ->
+                    # айтемы пихнули в шипмент теперь можно этот массив игроку отослать
+                    return done err, conn, playerResItems
+        
+        (conn, playerResItems, done) ->
             conn.query 'COMMIT', (err) ->
-                return done err, conn
+                return done err, conn, playerResItems
 
-    ],  (err, conn) ->
+    ],  (err, conn, playerResItems) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200
-
-
-
-###
-Удаляет сервер
-###
-app.delete '/:serverId', (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query 'DELETE FROM server WHERE id = ?'
-            ,   [req.params.serverId]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
-
-    ],  (err, conn) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200
-
+            return res.json 200, playerResItems
