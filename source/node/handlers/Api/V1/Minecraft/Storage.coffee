@@ -59,6 +59,38 @@ app.get '/:playerName/list', (req, res, next) ->
 
 
 ###
+Выводит историю отгрузок (шипментов)
+###
+app.get '/:playerName/shipments/list', (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query '
+                SELECT
+                	shipment.id,
+                	shipment.createdAt,
+                	shipment.closedAt
+                FROM player AS player
+                JOIN storage_shipment AS shipment
+                	ON shipment.playerId = player.id AND shipment.serverId = ?
+                WHERE player.name = ?'
+            ,   [req.server.id,req.params.playerName]
+            ,   (err, rows) ->
+                    return done err, conn, rows
+
+    ],  (err, conn, rows) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, rows
+
+
+
+###
 Открывает шипмент
 ###
 app.post '/:playerName/shipments/open', (req, res, next) ->
@@ -180,11 +212,11 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
 ###
 Закрывает шипмент
 ###
-app.post '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
+app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
     ###
-    1. надо получить все айтемы шипмента, записать количество в массив
-    2. вычест количество из storage_item
-    3. закрыть шипмент
+    1. надо получить все айтемы шипмента, записать массив
+    2. вычест количество из storage_item, сделать там апдейт
+    3. закрыть шипмент - указать дату закрытия
     ###
     async.waterfall [
 
@@ -200,74 +232,54 @@ app.post '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
             # ищем айтемы шипмента
             conn.query '
                 SELECT
-                	itemId,
-                    amount
-                FROM storage_shipment_item
+                	shipmentItem.itemId AS shipmentItemId,
+                	shipmentItem.amount AS shipmentItemAmount,
+                	storageItem.amount AS storageItemAmount
+                FROM storage_shipment_item AS shipmentItem
+                JOIN storage_item AS storageItem
+                	ON storageItem.id = shipmentItem.itemId
                 WHERE shipmentId = ?'
             ,   [req.params.shipmentId]
-            ,   (err, rows) ->
-                    # теперь нам нужно посчитать количество айтемов которые отдадим
-                    playerResItems=
-                        playerName: ''
-                        shipmentId: ''
-                        items: []
+            ,   (err, items) ->
+                    # получили айтемы теперь вычитаем количество
+                    updateItem=[]
 
-                    rows.map (row, i) ->
-                        playerResItems.playerName= row.playerName
+                    items.map (item, i) ->
+                        updateItem.push
+                            itemId: item.shipmentItemId
+                            amount: (item.storageItemAmount - item.shipmentItemAmount)
 
-                        # ищем нужный айтем в массиве который получили от плагина
-                        reqEqualItem= {}
-                        req.body.map (item, i) ->
-                            reqEqualItem= item if item.materialId == row.materialId
+                    return done err, conn, updateItem
 
-                        # смотрим amount, если больше даем сколько есть иначе сколько запросили
-                        realAmount= parseInt (if reqEqualItem.amount > row.amount then row.materialId else reqEqualItem.amount)
+        (conn, updateItem, done) ->
+            # обновляем оставшееся количество на складе игрока
+            updateItem.map (item, i) ->
+                conn.query '
+                    UPDATE storage_item
+                        SET amount = ?
+                    WHERE id = ?'
+                ,   [item.amount, item.itemId]
+                ,   (err, resp) ->
+                        return done err, conn if err
 
-                        # пихаем в массив, айтем
-                        playerResItems.items.push
-                            id: row.id
-                            materialId: row.materialId
-                            amount: realAmount
+            return done null, conn
 
-                    return done err, conn, playerResItems
-
-        (conn, playerResItems, done) ->
-            # выборку сделали, открываем шипмент
+        (conn, done) ->
+            # обновляем шипмент - выставляем дату закрытия
             conn.query '
-                INSERT INTO storage_shipment
-                SET
-                    playerId = (SELECT id FROM player WHERE name = ?),
-                    serverId = ?'
-            ,   [req.params.playerName, req.server.id]
+                UPDATE storage_shipment
+                    SET closedAt = NOW()
+                WHERE id = ?'
+            ,   [req.params.shipmentId]
             ,   (err, resp) ->
-                    # как открыли шипмент дадут id шипмента
-                    playerResItems.shipmentId= resp.insertId
-                    return done err, conn, playerResItems
+                    return done err, conn
 
-        (conn, playerResItems, done) ->
-            # подготовим массив для инсерта
-            shipmentItems= []
-            playerResItems.items.map (item, i) ->
-                shipmentItems.push [playerResItems.shipmentId, item.id, item.amount]
-
-            console.log shipmentItems
-
-            # выборку сделали, открываем шипмент
-            conn.query '
-                INSERT INTO
-                    storage_shipment_item (`shipmentId`, `itemId`, `amount`)
-                VALUES ?'
-            ,   [shipmentItems]
-            ,   (err, resp) ->
-                    # айтемы пихнули в шипмент теперь можно этот массив игроку отослать
-                    return done err, conn, playerResItems
-        
-        (conn, playerResItems, done) ->
+        (conn, done) ->
             conn.query 'COMMIT', (err) ->
-                return done err, conn, playerResItems
+                return done err, conn
 
-    ],  (err, conn, playerResItems) ->
+    ],  (err, conn) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200, playerResItems
+            return res.json 200
