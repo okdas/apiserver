@@ -40,7 +40,7 @@ module.exports= (grunt) ->
                 files: [{
                     expand: true
                     cwd: '<%= pkg.config.build.src.node %>/views/templates'
-                    src: ['**/*.jade']
+                    src: ['**/*.jade', '!**/layout.jade']
                     dest: '<%= pkg.config.build.app.node %>/views/templates'
                     ext: '.html'
                 }]
