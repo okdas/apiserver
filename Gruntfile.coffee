@@ -22,15 +22,13 @@ module.exports= (grunt) ->
                 options:
                     ignored: /^_/
                     space: 2
-                files: [
-                    {
-                        expand: true
-                        cwd: '<%= pkg.config.build.src.root %>'
-                        src: ['**/*.yaml', '**/*.yml', '!**/views/**']
-                        dest: '<%= pkg.config.build.app.root %>/'
-                        ext: '.json'
-                    }
-                ]
+                files: [{
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.root %>'
+                    src: ['**/*.yaml', '**/*.yml', '!**/views/**']
+                    dest: '<%= pkg.config.build.app.root %>/'
+                    ext: '.json'
+                }]
 
         jade:
             compile:
