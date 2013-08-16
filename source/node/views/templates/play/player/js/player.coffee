@@ -1,7 +1,23 @@
-app= angular.module 'play', ['ngResource'], ($routeProvider) ->
+app= angular.module 'play', ['ngAnimate', 'ngRoute', 'ngResource'], ($routeProvider) ->
 
     $routeProvider.when '/',
-        templateUrl: 'partials/', controller: 'PlayerCtrl'
+        templateUrl: 'partials/', controller: 'PlayerCtrl', resolve:
+            player: (Player) ->
+                return do Player.get
+
+    $routeProvider.when '/player',
+        templateUrl: 'partials/player/', controller: 'PersonalCtrl'
+
+
+    $routeProvider.when '/player/pay',
+        templateUrl: 'partials/player/', controller: 'PersonalCtrl'
+
+    $routeProvider.when '/player/payments',
+        templateUrl: 'partials/player/payments/', controller: 'PlayerPaymentListCtrl'
+
+    $routeProvider.when '/player/payments/payment/:paymentId',
+        templateUrl: 'partials/player/payments/payment/', controller: 'PlayerPaymentCtrl'
+
 
     $routeProvider.when '/store',
         templateUrl: 'partials/store/', controller: 'StoreCtrl'
@@ -75,8 +91,9 @@ app.controller 'ViewCtrl', ($scope, $location, $window, Player, Store, StoreOrde
             $location.path "/store/order/#{order.id}"
 
 
-app.controller 'PlayerCtrl', ($scope, Player) ->
 
+app.controller 'PlayerCtrl', ($scope, $route, Player) ->
+    console.log $scope, $route.current.locals
 
 app.controller 'StoreCtrl', ['$scope', '$location', 'Store', 'StoreOrder', ($scope, $location, Store, StoreOrder) ->
 
@@ -172,3 +189,45 @@ app.controller 'StoreOrderCtrl', ['$scope', '$route', 'StoreOrder', ($scope, $ro
     $scope.order= StoreOrder.get $route.current.params, (order) ->
         $scope.state= 'loaded'
 ]
+
+
+
+
+
+app.factory 'Subscription', ($resource) ->
+    $resource '/api/v1/player/subscriptions/:subscriptionId', {},
+        query: {method:'GET', isArray:true, cache:true}
+
+app.controller 'SubscriptionListCtrl', ($scope, Subscription) ->
+    $scope.subscriptions= Subscription.query () ->
+
+
+
+app.factory 'PlayerPayment', ($resource) ->
+    $resource '/api/v1/player/payments/:paymentId', {paymentId:'@id'},
+        query: {method:'GET', isArray:true, cache:true}
+        create: {method:'POST'}
+
+app.controller 'PlayerPaymentListCtrl', ($scope, PlayerPayment) ->
+    $scope.state= 'loaded'
+    $scope.payments= PlayerPayment.query () ->
+
+app.controller 'PlayerPaymentCtrl', ($scope, $route, PlayerPayment) ->
+    $scope.state= 'load'
+    $scope.payments= PlayerPayment.get $route.current.params, () ->
+        $scope.state= 'loaded'
+
+app.controller 'PlayerPayCtrl', ($scope, $location, PlayerPayment) ->
+    $scope.payment= new PlayerPayment
+    $scope.create= () ->
+        $scope.payment.$create (payment) ->
+                console.log 'запись о пополнении создана'
+                do $scope.hideDialog
+                $location.path "/player/payments/payment/#{payment.id}"
+        ,   () ->
+                console.error 'запись о пополнении не создана'
+
+app.controller 'PersonalCtrl', ($scope, $route) ->
+    $scope.showPayDialog= () ->
+        $scope.dialog.templateUrl= '/player/partials/player/dialog/pay/'
+        do $scope.showDialog

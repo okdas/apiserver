@@ -1,4 +1,4 @@
-section.view-inner(ng-if="'loaded' == state", ng-animate="'view'")
+section.view-inner(ng-if="'loaded' == state", ng-animate="dialog.overlay ? 'view-dialog' : 'view'")
     block section
 
     .container

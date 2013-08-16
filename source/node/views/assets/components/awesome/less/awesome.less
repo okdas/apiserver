@@ -62,7 +62,19 @@
 @import "../../bootstrap/less/responsive-utilities.less";
 
 
-@import "../../font-awesome/less/font-awesome.less";
+
+@import "../../font-awesome/less/variables.less";
+
+@FontAwesomePath: '../fonts';
+
+@import "../../font-awesome/less/mixins.less";
+@import "../../font-awesome/less/path.less";
+@import "../../font-awesome/less/core.less";
+@import "../../font-awesome/less/bootstrap.less";
+@import "../../font-awesome/less/extras.less";
+@import "../../font-awesome/less/icons.less";
+
+
 
 body {
     font-size:14px; line-height:1.5em;
@@ -138,24 +150,7 @@ select {
         border-color:rgba(185,74,72, .7);
     }
 
-
-.btn-primary {
-    color:#eee;
-    background-color:#428bca;
-    border-color:#428bca;
-}
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
-    color:#fff;
-    background-color:#357ebd;
-    border-color:#3071a9;
-}
-
-.btn[disabled] {
-    background:#eee;
-    border-color:#ccc;
-    color:#777;
-    opacity:1;
-}
+@import "btn/btn.less";
 
 
 
@@ -438,3 +433,18 @@ html {
     .list-leave.list-leave-active {
         opacity:0;
     }
+
+.view.ng-enter,
+.view.ng-leave {
+    transition:all .3s ease;
+}
+
+.view.ng-enter,
+.view.ng-leave.ng-leave-active {
+    opacity:0;
+}
+
+.view.ng-leave,
+.view.ng-enter.ng-enter-active {
+    opacity:1;
+}

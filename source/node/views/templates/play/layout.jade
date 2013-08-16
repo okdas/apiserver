@@ -7,13 +7,15 @@ html(lang='ru', ng-app='play', ng-cloak)
 
       block head-links
 
-        link(rel='stylesheet', href='/css/bootcraft.css')
+        link(rel='stylesheet', href='/styles/bootcraft.css')
 
       block head-scripts
 
-        script(src='/js/libs/jquery/1.10.2/jquery.min.js')
-        script(src='/js/libs/angularjs/1.1.5/angular.min.js')
-        script(src='/js/libs/angularjs/1.1.5/angular-resource.min.js')
+        script(src='/scripts/libs/jquery/1.10.2/jquery.min.js')
+        script(src='/scripts/libs/angularjs/1.2.0rc1/angular.min.js')
+        script(src='/scripts/libs/angularjs/1.2.0rc1/angular-animate.min.js')
+        script(src='/scripts/libs/angularjs/1.2.0rc1/angular-route.min.js')
+        script(src='/scripts/libs/angularjs/1.2.0rc1/angular-resource.min.js')
 
   body(ng-controller='ViewCtrl')
     block body
