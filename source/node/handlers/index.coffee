@@ -164,4 +164,24 @@ exports.manage= () ->
     ###
     app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareSecret'
 
+
+
+    ###
+
+    Рассылка
+
+    ###
+
+    ###
+    Методы API для рассылки писем.
+    ###
+    app.use '/api/v1/sender/mail', require './Manage/Api/V1/Sender/Mail'
+
+    ###
+    Методы API для рассылки смс.
+    ###
+    app.use '/api/v1/sender/sms', require './Manage/Api/V1/Sender/Sms'
+
+
+
     app
