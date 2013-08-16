@@ -31,7 +31,7 @@ exports.play= () ->
         return res.redirect '/welcome/' if do req.isUnauthenticated
         return do next
 
-    app.use App.static "#{__dirname}/../views/public/templates/play"
+    app.use App.static "#{__dirname}/../views/templates/play"
 
 
     ###
@@ -81,7 +81,7 @@ exports.management= () ->
         return res.redirect '/'
 
 
-    app.use App.static "#{__dirname}/../views/public/templates/management"
+    app.use App.static "#{__dirname}/../views/templates/management"
 
 
     ###

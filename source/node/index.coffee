@@ -57,7 +57,7 @@ module.exports= (cfg, log, done) ->
 
     app.use do App.compress
 
-    app.use App.static "#{__dirname}/views/public"
+    app.use App.static "#{__dirname}/views/assets"
 
     app.use do App.cookieParser
     app.use do App.bodyParser
