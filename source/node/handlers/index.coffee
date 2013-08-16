@@ -31,26 +31,26 @@ exports.play= () ->
         return res.redirect '/welcome/' if do req.isUnauthenticated
         return do next
 
-    app.use App.static "#{__dirname}/../views/templates/play"
+    app.use App.static "#{__dirname}/../views/templates/Play"
 
 
     ###
     Методы API для работы c аутентифицированным игроком.
     ###
     app.use '/api/v1/player'
-    ,   require './Api/V1/Minecraft/Player'
+    ,   require './Play/Api/V1/Player'
 
     ###
     Методы API для работы игрока с магазином.
     ###
     app.use '/api/v1/player/store'
-    ,   require './Api/V1/Minecraft/Player/Store'
+    ,   require './Play/Api/V1/Player/Store'
 
     app
 
 
 
-exports.management= () ->
+exports.manage= () ->
     app= do App
 
     passport= new Passport
@@ -62,7 +62,7 @@ exports.management= () ->
         done null, id
 
     app.use App.session
-        key:'management.sid', secret:'user'
+        key:'manage.sid', secret:'user'
         store: new SessionStore
     app.use do passport.initialize
     app.use do passport.session
@@ -81,7 +81,7 @@ exports.management= () ->
         return res.redirect '/'
 
 
-    app.use App.static "#{__dirname}/../views/templates/management"
+    app.use App.static "#{__dirname}/../views/templates/Manage"
 
 
     ###
@@ -94,13 +94,13 @@ exports.management= () ->
     Методы API для работы c аутентифицированным пользователем.
     ###
     app.use '/api/v1/user'
-    ,   require './Api/V1/User'
+    ,   require './Manage/Api/V1/User'
 
     ###
     Методы API для работы c пользователями.
     ###
     app.use '/api/v1/users'
-    ,   require './Api/V1/Users'
+    ,   require './Manage/Api/V1/Users'
 
 
     ###
@@ -113,19 +113,19 @@ exports.management= () ->
     Методы API для работы c игроками.
     ###
     app.use '/api/v1/players'
-    ,   require './Api/V1/Minecraft/Players'
+    ,   require './Manage/Api/V1/Project/Players'
 
     ###
     Методы API для работы c серверами.
     ###
     app.use '/api/v1/servers'
-    ,   require './Api/V1/Minecraft/Servers'
+    ,   require './Manage/Api/V1/Project/Servers'
 
     ###
-    Методы API для работы c инстансами.
+    Методы API для работы c инстансами серверов.
     ###
-    app.use '/api/v1/instances'
-    ,   require './Api/V1/Minecraft/Instances'
+    app.use '/api/v1/servers/instances'
+    ,   require './Manage/Api/V1/Project/Servers/Instances'
 
 
     ###
@@ -138,19 +138,19 @@ exports.management= () ->
     Методы API для работы c заказами магазина.
     ###
     app.use '/api/v1/store/orders'
-    ,   require './Api/V1/Minecraft/Store/Orders'
+    ,   require './Manage/Api/V1/Project/Store/Orders'
 
     ###
     Методы API для работы c чарами.
     ###
     app.use '/api/v1/store/enchantments'
-    ,   require './Api/V1/Minecraft/Store/Enchantments'
+    ,   require './Manage/Api/V1/Project/Store/Enchantments'
 
     ###
     Методы API для работы c предметами.
     ###
     app.use '/api/v1/store/items'
-    ,   require './Api/V1/Minecraft/Store/Items'
+    ,   require './Manage/Api/V1/Project/Store/Items'
 
 
     ###
@@ -162,6 +162,6 @@ exports.management= () ->
     ###
     Методы API для работы c аутентифицированным сервером.
     ###
-    app.use '/api/v1/server', require './Api/V1/Minecraft/MiddlewareSecret'
+    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareSecret'
 
     app

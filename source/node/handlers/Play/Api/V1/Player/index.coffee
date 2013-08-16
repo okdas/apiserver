@@ -17,7 +17,6 @@ access= (req, res, next) ->
 app= module.exports= do express
 
 
-
 ###
 Отдает аутентифицированного игрока.
 ###
@@ -51,7 +50,6 @@ app.get '/', access, (req, res, next) ->
             return res.json 200, player
 
 
-
 ###
 Выполняет вход игрока.
 ###
@@ -74,8 +72,7 @@ app.post '/login', (req, res, next) ->
                 FROM
                     player as p
                 WHERE
-                    p.name = ?
-                    AND p.pass = ?
+                    p.name = ? AND p.pass = ?
                 "
             ,   [name, pass]
             ,   (err, rows) ->
@@ -93,7 +90,6 @@ app.post '/login', (req, res, next) ->
                 return res.json 200, player
 
 
-
 ###
 Выполняет выход игрока.
 ###
@@ -106,33 +102,72 @@ app.post '/logout', access, (req, res, next) ->
 
 
 ###
+Отдает историю пополнений аутентифицированного игрока.
+###
+app.get '/payment', access, (req, res, next) ->
+    data= null
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query "
+                SELECT
+                    payment.id,
+                    payment.amount,
+                    payment.createdAt,
+                    payment.closedAt,
+                    payment.status
+                FROM
+                    player_payment as payment
+                WHERE
+                    payment.playerId = ?
+                "
+            ,   [req.user.id]
+            ,   (err, rows) ->
+                    data= rows if not err
+                    return done err, conn
+
+    ],  (err, conn) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, data
+
+
+
+###
 Пополняет счет аутетифицированного игрока.
 ###
-app.post '/donate', access, (req, res, next) ->
+app.post '/payment', access, (req, res, next) ->
+
+    payment=
+        id: null
+        playerId: req.user.id
+        amount: req.body.amount
+
     async.waterfall [
 
         (done) ->
             req.db.getConnection (err, conn) ->
                 return done err, conn if err
                 conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query "
-                UPDATE player
-                SET balance = balance + #{conn.escape(req.query.amount)}
-                WHERE id = ?
-                "
-            ,   [req.user.id]
-            ,   (err, resp) ->
                     return done err, conn
 
         (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
+            conn.query "
+                INSERT INTO player_payment SET ?
+                "
+            ,   [payment]
+            ,   (err, resp) ->
+                    if not err
+                        payment.id= resp.insertId
+                    return done err, conn
 
     ],  (err, conn) ->
             do conn.end if conn
+
             return next err if err
+            return res.json 201, payment
