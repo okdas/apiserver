@@ -66,7 +66,7 @@ module.exports= (grunt) ->
                     expand: true
                     cwd: '<%= pkg.config.build.src.node %>/views/assets/components/font-awesome/font'
                     src: ['**/*']
-                    dest: '<%= pkg.config.build.app.node %>/views/assets/fonts'
+                    dest: '<%= pkg.config.build.app.node %>/views/assets/fonts/awesome'
                 }]
 
         #coffeelint:
