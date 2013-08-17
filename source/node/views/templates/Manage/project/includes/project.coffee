@@ -1,5 +1,5 @@
-app= angular.module 'management.project'
-,   ['project.servers', 'project.store', 'project.players']
+app= angular.module 'manage'
+,   ['project.servers', 'project.store', 'project.players', 'ngResource', 'ngRoute']
 ,   ($routeProvider) ->
 
         $routeProvider.otherwise

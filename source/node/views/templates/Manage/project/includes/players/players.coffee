@@ -1,4 +1,4 @@
-app= angular.module 'project.players', ['ngResource'], ($routeProvider) ->
+app= angular.module 'project.players', ['ngResource','ngRoute'], ($routeProvider) ->
 
     # Игроки
 
