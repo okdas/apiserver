@@ -135,14 +135,20 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             conn.query '
                 SELECT
                     player.name AS playerName,
-                    item.id,
-                    item.materialId,
-                    item.amount
-                FROM player AS player
-                JOIN storage_item AS item
-                    ON item.playerId = player.id AND item.serverId = ? AND item.materialId IN (?)
-                WHERE player.name = ?'
-            ,   [req.server.id, materialIdArr, req.params.playerName]
+                    storageItem.id,
+                    item.title,
+                    material.materialId,
+                    storageItem.amount
+                FROM storage_item AS storageItem
+                JOIN material AS material
+                    ON material.materialId IN (?)
+                JOIN item as item
+                    ON material.id = item.material
+                JOIN player AS player
+                    ON player.name = ?
+                WHERE
+                    storageItem.itemId = item.id AND storageItem.playerId = player.id AND storageItem.serverId = ?'
+            ,   [materialIdArr, req.params.playerName, req.server.id]
             ,   (err, rows) ->
                     # теперь нам нужно посчитать количество айтемов которые отдадим
                     playerResItems=
@@ -167,6 +173,7 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
                             materialId: row.materialId
                             amount: realAmount
 
+                    console.log playerResItems
                     return done err, conn, playerResItems
 
         (conn, playerResItems, done) ->
