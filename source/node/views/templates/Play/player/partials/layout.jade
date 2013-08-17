@@ -1,0 +1,24 @@
+section.view-inner(ng-if="'loaded' == state", ng-animate="dialog.overlay ? 'view-dialog' : 'view'")
+    block section
+
+    .container
+        block section-container
+
+        .row
+            .col-12.section-head
+                block section-head
+
+                    h1.section-head-title
+                        block section-head-title
+
+                    nav.section-head-nav
+                        block section-head-nav
+
+                    hr.section-sep
+
+        .row
+            .col-12.col-sm-5.col-lg-5.col-push-7
+                block section-side
+
+            .col-12.col-sm-7.col-lg-7.col-pull-5
+                block section-body

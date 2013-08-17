@@ -1,9 +1,0 @@
-h1 Кабинет игрока
-hr
-p Игрок: 
-  b= player.name
-p Баланс лицевого счета: 
-  b= player.balance
-  form(action='/player/payment')
-    input(type='text', name='amount')
-    button(type='submit') Пополнить счет

@@ -1,0 +1,116 @@
+.btn-primary {
+    color:#eee;
+    background-color:#428bca;
+    border-color:#428bca;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
+    color:#fff;
+    background-color:#357ebd;
+    border-color:#3071a9;
+}
+
+.btn[disabled] {
+    background:#eee;
+    border-color:#ccc;
+    color:#777;
+    opacity:1;
+}
+
+
+
+.btn {
+    margin:0;
+    padding:11px 15px 13px;
+    color:#eee;
+    text-shadow:
+        0 1px 0 rgba(0,0,0,0.15)
+    ;
+    border:0px solid transparent;
+    border-radius:1px;
+    background-image:
+        linear-gradient(#43a6e2, #277ac1)
+    ;
+    cursor:pointer;
+}
+.btn-primary {
+    background-image:
+        linear-gradient(hsl(264, 33%, 57%), hsl(264, 33%, 51%))
+    ;
+}
+
+.btn:hover {
+    color:#fff;
+    text-shadow:
+        0 1px 0 rgba(0,0,0,0.3)
+    ;
+    box-shadow:
+        inset 0 -1px 5px -1px rgba(0,0,0,0.3),
+        inset 0 11px 22px 1px #38a9ed
+    ;
+}
+.btn-primary:hover {
+    box-shadow:
+        inset 0 -1px 5px -1px rgba(0,0,0,0.2),
+        inset 0 11px 22px 1px hsl(264, 33%, 61%)
+    ;
+}
+
+.btn:active {
+    text-shadow:
+        0 -1px 0 rgba(0,0,0,0.15)
+    ;
+    box-shadow:
+        inset 0 1px 5px -1px rgba(0,0,0,0.3),
+        inset 0 11px 22px 1px rgba(0,0,0,0.1),
+        inset 0 0 2px 2px rgba(0,0,0,0.0)
+    ;
+}
+.btn-primary:active {
+    box-shadow:
+        inset 0 1px 5px -1px rgba(0,0,0,0.35),
+        inset 0 11px 22px 1px hsla(264, 33%, 41%, 0.1),
+        inset 0 0 2px 2px rgba(0,0,0,0.0)
+    ;
+}
+
+.btn-small {
+    padding:7px 15px 9px;
+    line-height:14px;
+}
+
+
+.btn-group {
+    display:inline-block;
+    position:relative;
+    border-radius:0;
+    box-shadow:0 0 0 5px rgba(0,0,0,.1);
+
+    &.btn-block {
+        display:block;
+    }
+
+    & {
+        .dropdown-menu {
+            display:none;
+            position:absolute; top:0; right:auto; left:0; bottom:auto;
+            margin:-5px; padding:5px;
+            background:#f9f9f9;
+        }
+    }
+    &.pull-right {
+        .dropdown-menu {
+            left:auto; right:0;
+        }
+    }
+    &:hover {
+        .dropdown-menu {
+            display:block;
+        }
+    }
+
+}
+
+
+.navbar-nav > li > .btn-group {
+    
+}

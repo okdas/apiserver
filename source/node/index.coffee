@@ -1,6 +1,5 @@
-express= require 'express'
+App= require 'express'
 extend= require 'extend'
-
 
 ###
 Возвращает настроенный экзмепляр приложения.
@@ -10,9 +9,7 @@ module.exports= (cfg, log, done) ->
     ###
     Экземпляр приложения
     ###
-    app= do express
-
-    app.use do express.compress
+    app= do App
 
 
     ###
@@ -47,7 +44,7 @@ module.exports= (cfg, log, done) ->
     Логгер приложения для разработчиков
     ###
     app.configure 'development', ->
-        app.use express.logger 'dev'
+        app.use App.logger 'dev'
 
     ###
     Логгер приложения для производства
@@ -58,65 +55,12 @@ module.exports= (cfg, log, done) ->
             do next
 
 
+    app.use do App.compress
 
-    passport= require 'passport'
+    app.use App.static "#{__dirname}/views/assets"
 
-    passport.serializeUser (user, done) ->
-        done null, user
-
-    passport.deserializeUser (id, done) ->
-        done null, id
-
-
-    ###
-    Сессии пользователей приложения
-    ###
-    app.configure ->
-        app.use do express.cookieParser
-
-        #MariaStore= require('connect-mysql-session')(express)
-        #handler= express.session
-        #    secret: 'apiserver'
-        #    store: new MariaStore app.db, 'users_session'
-        RedisStore= require('connect-redis')(express)
-        handler= express.session
-            secret: 'apiserver'
-            store: new RedisStore
-        app.use '/management', handler
-        app.use '/api', handler
-
-        handler= do passport.initialize
-        app.use '/management', handler
-        app.use '/api', handler
-
-        handler= do passport.session
-        app.use '/management', handler
-        app.use '/api', handler
-
-
-    app.get '/management/', (req, res, next) ->
-        return do next if do req.isUnauthenticated
-        return res.redirect '/management/project/'
-
-    app.get '/management/project/', (req, res, next) ->
-        return do next if do req.isAuthenticated
-        return res.redirect '/management/'
-
-    app.get '/management/engine/', (req, res, next) ->
-        return do next if do req.isAuthenticated
-        return res.redirect '/management/'
-
-
-    ###
-    Прослойки приложения
-    ###
-    app.configure ->
-
-        # Публичные файлы
-        app.use express.static "#{__dirname}/views/public/templates"
-        app.use express.static "#{__dirname}/views/public"
-
-        app.use do express.bodyParser
+    app.use do App.cookieParser
+    app.use do App.bodyParser
 
 
     ###
@@ -135,7 +79,12 @@ module.exports= (cfg, log, done) ->
 
 
     ###
-    Обработчики маршрутов
+    Обработчики маршрутов приложения
     ###
-    handlers= require './handlers'
-    handlers app
+    app.configure ->
+        config= app.get 'config'
+
+        handlers= require './handlers'
+
+        app.use App.vhost "play.#{config.host}", do handlers.play
+        app.use App.vhost "manage.#{config.host}", do handlers.manage

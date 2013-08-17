@@ -1,0 +1,10 @@
+extends ../layout
+
+block section-head-title
+  a(href='#/store') Управление магазином
+
+block section-head-nav
+  ul.nav.nav-row
+    li: a(ng-href='#/store/orders/list') История покупок
+    li: a(ng-href='#/store/items/list') Предметы
+    li: a(ng-href='#/store/enchantments/list') Чары
