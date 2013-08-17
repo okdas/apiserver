@@ -1,4 +1,4 @@
-app= angular.module 'project.servers', ['ngResource'], ($routeProvider) ->
+app= angular.module 'project.servers', ['ngResource','ngRoute'], ($routeProvider) ->
 
     # Серверы
 

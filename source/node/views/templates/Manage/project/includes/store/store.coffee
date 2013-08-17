@@ -1,4 +1,4 @@
-app= angular.module 'project.store', ['ngResource'], ($routeProvider) ->
+app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) ->
 
     # Магазин
 
