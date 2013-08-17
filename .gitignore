@@ -1,4 +1,4 @@
-source/node/views/public/components
+source/node/views/assets/components
 node_modules/*
 *.log
 app/*

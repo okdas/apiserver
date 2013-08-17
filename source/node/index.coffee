@@ -57,7 +57,7 @@ module.exports= (cfg, log, done) ->
 
     app.use do App.compress
 
-    app.use App.static "#{__dirname}/views/public"
+    app.use App.static "#{__dirname}/views/assets"
 
     app.use do App.cookieParser
     app.use do App.bodyParser
@@ -87,4 +87,4 @@ module.exports= (cfg, log, done) ->
         handlers= require './handlers'
 
         app.use App.vhost "play.#{config.host}", do handlers.play
-        app.use App.vhost "management.#{config.host}", do handlers.management
+        app.use App.vhost "manage.#{config.host}", do handlers.manage

@@ -22,15 +22,13 @@ module.exports= (grunt) ->
                 options:
                     ignored: /^_/
                     space: 2
-                files: [
-                    {
-                        expand: true
-                        cwd: '<%= pkg.config.build.src.root %>'
-                        src: ['**/*.yaml', '**/*.yml']
-                        dest: '<%= pkg.config.build.app.root %>/'
-                        ext: '.json'
-                    }
-                ]
+                files: [{
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.root %>'
+                    src: ['**/*.yaml', '**/*.yml', '!**/views/**']
+                    dest: '<%= pkg.config.build.app.root %>/'
+                    ext: '.json'
+                }]
 
         jade:
             compile:
@@ -39,9 +37,9 @@ module.exports= (grunt) ->
                         debug: false
                 files: [{
                     expand: true
-                    cwd: '<%= pkg.config.build.src.node %>/views/public/templates'
-                    src: ['**/*.jade']
-                    dest: '<%= pkg.config.build.app.node %>/views/public/templates'
+                    cwd: '<%= pkg.config.build.src.node %>/views/templates'
+                    src: ['**/*.jade', '!**/layout.jade']
+                    dest: '<%= pkg.config.build.app.node %>/views/templates'
                     ext: '.html'
                 }]
 
@@ -49,9 +47,9 @@ module.exports= (grunt) ->
             compile:
                 files: [{
                     expand: true
-                    cwd: '<%= pkg.config.build.src.node %>/views/public/less'
+                    cwd: '<%= pkg.config.build.src.node %>/views/assets/styles'
                     src: ['**/*.less']
-                    dest: '<%= pkg.config.build.app.node %>/views/public/css'
+                    dest: '<%= pkg.config.build.app.node %>/views/assets/styles'
                     ext: '.css'
                 }]
 
@@ -59,19 +57,14 @@ module.exports= (grunt) ->
             views:
                 files: [{
                     expand: true
-                    cwd: '<%= pkg.config.build.src.node %>/views/public'
-                    src: ['**/*', '!**/components/**', '!**/less/**', '!**/*.jade', '!**/*.coffee', '!**/*.md']
-                    dest: '<%= pkg.config.build.app.node %>/views/public'
+                    cwd: '<%= pkg.config.build.src.node %>/views/assets'
+                    src: ['**/*', '!**/components/**', '!**/*.less', '!**/*.jade', '!**/*.coffee', '!**/*.md']
+                    dest: '<%= pkg.config.build.app.node %>/views/assets'
                 }, {
                     expand: true
-                    cwd: '<%= pkg.config.build.src.node %>/views/public/components/font-awesome/font'
+                    cwd: '<%= pkg.config.build.src.node %>/views/assets/components/font-awesome/font'
                     src: ['**/*']
-                    dest: '<%= pkg.config.build.app.node %>/views/public/font'
-                }, {
-                    expand: true
-                    cwd: '<%= pkg.config.build.src.node %>/views/templates'
-                    src: ['**/*', '!**/*.md']
-                    dest: '<%= pkg.config.build.app.node %>/views/templates'
+                    dest: '<%= pkg.config.build.app.node %>/views/assets/fonts/awesome'
                 }]
 
         #coffeelint:

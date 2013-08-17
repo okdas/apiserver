@@ -1,0 +1,450 @@
+/*!
+ * Bootstrap v3.0.0
+ *
+ * Copyright 2013 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world by @mdo and @fat.
+ */
+
+@import "../../bootstrap/less/variables.less";
+@import "../../bootstrap/less/mixins.less";
+
+// Reset
+@import "../../bootstrap/less/normalize.less";
+@import "../../bootstrap/less/print.less";
+
+// Core CSS
+@import "../../bootstrap/less/scaffolding.less";
+@import "../../bootstrap/less/type.less";
+@import "../../bootstrap/less/code.less";
+@import "../../bootstrap/less/grid.less";
+
+@import "../../bootstrap/less/tables.less";
+@import "../../bootstrap/less/forms.less";
+@import "../../bootstrap/less/buttons.less";
+
+// Components: common
+@import "../../bootstrap/less/component-animations.less";
+@import "../../bootstrap/less/dropdowns.less";
+@import "../../bootstrap/less/list-group.less";
+@import "../../bootstrap/less/panels.less";
+@import "../../bootstrap/less/wells.less";
+@import "../../bootstrap/less/close.less";
+
+// Components: Nav
+@import "../../bootstrap/less/navs.less";
+@import "../../bootstrap/less/navbar.less";
+@import "../../bootstrap/less/button-groups.less";
+@import "../../bootstrap/less/breadcrumbs.less";
+@import "../../bootstrap/less/pagination.less";
+@import "../../bootstrap/less/pager.less";
+
+// Components: Popovers
+@import "../../bootstrap/less/modals.less";
+@import "../../bootstrap/less/tooltip.less";
+@import "../../bootstrap/less/popovers.less";
+
+// Components: Misc
+@import "../../bootstrap/less/alerts.less";
+@import "../../bootstrap/less/thumbnails.less";
+@import "../../bootstrap/less/media.less";
+@import "../../bootstrap/less/labels.less";
+@import "../../bootstrap/less/badges.less";
+@import "../../bootstrap/less/progress-bars.less";
+@import "../../bootstrap/less/accordion.less";
+@import "../../bootstrap/less/carousel.less";
+@import "../../bootstrap/less/jumbotron.less";
+
+// Utility classes
+@import "../../bootstrap/less/utilities.less"; // Has to be last to override when necessary
+@import "../../bootstrap/less/responsive-utilities.less";
+
+
+
+@import "../../font-awesome/less/variables.less";
+
+@FontAwesomePath: '../fonts/awesome';
+
+@import "../../font-awesome/less/mixins.less";
+@import "../../font-awesome/less/path.less";
+@import "../../font-awesome/less/core.less";
+@import "../../font-awesome/less/bootstrap.less";
+@import "../../font-awesome/less/extras.less";
+@import "../../font-awesome/less/icons.less";
+
+
+
+body {
+    font-size:14px; line-height:1.5em;
+    -webkit-backface-visibility:hidden;
+}
+
+form {
+    margin:0;
+    background:#f9f9f9;
+}
+.form .form-row {
+    margin:0 -5px;
+}
+.form-row > *[class^="col-"] {
+    padding:0 5px;
+}
+.form-row label {
+    display:block;
+    padding:12px 15px; line-height:normal;
+    background:#eee;
+}
+.form-foot {
+    margin:-15px; margin-top:15px;
+    padding:15px;
+    background:#eee;
+}
+
+fieldset {
+    margin:15px 0; padding:0;
+    border:0;
+}
+legend {
+    padding:7px 13px;
+    color:#777;
+}
+
+.input, .btn {
+    padding:11px 14px;
+    font:inherit; line-height:normal; color:#333;
+    border-radius:1px;
+}
+.form-large .input, .form-large .btn, .input-large, .btn-large {
+    padding:15px 18px;
+    font-size:18px;
+}
+
+select {
+    max-height:40px;
+}
+
+.input {
+    display:block;
+    width:100%;
+    margin:0; margin-bottom:10px;
+    color:#333; background:#eee;
+    border:1px solid #ccc; outline:none;
+    box-shadow:inset 0 1px 1px rgba(0,0,0, 0.075);
+}
+.input-auto {
+    width:auto;
+}
+    input:focus {
+        color:#333;
+        box-shadow:inset 0 1px 1px rgba(0,0,0, 0.075);
+    }
+    input.ng-valid {
+        color:#357ebd;
+        border-color:rgba(82,168,236, .8);
+    }
+
+    .input.ng-invalid:not(.ng-invalid-required) {
+        color:#b94a48;
+        border-color:rgba(185,74,72, .7);
+    }
+
+@import "btn/btn.less";
+
+
+
+.text-left {
+  text-align: left;
+}
+.text-right {
+  text-align: right;
+}
+
+
+
+.navbar-brand, .section-head-title {
+    font-size:18px; font-weight:500; line-height:20px;
+    text-transform:uppercase; letter-spacing:2px;
+    color:#777;
+}
+.navbar-brand sup {
+    font-size:small;
+    opacity:.5;
+}
+
+abbr {
+    letter-spacing:2px;
+}
+
+
+.breadcrumb {
+    margin:0; padding:0;
+    font-size:small;
+    background:none;
+}
+.breadcrumb > li + li:before {
+    padding:0 1em;
+    content: '→';
+}
+.breadcrumb > li > a {
+    display:inline-block;
+    color:#777;
+}
+.breadcrumb > .active {
+    color:#333;
+}
+
+.section-head-title, .section-head-nav {
+    display:inline-block; vertical-align:middle;
+    margin:15px 0;
+}
+.section-head-title {
+    margin-right:15px;
+}
+
+.section-sep {
+    margin:0 0 30px 0;
+}
+
+.nav-row {
+    margin:0;
+    line-height:20px;
+}   .nav-row > li {
+        display:inline-block;
+        line-height:20px;
+    }   .nav-row > li > a {
+            padding:0 15px; line-height:20px;
+            background:none !important;
+        }   .nav-row > li > a:hover {
+                text-decoration:underline;
+            }
+        .nav-row > li.active > a {
+            color:#333;
+        }   .nav-row > li.active > a:hover {
+                text-decoration:none;
+            }
+
+h3 {
+    font-size:1.5em; line-height:28px;
+    color:#777;
+}
+.toolbar-title, .toolbar-btn {
+    display:inline-block;
+    vertical-align:middle;
+}
+.toolbar-title {
+    margin:0; margin-right:1em;
+}
+
+table {
+    max-width:100%;
+    background-color:transparent;
+    border-collapse:collapse;
+    border-spacing:0;
+}
+.table {
+    width:100%;
+    margin-bottom:30px;
+}
+.table > thead > tr > th,
+.table > thead > tr > td,
+.table > tbody > tr > th,
+.table > tbody > tr > td {
+    padding:12px 15px;
+    font: inherit; font-weight:normal; color:#777;
+    background:#f9f9f9;
+    border-top:1px solid #fff;
+}
+.table > thead > tr > th,
+.table > tbody > tr > th {
+    background:#eee;
+}
+.table > thead > tr > td
+.table > tbody > tr > td {
+    border-top:1px solid #fff;
+}
+.table > thead > tr > th:not(:last-child),
+.table > thead > tr > td:not(:last-child),
+.table > tbody > tr > th:not(:last-child),
+.table > tbody > tr > td:not(:last-child) {
+    border-right:1px solid #fff;
+}
+.table > caption + thead > tr:first-child > th,
+.table > caption + thead > tr:first-child > td,
+.table > thead:first-child > tr:first-child > th,
+.table > thead:first-child > tr:first-child > td,
+.table > tbody:first-child > tr:first-child > th,
+.table > tbody:first-child > tr:first-child > td {
+    border-top:0;
+}
+
+.col-flex {
+    width:100%;
+}
+
+.table-col {
+    position:relative;
+}
+.table-col-sortable {
+    padding-right:30px;
+    cursor:pointer;
+}
+.table-col-sortable:before, .table-col-sortable:after {
+    content:"\f0dc";
+    display:block;
+    position:absolute; top:0; right:0;
+    font-family:FontAwesome; font-weight:normal;
+    color:#f9f9f9;
+}
+.table-col-sortable:hover {
+    color:#333;
+}
+.table-col-sortable:hover:before, .table-col-sortable:hover:after {
+    color:rgba(0,0,0,.3);
+}
+
+
+.dialog-static .dialog-head {
+    background:#f9f9f9;
+}
+
+.dialog {
+    position:fixed; top:0; right:0; bottom:0; left:0; z-index:9999;
+    overflow-x:hidden; overflow-y:hidden;
+    padding-top:40px;
+}
+    .dialog-bg {
+        position:absolute; top:0; right:0; bottom:0; left:0;
+    }
+    .dialog-container {
+        box-shadow:0 2px 2px -2px rgba(0,0,0,.3);
+    }
+    .dialog-head {
+        padding:15px;
+        line-height:20px;
+        background:#eee;
+        font-size:18px;
+        color:#777;
+    }
+    .dialog-body {
+        padding:50px;
+        background:#f9f9f9;
+    }
+    .dialog-title {
+        margin-bottom:20px;
+        font-size:1.5em; line-height:1.5em;
+        text-align:center;
+    }
+
+.dialog-overlay {
+    position:fixed; top:0; right:0; bottom:0; left:0; z-index:9000;
+    background:rgba(255,255,255,0.7);
+}
+
+
+.dialog-form {
+    margin-bottom:70px;
+}
+
+.dialog-form .form-actions {
+    text-align:right;
+}
+
+
+.animate .dialog-show,
+.animate .dialog-hide {
+    transition:all .5s ease;
+    -moz-transition:all ease .5s;
+}
+    .animate .dialog-show,
+    .animate .dialog-hide.dialog-hide-active {
+        opacity:0;
+        -webkit-transform:scale(1.5);
+        //transform:scale(1.5);
+    }
+    .animate .dialog-hide,
+    .animate .dialog-show.dialog-show-active {
+        opacity:1;
+        -webkit-transform:scale(1);
+        //transform:scale(1);
+    }
+
+.animate .dialog-overlay-enter,
+.animate .dialog-overlay-leave {
+    transition:all .5s ease;
+}
+    .animate .dialog-overlay-enter,
+    .animate .dialog-overlay-leave.dialog-overlay-leave-active {
+        opacity:0;
+    }
+    .animate .dialog-overlay-leave,
+    .animate .dialog-overlay-enter.dialog-overlay-enter-active {
+        opacity:1;
+    }
+
+html {
+    min-height:100%; height:100%; overflow-y:scroll;
+    background:#eee;
+    background-image:url(/flydev.png);
+    background-position:50%;
+    background-repeat:no-repeat;
+}
+.header {
+    position:absolute; top:0; right:0; bottom:auto; left:0; z-index:900;
+}
+.view-outer {
+}
+.view-inner {
+    position:absolute; width:100%; min-height:100%; padding-top:50px;
+    background:#fff;
+}
+
+.view-title {
+    margin:0;
+    border-left:1px solid #e2e2e2;
+}
+.view-enter, .view-leave {
+    -ms-transition:all 1s ease;
+    transition:all 1s ease;
+}
+    .view-enter,
+    .view-leave.view-leave-active {
+        opacity:0;
+    }
+    .view-leave,
+    .view-enter.view-enter-active {
+        opacity:1;
+    }
+
+.list-enter, .list-leave {
+    transition:all .3s ease;
+}
+    .list-enter {
+        opacity:0;
+    }
+    .list-enter.list-enter-active {
+        opacity:1;
+    }
+    .list-leave {
+        transition:none;
+        opacity:1;
+    }
+    .list-leave.list-leave-active {
+        opacity:0;
+    }
+
+.view.ng-enter,
+.view.ng-leave {
+    transition:all .3s ease;
+}
+
+.view.ng-enter,
+.view.ng-leave.ng-leave-active {
+    opacity:0;
+}
+
+.view.ng-leave,
+.view.ng-enter.ng-enter-active {
+    opacity:1;
+}

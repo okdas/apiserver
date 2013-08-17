@@ -1,0 +1,10 @@
+.row: .col-12.dialog-head
+  i.icon-signin
+  span   Пополнить счет
+.row: .col-12.dialog-body: .row
+  .col-12.col-sm-8.col-lg-8.col-offset-2(ng-controller='PlayerPayCtrl')
+    .row
+      .col-8
+        input.input(ng-model='payment.amount')
+      .col-4
+        button.btn.btn-primary.btn-block(ng-click='create()') Пополнить счет
