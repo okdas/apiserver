@@ -2,8 +2,8 @@ module.exports= (grunt) ->
     grunt.initConfig
         pkg: grunt.file.readJSON 'package.json'
 
-        #clean:
-        #    all: ['<%= pkg.config.build.app.node %>/']
+        clean:
+            all: ['<%= pkg.config.build.app.node %>/']
 
         coffee:
             main:
@@ -102,6 +102,6 @@ module.exports= (grunt) ->
     #grunt.loadNpmTasks 'grunt-coffeelint'
     grunt.loadNpmTasks 'grunt-docco'
 
-    grunt.registerTask 'default', ['yaml', 'coffee', 'jade', 'less', 'copy']
+    grunt.registerTask 'default', ['clean', 'yaml', 'coffee', 'jade', 'less', 'copy']
     #grunt.registerTask 'lint', ['coffeelint']
     grunt.registerTask 'doc', ['docco']
