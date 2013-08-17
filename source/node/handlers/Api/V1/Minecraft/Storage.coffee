@@ -71,12 +71,12 @@ app.get '/:playerName/shipments/list', (req, res, next) ->
         (conn, done) ->
             conn.query '
                 SELECT
-                	shipment.id,
-                	shipment.createdAt,
-                	shipment.closedAt
+                    shipment.id,
+                    shipment.createdAt,
+                    shipment.closedAt
                 FROM player AS player
                 JOIN storage_shipment AS shipment
-                	ON shipment.playerId = player.id AND shipment.serverId = ?
+                    ON shipment.playerId = player.id AND shipment.serverId = ?
                 WHERE player.name = ?'
             ,   [req.server.id,req.params.playerName]
             ,   (err, rows) ->
@@ -131,9 +131,9 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             # выбираем айтемы игрока
             conn.query '
                 SELECT
-    	            player.name AS playerName,
+                    player.name AS playerName,
                     item.id,
-                	item.materialId,
+                    item.materialId,
                     item.amount
                 FROM player AS player
                 JOIN storage_item AS item
@@ -196,7 +196,7 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             ,   (err, resp) ->
                     # айтемы пихнули в шипмент теперь можно этот массив игроку отослать
                     return done err, conn, playerResItems
-        
+
         (conn, playerResItems, done) ->
             conn.query 'COMMIT', (err) ->
                 return done err, conn, playerResItems
@@ -232,12 +232,12 @@ app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
             # ищем айтемы шипмента
             conn.query '
                 SELECT
-                	shipmentItem.itemId AS shipmentItemId,
-                	shipmentItem.amount AS shipmentItemAmount,
-                	storageItem.amount AS storageItemAmount
+                    shipmentItem.itemId AS shipmentItemId,
+                    shipmentItem.amount AS shipmentItemAmount,
+                    storageItem.amount AS storageItemAmount
                 FROM storage_shipment_item AS shipmentItem
                 JOIN storage_item AS storageItem
-                	ON storageItem.id = shipmentItem.itemId
+                    ON storageItem.id = shipmentItem.itemId
                 WHERE shipmentId = ?'
             ,   [req.params.shipmentId]
             ,   (err, items) ->
