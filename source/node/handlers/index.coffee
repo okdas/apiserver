@@ -46,6 +46,18 @@ exports.play= () ->
     app.use '/api/v1/player/store'
     ,   require './Play/Api/V1/Player/Store'
 
+
+
+    ###
+    Форум
+    ###
+    app.use '/api/v1/forum/forum', require './Play/Api/V1/Forum/Forum'
+    app.use '/api/v1/forum/section', require './Play/Api/V1/Forum/Section'
+    app.use '/api/v1/forum/thread', require './Play/Api/V1/Forum/Thread'
+    app.use '/api/v1/forum/comment', require './Play/Api/V1/Forum/Comment'
+
+
+
     app
 
 
@@ -181,17 +193,6 @@ exports.manage= () ->
     Методы API для рассылки смс.
     ###
     app.use '/api/v1/sender/sms', require './Manage/Api/V1/Sender/Sms'
-
-
-
-    ###
-    Форум
-    ###
-    app.use '/api/v1/forum/forum', require './Api/V1/Forum/Forum'
-    app.use '/api/v1/forum/section', require './Api/V1/Forum/Section'
-    app.use '/api/v1/forum/thread', require './Api/V1/Forum/Thread'
-    app.use '/api/v1/forum/comment', require './Api/V1/Forum/Comment'
-
 
 
 

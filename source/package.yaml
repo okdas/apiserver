@@ -17,6 +17,8 @@ config:
             host: 176.31.14.255
             port: 3306
 
+            multipleStatements: true
+
 
     development:
 

@@ -9,6 +9,75 @@ app= module.exports= do express
 
 
 ###
+Список секций и тредов
+###
+app.get '/list', (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query '
+                SELECT * FROM forum_section;
+                SELECT * FROM forum_thread;'
+            ,   (err, rows) ->
+                    sections= []
+                    rows[0].map (section, i) ->
+                        section=
+                            id: section.id
+                            title: section.title
+                            threads: []
+
+                        rows[1].map (thread, i) ->
+                            if thread.sectionId == section.id
+                                section.threads.push thread
+
+                        sections.push section
+
+                    return done err, conn, sections
+
+    ],  (err, conn, sections) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, sections
+
+
+
+###
+Отдает секцию
+###
+app.get '/:sectionId', (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query '
+                SELECT * FROM forum_section WHERE id = ?;
+                SELECT * FROM forum_thread WHERE sectionId = ?'
+            ,   [req.params.sectionId, req.params.sectionId]
+            ,   (err, rows) ->
+                    section=
+                        id: rows[0][0].id
+                        title: rows[0][0].title
+                        sections: rows[1]
+
+                    return done err, conn, section
+
+    ],  (err, conn, section) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 404, null if not section
+            return res.json 200, section
+
+
+###
 Добавляет раздел.
 ###
 app.post '/', (req, res, next) ->

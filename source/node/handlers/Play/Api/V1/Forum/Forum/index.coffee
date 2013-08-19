@@ -9,44 +9,9 @@ app= module.exports= do express
 
 
 ###
-Добавляет инстанс.
+Отдает список форумов и секций
 ###
-app.post '/', (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query 'INSERT INTO forum SET ?'
-            ,   [req.body]
-            ,   (err, resp) ->
-                    forum= req.body
-                    forum.id= resp.insertId
-
-                    return done err, conn, forum
-
-        (conn, forum, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn, forum
-
-    ],  (err, conn, forum) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, forum
-
-
-
-###
-Отдает список инстансов.
-###
-app.get '/', (req, res, next) ->
+app.get '/list', (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -54,20 +19,35 @@ app.get '/', (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM forum'
+            conn.query '
+                SELECT * FROM forum;
+                SELECT * FROM forum_section;'
             ,   (err, rows) ->
-                    return done err, conn, rows
+                    forums= []
+                    rows[0].map (forum, i) ->
+                        forum=
+                            id: forum.id
+                            title: forum.title
+                            sections: []
 
-    ],  (err, conn, rows) ->
+                        rows[1].map (section, i) ->
+                            if section.forumId == forum.id
+                                forum.sections.push section
+
+                        forums.push forum
+
+                    return done err, conn, forums
+
+    ],  (err, conn, forums) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200, rows
+            return res.json 200, forums
 
 
 
 ###
-Отдает инстанс.
+Отдает форум.
 ###
 app.get '/:forumId', (req, res, next) ->
     async.waterfall [
@@ -77,10 +57,16 @@ app.get '/:forumId', (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM forum WHERE id = ?'
-            ,   [req.params.forumId]
-            ,   (err, resp) ->
-                    forum= do resp.shift if not err
+            conn.query '
+                SELECT * FROM forum WHERE id = ?;
+                SELECT * FROM forum_section WHERE forumId = ?'
+            ,   [req.params.forumId, req.params.forumId]
+            ,   (err, rows) ->
+                    forum=
+                        id: rows[0][0].id
+                        title: rows[0][0].title
+                        sections: rows[1]
+
                     return done err, conn, forum
 
     ],  (err, conn, forum) ->
@@ -127,7 +113,7 @@ app.put '/:forumId', (req, res, next) ->
 
 
 ###
-Удаляет инстанс
+Удаляет форум
 ###
 app.delete '/:forumId', (req, res, next) ->
     async.waterfall [
