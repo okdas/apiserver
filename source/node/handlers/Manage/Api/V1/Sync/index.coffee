@@ -24,8 +24,8 @@ app.get '/db', (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            Db.syncDb conn, (err) ->
-                done err, conn
+            Db.syncMaterial conn, (err) ->
+                return done err, conn
 
     ],  (err, conn) ->
             do conn.end if conn

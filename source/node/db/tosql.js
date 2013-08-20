@@ -18,12 +18,12 @@ ids.map(function(id, i) {
 
     if (m.enchantability) {
         enchantability= m.enchantability
-        enchantability= "'" + enchantability + "'"
+        enchantability= '"' + enchantability + '"'
     } else {
         enchantability= null
     }
 
-    fs.appendFileSync('materials.sql', "  ('" + id + "', '" + titleRu + "', '" + titleEn + "', '" + imageUrl + "', " + enchantability + "),\n")
+    fs.appendFileSync('materials.sql', '  ("' + id + '", "' + titleRu + '", "' + titleEn + '", "' + imageUrl + '", ' + enchantability + '),\n')
 })
 
 fs.appendFileSync('materials.sql', ';')
