@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS `material` (
   `name` varchar(50) NOT NULL,
   `materialId` varchar(50) NOT NULL,
   `title` varchar(50) DEFAULT NULL,
+  `enchantability` int(3) DEFAULT NULL,
   PRIMARY KEY (`id`,`name`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
