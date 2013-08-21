@@ -66,6 +66,13 @@ module.exports= (grunt) ->
                     src: ['**/*']
                     dest: '<%= pkg.config.build.app.node %>/views/assets/fonts/awesome'
                 }]
+            sql:
+                files: [{
+                    expand: true
+                    cwd: '<%= pkg.config.build.src.node %>/db/sql'
+                    src: ['**/*.sql']
+                    dest: '<%= pkg.config.build.app.node %>/db/sql'
+                }]
 
         #coffeelint:
         #    app:
