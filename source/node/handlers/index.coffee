@@ -162,7 +162,14 @@ exports.manage= () ->
     ###
     Методы API для работы c аутентифицированным сервером.
     ###
-    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareSecret'
+    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareServer'
+
+
+
+    ###
+    API для плагина
+    ###
+    app.use '/api/v1/server/storage', require './Manage/Api/V1/Project/Storage'
 
 
 
@@ -181,13 +188,6 @@ exports.manage= () ->
     Методы API для рассылки смс.
     ###
     app.use '/api/v1/sender/sms', require './Manage/Api/V1/Sender/Sms'
-
-
-
-    ###
-    API для плагина
-    ###
-    app.use '/api/v1/server/storage', require './Manage/Api/V1/Project/Storage'
 
 
 

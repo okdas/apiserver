@@ -22,19 +22,17 @@ app.get '/:playerName/list', (req, res, next) ->
             conn.query '
                 SELECT
                     player.name AS playerName,
-                    item.title,
-                    material.materialId,
-                    storageItem.amount
-                FROM storage_item AS storageItem
-                JOIN material AS material
-                JOIN item as item
-                    ON material.id = item.material
+                    item.material,
+                    item.titleRu,
+                    item.amount,
+                    item.id
+                FROM player_item AS item
                 JOIN player AS player
                     ON player.name = ?
-                WHERE
-                    storageItem.itemId = item.id AND storageItem.playerId = player.id AND storageItem.serverId = ?'
-            ,   [req.params.playerName,req.server.id]
+                WHERE item.playerId = player.id AND item.serverId = ?'
+            ,   [req.params.playerName, req.server.id]
             ,   (err, rows) ->
+                    console.log rows
                     return done err, conn, rows
 
         (conn, rows, done) ->
@@ -42,16 +40,44 @@ app.get '/:playerName/list', (req, res, next) ->
                 playerName: ''
                 items: []
 
-            for row in rows
-                player.playerName= row.playerName
+            rows.map (item) ->
+                player.playerName= item.playerName
 
                 player.items.push
-                    materialId: row.materialId
-                    title: row.title
-                    amount: row.amount
-
+                    material: item.material
+                    amount: item.amount
+                    titleRu: item.titleRu
+                    id: item.id
+                    enchantments: []
 
             return done null, conn, player
+
+
+        (conn, player, done) ->
+            idItems= []
+            player.items.map (item) ->
+                idItems.push item.id
+
+            conn.query '
+                SELECT
+                    itemId AS id,
+                    enchantmentId,
+                    level
+                FROM player_item_enchantment
+                WHERE itemId IN (?)'
+            ,   [idItems]
+            ,   (err, rows) ->
+                    rows.map (ench) ->
+                        player.items.map (item, i) ->
+                            if item.id == ench.id
+                                player.items[i].enchantments.push
+                                    enchantmentId: ench.enchantmentId
+                                    level: ench.level
+
+                    player.items.map (val, i) ->
+                        delete player.items[i].id
+
+                    return done err, conn, player
 
     ],  (err, conn, rows) ->
             do conn.end if conn
@@ -78,10 +104,10 @@ app.get '/:playerName/shipments/list', (req, res, next) ->
                     shipment.createdAt,
                     shipment.closedAt
                 FROM player AS player
-                JOIN storage_shipment AS shipment
+                JOIN player_shipment AS shipment
                     ON shipment.playerId = player.id AND shipment.serverId = ?
                 WHERE player.name = ?'
-            ,   [req.server.id,req.params.playerName]
+            ,   [req.server.id, req.params.playerName]
             ,   (err, rows) ->
                     return done err, conn, rows
 
@@ -135,20 +161,15 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             conn.query '
                 SELECT
                     player.name AS playerName,
-                    storageItem.id,
-                    item.title,
-                    material.materialId,
-                    storageItem.amount
-                FROM storage_item AS storageItem
-                JOIN material AS material
-                    ON material.materialId IN (?)
-                JOIN item as item
-                    ON material.id = item.material
+                    item.material,
+                    item.titleRu,
+                    item.amount,
+                    item.id
+                FROM player_item AS item
                 JOIN player AS player
                     ON player.name = ?
-                WHERE
-                    storageItem.itemId = item.id AND storageItem.playerId = player.id AND storageItem.serverId = ?'
-            ,   [materialIdArr, req.params.playerName, req.server.id]
+                WHERE item.playerId = player.id AND item.serverId = ? AND item.material IN (?)'
+            ,   [req.params.playerName, req.server.id, materialIdArr]
             ,   (err, rows) ->
                     # теперь нам нужно посчитать количество айтемов которые отдадим
                     playerResItems=
