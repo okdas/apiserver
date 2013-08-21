@@ -1,4 +1,4 @@
-INSERT INTO `server_bukkit_material` (`id`, `titleRu`, `titleEn`, `imageUrl`, `enchantability`) VALUES
+INSERT INTO `bukkit_material` (`id`, `titleRu`, `titleEn`, `imageUrl`, `enchantability`) VALUES
   ("1", "Камень", "Stone", "http://media-mcw.cursecdn.com/a/a6/Grid_Stone.png", null),
   ("2", "Трава", "Grass Block", "http://media-mcw.cursecdn.com/6/6f/Grid_Grass.png", null),
   ("3", "Земля", "Dirt", "http://media-mcw.cursecdn.com/b/bd/Grid_Dirt.png", null),
@@ -465,5 +465,4 @@ INSERT INTO `server_bukkit_material` (`id`, `titleRu`, `titleEn`, `imageUrl`, `e
   ("397:1", "Голова скелета-иссушителя", "Wither Skeleton Head", "http://media-mcw.cursecdn.com/d/d4/Grid_Wither_Skeleton_Skull.png", null),
   ("397:2", "Голова зомби", "Zombie Head", "http://media-mcw.cursecdn.com/6/6f/Grid_Zombie_Head.png", null),
   ("397:3", "Голова", "Human Head", "http://media-mcw.cursecdn.com/5/55/Grid_Head.png", null),
-  ("397:4", "Голова крипера", "Creeper Head", "http://media-mcw.cursecdn.com/c/c7/Grid_Creeper_Head.png", null)
-;
+  ("397:4", "Голова крипера", "Creeper Head", "http://media-mcw.cursecdn.com/c/c7/Grid_Creeper_Head.png", null);
