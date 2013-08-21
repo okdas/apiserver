@@ -340,7 +340,7 @@ INSERT INTO `bukkit_material` (`id`, `titleRu`, `titleEn`, `imageUrl`, `enchanta
   ("171:2", "Сиреневый ковер", "Magenta Carpet", "http://media-mcw.cursecdn.com/0/01/Grid_Magenta_Carpet.png", null),
   ("171:3", "Светло-синий ковер", "Light Blue Carpet", "http://media-mcw.cursecdn.com/4/4b/Grid_Light_Blue_Carpet.png", null),
   ("171:4", "Желтый ковер", "Yellow Carpet", "http://media-mcw.cursecdn.com/6/63/Grid_Yellow_Carpet.png", null),
-  ("171:5", "null", "Lime Carpet", "http://media-mcw.cursecdn.com/3/34/Grid_Lime_Carpet.png", null),
+  ("171:5", "Лаймовый ковер", "Lime Carpet", "http://media-mcw.cursecdn.com/3/34/Grid_Lime_Carpet.png", null),
   ("171:6", "Светло-зеленый ковер", "Pink Carpet", "http://media-mcw.cursecdn.com/b/be/Grid_Pink_Carpet.png", null),
   ("171:7", "Серый ковер", "Gray Carpet", "http://media-mcw.cursecdn.com/2/2b/Grid_Gray_Carpet.png", null),
   ("171:8", "Светло-серый ковер", "Light Gray Carpet", "http://media-mcw.cursecdn.com/3/3a/Grid_Light_Gray_Carpet.png", null),
