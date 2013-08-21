@@ -184,13 +184,6 @@ exports.manage= () ->
 
 
 
-    ###
-    Инициализация бд
-    ###
-    app.use '/api/v1/sync/', require './Manage/Api/V1/Sync/'
-
-
-
 
 
     app
