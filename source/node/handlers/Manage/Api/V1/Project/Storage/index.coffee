@@ -29,7 +29,7 @@ app.get '/:playerName/list', (req, res, next) ->
                 FROM player_item AS item
                 JOIN player AS player
                     ON player.name = ?
-                WHERE item.playerId = player.id AND item.serverId = ?'
+                WHERE item.playerId = player.id AND item.amount > 0 AND item.serverId = ?'
             ,   [req.params.playerName, req.server.id]
             ,   (err, rows) ->
                     console.log rows
@@ -52,7 +52,7 @@ app.get '/:playerName/list', (req, res, next) ->
 
             return done null, conn, player
 
-
+        # прицепляем энчаты
         (conn, player, done) ->
             idItems= []
             player.items.map (item) ->
@@ -70,12 +70,7 @@ app.get '/:playerName/list', (req, res, next) ->
                     rows.map (ench) ->
                         player.items.map (item, i) ->
                             if item.id == ench.id
-                                player.items[i].enchantments.push
-                                    enchantmentId: ench.enchantmentId
-                                    level: ench.level
-
-                    player.items.map (val, i) ->
-                        delete player.items[i].id
+                                player.items[i].enchantments.push ench
 
                     return done err, conn, player
 
@@ -125,18 +120,17 @@ app.get '/:playerName/shipments/list', (req, res, next) ->
 app.post '/:playerName/shipments/open', (req, res, next) ->
     ###
     прислали кучу айтемов что делать:
-    1. проверить имеем ли мы такие айтемы на складе этого игрока
-    2. проверить количество, если запросили больше выдать сколько можно
-    3. открыть шипмент с теми айтемами которые мы выдадим
-    4. записать в storage_shipment_item айтемы которые выдадим
+    1. нам прислали реальные id и реальное количество то есть ошибки быть не может
+       и проверять не нужно
+    2. сразу создаем шипмент с этими айтемами
 
     req.body= [
         {
-            materialId: '5',
+            id: '5',
             amount: 10
         },
         {
-            materialId: '7',
+            id: '7',
             amount: '2'
         }
     ]
@@ -153,90 +147,48 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            materialIdArr= []
-            req.body.map (val, i) ->
-                materialIdArr.push val.materialId
-
-            # выбираем айтемы игрока
+            # открываем шипмент
             conn.query '
-                SELECT
-                    player.name AS playerName,
-                    item.material,
-                    item.titleRu,
-                    item.amount,
-                    item.id
-                FROM player_item AS item
-                JOIN player AS player
-                    ON player.name = ?
-                WHERE item.playerId = player.id AND item.serverId = ? AND item.material IN (?)'
-            ,   [req.params.playerName, req.server.id, materialIdArr]
-            ,   (err, rows) ->
-                    # теперь нам нужно посчитать количество айтемов которые отдадим
-                    playerResItems=
-                        playerName: ''
-                        shipmentId: ''
-                        items: []
-
-                    rows.map (row, i) ->
-                        playerResItems.playerName= row.playerName
-
-                        # ищем нужный айтем в массиве который получили от плагина
-                        reqEqualItem= {}
-                        req.body.map (item, i) ->
-                            reqEqualItem= item if item.materialId == row.materialId
-
-                        # смотрим amount, если больше даем сколько есть иначе сколько запросили
-                        realAmount= parseInt (if reqEqualItem.amount > row.amount then row.materialId else reqEqualItem.amount)
-
-                        # пихаем в массив, айтем
-                        playerResItems.items.push
-                            id: row.id
-                            materialId: row.materialId
-                            amount: realAmount
-
-                    console.log playerResItems
-                    return done err, conn, playerResItems
-
-        (conn, playerResItems, done) ->
-            # выборку сделали, открываем шипмент
-            conn.query '
-                INSERT INTO storage_shipment
+                INSERT INTO player_shipment
                 SET
                     playerId = (SELECT id FROM player WHERE name = ?),
                     serverId = ?'
             ,   [req.params.playerName, req.server.id]
             ,   (err, resp) ->
                     # как открыли шипмент дадут id шипмента
-                    playerResItems.shipmentId= resp.insertId
-                    return done err, conn, playerResItems
+                    shipment=
+                        id: resp.insertId
+                        items: req.body
 
-        (conn, playerResItems, done) ->
+                    return done err, conn, shipment
+
+        (conn, shipment, done) ->
             # подготовим массив для инсерта
             shipmentItems= []
-            playerResItems.items.map (item, i) ->
-                shipmentItems.push [playerResItems.shipmentId, item.id, item.amount]
+            shipment.items.map (item, i) ->
+                shipmentItems.push [shipment.id, item.id, item.amount]
 
             console.log shipmentItems
 
             # выборку сделали, открываем шипмент
             conn.query '
                 INSERT INTO
-                    storage_shipment_item (`shipmentId`, `itemId`, `amount`)
+                    player_shipment_items (`shipmentId`, `plyerItemId`, `amount`)
                 VALUES ?'
             ,   [shipmentItems]
             ,   (err, resp) ->
                     # айтемы пихнули в шипмент теперь можно этот массив игроку отослать
-                    return done err, conn, playerResItems
+                    return done err, conn, shipment
 
-        (conn, playerResItems, done) ->
+        (conn, shipment, done) ->
             conn.query 'COMMIT', (err) ->
-                return done err, conn, playerResItems
+                return done err, conn, shipment
 
-    ],  (err, conn, playerResItems) ->
+    ],  (err, conn, shipment) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200, playerResItems
+            return res.json 200, shipment
 
 
 
@@ -263,12 +215,12 @@ app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
             # ищем айтемы шипмента
             conn.query '
                 SELECT
-                    shipmentItem.itemId AS shipmentItemId,
-                    shipmentItem.amount AS shipmentItemAmount,
-                    storageItem.amount AS storageItemAmount
-                FROM storage_shipment_item AS shipmentItem
-                JOIN storage_item AS storageItem
-                    ON storageItem.id = shipmentItem.itemId
+                    shipmentItem.playerItemId,
+                    playerItem.amount AS playerAmount,
+                    shipmentItem.amount AS shipmentAmount
+                FROM player_shipment_items AS shipmentItem
+                JOIN player_item AS playerItem
+                    ON playerItem.id = playerItemId
                 WHERE shipmentId = ?'
             ,   [req.params.shipmentId]
             ,   (err, items) ->
@@ -277,8 +229,8 @@ app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
 
                     items.map (item, i) ->
                         updateItem.push
-                            itemId: item.shipmentItemId
-                            amount: (item.storageItemAmount - item.shipmentItemAmount)
+                            itemId: item.playerItemId
+                            amount: (item.playerAmount - item.shipmentAmount)
 
                     return done err, conn, updateItem
 
@@ -286,7 +238,7 @@ app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
             # обновляем оставшееся количество на складе игрока
             updateItem.map (item, i) ->
                 conn.query '
-                    UPDATE storage_item
+                    UPDATE player_item
                         SET amount = ?
                     WHERE id = ?'
                 ,   [item.amount, item.itemId]
@@ -298,7 +250,7 @@ app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
         (conn, done) ->
             # обновляем шипмент - выставляем дату закрытия
             conn.query '
-                UPDATE storage_shipment
+                UPDATE player_shipment
                     SET closedAt = NOW()
                 WHERE id = ?'
             ,   [req.params.shipmentId]
