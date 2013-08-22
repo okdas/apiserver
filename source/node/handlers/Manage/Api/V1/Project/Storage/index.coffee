@@ -120,13 +120,13 @@ app.get '/:playerName/shipments/list', (req, res, next) ->
 app.post '/:playerName/shipments/open', (req, res, next) ->
     ###
     прислали кучу айтемов что делать:
-    1. нам прислали реальные id и реальное количество то есть ошибки быть не может
-       и проверять не нужно
+    1. нам прислали id player_item и реальное количество то есть ошибки быть не может
+       и проверять не нужно (но! всетаки проверим, тем более меньше работы плагину)
     2. сразу создаем шипмент с этими айтемами
 
     req.body= [
         {
-            id: '5',
+            id: '5', это id из player_item
             amount: 10
         },
         {
@@ -147,6 +147,34 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
+            # чекаем айтемы и их количество
+            idItems= []
+            req.body.map (item) ->
+                idItems.push item.id
+
+            conn.query '
+                SELECT
+                    id,
+                    amount
+                FROM player_item
+                WHERE id IN (?)'
+            ,   [idItems]
+            ,   (err, rows) ->
+                    # как открыли шипмент дадут id шипмента
+                    shipment=
+                        id: ''
+                        items: []
+
+                    rows.map (tableItem) ->
+                        req.body.map (reqItem) ->
+                            if tableItem.id == parseInt reqItem.id
+                                shipment.items.push
+                                    id: tableItem.id
+                                    amount: (if reqItem.amount > tableItem.amount then tableItem.amount else reqItem.amount)
+
+                    return done err, conn, shipment
+
+        (conn, shipment, done) ->
             # открываем шипмент
             conn.query '
                 INSERT INTO player_shipment
@@ -156,9 +184,7 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             ,   [req.params.playerName, req.server.id]
             ,   (err, resp) ->
                     # как открыли шипмент дадут id шипмента
-                    shipment=
-                        id: resp.insertId
-                        items: req.body
+                    shipment.id= resp.insertId
 
                     return done err, conn, shipment
 
@@ -168,12 +194,10 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             shipment.items.map (item, i) ->
                 shipmentItems.push [shipment.id, item.id, item.amount]
 
-            console.log shipmentItems
-
             # выборку сделали, открываем шипмент
             conn.query '
                 INSERT INTO
-                    player_shipment_items (`shipmentId`, `plyerItemId`, `amount`)
+                    player_shipment_items (`shipmentId`, `playerItemId`, `amount`)
                 VALUES ?'
             ,   [shipmentItems]
             ,   (err, resp) ->
