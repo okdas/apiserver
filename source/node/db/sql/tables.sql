@@ -52,6 +52,21 @@ CREATE TABLE `player_balance` (
 
 
 
+-- Дамп структуры для таблица apiserver.player_payment
+CREATE TABLE `player_payment` (
+  `id` int(10) NOT NULL AUTO_INCREMENT,
+  `playerId` int(10) NOT NULL,
+  `amount` int(10) NOT NULL,
+  `status` enum('pending','success','error') DEFAULT 'pending',
+  `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `closedAt` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `player_payment_player_id` (`playerId`),
+  CONSTRAINT `player_payment_player` FOREIGN KEY (`playerId`) REFERENCES `player` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- Дамп структуры для таблица apiserver.subscription
 CREATE TABLE IF NOT EXISTS `subscription` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
@@ -162,18 +177,6 @@ CREATE TABLE IF NOT EXISTS `player_order_items` (
   KEY `order_item_id` (`itemId`),
   CONSTRAINT `order_id` FOREIGN KEY (`orderId`) REFERENCES `player_order` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `order_item_id` FOREIGN KEY (`itemId`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
-
-
--- Дамп структуры для таблица apiserver.player_payments
-CREATE TABLE IF NOT EXISTS `player_payments` (
-  `id` int(10) NOT NULL AUTO_INCREMENT,
-  `playerId` int(10) NOT NULL,
-  `money` int(10) NOT NULL DEFAULT '0',
-  PRIMARY KEY (`id`),
-  KEY `payments_player_id` (`playerId`),
-  CONSTRAINT `payments_player_id` FOREIGN KEY (`playerId`) REFERENCES `player` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
