@@ -42,6 +42,16 @@ CREATE TABLE IF NOT EXISTS `player` (
 
 
 
+-- Дамп структуры для таблица apiserver.player_balance
+CREATE TABLE `player_balance` (
+  `playerId` int(10) NOT NULL,
+  `amount` float NOT NULL DEFAULT '0',
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`playerId`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
 -- Дамп структуры для таблица apiserver.subscription
 CREATE TABLE IF NOT EXISTS `subscription` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
