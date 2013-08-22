@@ -33,10 +33,12 @@ CREATE TABLE IF NOT EXISTS `server` (
 -- Дамп структуры для таблица apiserver.player
 CREATE TABLE IF NOT EXISTS `player` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
-  `nick` varchar(50) NOT NULL,
+  `name` varchar(45) NOT NULL,
+  `pass` varchar(40) NOT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `nick` (`nick`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='Информация об всех имеющихся игроках';
+  UNIQUE KEY `player_identity` (`name`),
+  UNIQUE KEY `player_credentials` (`name`,`pass`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 
 
