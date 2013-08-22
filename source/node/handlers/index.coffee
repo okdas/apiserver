@@ -41,6 +41,12 @@ exports.play= () ->
     ,   require './Play/Api/V1/Player'
 
     ###
+    Методы API для работы c платежами аутентифицированного игрока.
+    ###
+    app.use '/api/v1/player/payments'
+    ,   require './Play/Api/V1/Player/Payments'
+
+    ###
     Методы API для работы игрока с магазином.
     ###
     app.use '/api/v1/player/store'
