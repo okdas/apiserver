@@ -168,7 +168,14 @@ exports.manage= () ->
     ###
     Методы API для работы c аутентифицированным сервером.
     ###
-    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareSecret'
+    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareServer'
+
+
+
+    ###
+    API для плагина
+    ###
+    app.use '/api/v1/server/storage', require './Manage/Api/V1/Project/Storage'
 
 
 
