@@ -27,7 +27,7 @@ config:
         host: local.awesome39.com
 
         db:
-            database: apiserver_dev
+            database: apiserver
 
             user: apiserver
             password: iamthe1337

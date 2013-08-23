@@ -17,10 +17,14 @@ access= (req, res, next) ->
 app= module.exports= do express
 
 
+
 ###
 Отдает аутентифицированного игрока.
 ###
 app.get '/', access, (req, res, next) ->
+
+    id= req.user.id
+
     async.waterfall [
 
         (done) ->
@@ -30,14 +34,17 @@ app.get '/', access, (req, res, next) ->
         (conn, done) ->
             conn.query "
                 SELECT
-                    p.name,
-                    p.balance
+                    Player.id,
+                    Player.name,
+                    PlayerBalance.amount as balance
                 FROM
-                    player as p
+                    ?? as Player
+                JOIN
+                    ?? as PlayerBalance ON PlayerBalance.playerId = Player.id
                 WHERE
-                    p.id = ?
+                    Player.id = ?
                 "
-            ,   [req.user.id]
+            ,   ['player', 'player_balance', id]
             ,   (err, resp) ->
                     player= do resp.shift if not err
                     return done err, conn, player
@@ -48,6 +55,7 @@ app.get '/', access, (req, res, next) ->
             return next err if err
             return res.json 400, player if not player
             return res.json 200, player
+
 
 
 ###
@@ -67,14 +75,15 @@ app.post '/login', (req, res, next) ->
         (conn, done) ->
             conn.query "
                 SELECT
-                    p.id,
-                    p.name
+                    Player.id,
+                    Player.name
                 FROM
-                    player as p
+                    ?? as Player
                 WHERE
-                    p.name = ? AND p.pass = ?
+                    Player.name = ? AND
+                    Player.pass = ?
                 "
-            ,   [name, pass]
+            ,   ['player', name, pass]
             ,   (err, rows) ->
                     player= do rows.shift if not err
                     return done err, conn, player
@@ -88,6 +97,7 @@ app.post '/login', (req, res, next) ->
             req.login player, (err) ->
                 return next err if err
                 return res.json 200, player
+
 
 
 ###

@@ -41,6 +41,12 @@ exports.play= () ->
     ,   require './Play/Api/V1/Player'
 
     ###
+    Методы API для работы c платежами аутентифицированного игрока.
+    ###
+    app.use '/api/v1/player/payments'
+    ,   require './Play/Api/V1/Player/Payments'
+
+    ###
     Методы API для работы игрока с магазином.
     ###
     app.use '/api/v1/player/store'
@@ -174,7 +180,14 @@ exports.manage= () ->
     ###
     Методы API для работы c аутентифицированным сервером.
     ###
-    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareSecret'
+    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareServer'
+
+
+
+    ###
+    API для плагина
+    ###
+    app.use '/api/v1/server/storage', require './Manage/Api/V1/Project/Storage'
 
 
 
@@ -193,6 +206,8 @@ exports.manage= () ->
     Методы API для рассылки смс.
     ###
     app.use '/api/v1/sender/sms', require './Manage/Api/V1/Sender/Sms'
+
+
 
 
 
