@@ -1,20 +1,13 @@
 extends ../../layout
-
-block section-head-title
-  a(href='#/store') Управление содержимым
-
-block section-head-nav
-    ul.nav.nav-row
-        li: a(href='#/store/items/list') Предметы
-        li.active: a Чары
+extends ../layout
 
 block section-body
     table.table
         thead
             tr
-                th #
-                th.col-flex: .sortable: .sortable-cell Название чара
                 th ID
+                th.col-flex: .sortable: .sortable-cell Название чара
+                th English
                 th Max
                 th
                     button.btn.btn-info(ng-click='reload()')
@@ -23,8 +16,8 @@ block section-body
         tbody
             tr(ng-repeat='enchantment in enchantments')
                 td {{enchantment.id}}
-                td: a(ng-click='showDetails(enchantment)') {{enchantment.title}}
-                td {{enchantment.identity}}
+                td {{enchantment.titleRu}}
+                td {{enchantment.titleEn}}
                 td {{enchantment.levelmax}}
                 td
                     a(ng-href='#/store/enchantments/enchantment/update/{{enchantment.id}}')

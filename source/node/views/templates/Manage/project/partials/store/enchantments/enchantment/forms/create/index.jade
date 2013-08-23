@@ -1,22 +1,16 @@
 extends ../../../../../layout
-
-block section-head-title
-  a(href='#/store') Управление содержимым
-
-block section-head-nav
-    ul.nav.nav-row
-        li: a(ng-href='#/store/items/list') Предметы
-        li: a(ng-href='#/store/enchantments/list') Чары
+extends ../../../../layout
 
 block section-body
     form(name='EnchantmentForm')
         h3(style='text-align:center') Добавить чары в магазин
-        
-        fieldset
-              input.input(placeholder='Название чар', type='text', required, ng-model='enchantment.title')
 
         fieldset
-              input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='enchantment.identity', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
+              input.input(placeholder='Название чар', type='text', required, ng-model='enchantment.titleRu')
+              input.input(placeholder='Name enchantment', type='text', required, ng-model='enchantment.titleEn')
+
+        fieldset
+              input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='enchantment.id', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
               input.input.input-auto(placeholder='Максимальный уровень', type='text', required, ng-model='enchantment.levelmax', ng-pattern='/^([0-9]+)$/')
 
         fieldset
