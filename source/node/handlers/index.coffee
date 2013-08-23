@@ -149,8 +149,12 @@ exports.manage= () ->
     ###
     Методы API для работы c чарами.
     ###
-    app.use '/api/v1/store/enchantments'
-    ,   require './Manage/Api/V1/Project/Store/Enchantments'
+    app.use '/api/v1/bukkit/enchantments', require './Manage/Api/V1/Project/Bukkit/Enchantments'
+
+    ###
+    Методы API для работы c материалами.
+    ###
+    app.use '/api/v1/bukkit/materials', require './Manage/Api/V1/Project/Bukkit/Materials'
 
     ###
     Методы API для работы c предметами.

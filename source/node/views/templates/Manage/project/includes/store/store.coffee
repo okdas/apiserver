@@ -21,16 +21,27 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
     $routeProvider.when '/store/items/item/update/:itemId',
         templateUrl: 'partials/store/items/item/forms/update/', controller: 'StoreItemFormCtrl'
 
-    # Магазин. Чары
+    # Bukkit. Материалы
 
-    $routeProvider.when '/store/enchantments/list',
-        templateUrl: 'partials/store/enchantments/', controller: 'StoreEnchantmentCtrl'
+    $routeProvider.when '/bukkit/materials/list',
+        templateUrl: 'partials/bukkit/materials/', controller: 'BukkitMaterialListCtrl'
 
-    $routeProvider.when '/store/enchantments/enchantment/create',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/create', controller: 'StoreEnchantmentFormCtrl'
+    $routeProvider.when '/bukkit/materials/material/create',
+        templateUrl: 'partials/bukkit/materials/material/forms/create/', controller: 'BukkitMaterialFormCtrl'
 
-    $routeProvider.when '/store/enchantments/enchantment/update/:enchantmentId',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/update', controller: 'StoreEnchantmentFormCtrl'
+    $routeProvider.when '/bukkit/materials/item/update/:itemId',
+        templateUrl: 'partials/bukkit/materials/material/forms/update/', controller: 'BukkitMaterialFormCtrl'
+
+    # Bukkit. Чары
+
+    $routeProvider.when '/bukkit/enchantments/list',
+        templateUrl: 'partials/bukkit/enchantments/', controller: 'BukkitEnchantmentCtrl'
+
+    $routeProvider.when '/bukkit/enchantments/enchantment/create',
+        templateUrl: 'partials/bukkit/enchantments/enchantment/forms/create', controller: 'BukkitEnchantmentFormCtrl'
+
+    $routeProvider.when '/bukkit/enchantments/enchantment/update/:enchantmentId',
+        templateUrl: 'partials/bukkit/enchantments/enchantment/forms/update', controller: 'BukkitEnchantmentFormCtrl'
 
 
 
@@ -107,25 +118,47 @@ app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
 
 
 ###
-Модель чар.
+Модель материала.
 ###
-app.factory 'Enchantment', ($resource) ->
-    $resource '/api/v1/store/enchantments/:enchantmentId',
-        enchantmentId:'@id'
+app.factory 'Material', ($resource) ->
+    $resource '/api/v1/bukkit/materials/:materialId',
+        enchantmentId: '@id'
     ,
 
         create:
-            method:'post'
+            method: 'post'
 
         update:
-            method:'patch'
+            method: 'put'
             params:
-                enchantmentId:'@id'
+                enchantmentId: '@id'
 
         delete:
-            method:'delete'
+            method: 'delete'
             params:
-                enchantmentId:'@id'
+                enchantmentId: '@id'
+
+
+
+###
+Модель чар.
+###
+app.factory 'Enchantment', ($resource) ->
+    $resource '/api/v1/bukkit/enchantments/:enchantmentId',
+        enchantmentId: '@id',
+
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                enchantmentId: '@id'
+
+        delete:
+            method: 'delete'
+            params:
+                enchantmentId: '@id'
 
 
 
@@ -181,6 +214,15 @@ app.controller 'StoreOrderListCtrl', ($scope, $location, Order) ->
             console.log 'Заказы загружены', orders
 
     do load
+
+
+
+###
+Контроллер материалов баккита
+###
+app.controller 'BukkitMaterialListCtrl', ($scope, $location, Material) ->
+    $scope.state= 'loaded'
+
 
 
 ###
