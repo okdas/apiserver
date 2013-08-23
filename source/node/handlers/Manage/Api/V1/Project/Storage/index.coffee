@@ -33,7 +33,7 @@ app.get '/:playerName/list', (req, res, next) ->
                 WHERE item.playerId = player.id AND item.amount > 0 AND item.serverId = ?'
             ,   [req.params.playerName, req.server.id]
             ,   (err, rows) ->
-                    console.log rows
+                    return done 'empty', conn if rows.length == 0
                     return done err, conn, rows
 
         # массив айтемов
@@ -69,6 +69,8 @@ app.get '/:playerName/list', (req, res, next) ->
                 WHERE itemId IN (?)'
             ,   [idItems]
             ,   (err, rows) ->
+                    return done 'empty', conn if rows.length == 0
+
                     rows.map (ench) ->
                         player.items.map (item, i) ->
                             if item.id == ench.id
@@ -162,6 +164,8 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
                 WHERE id IN (?)'
             ,   [idItems]
             ,   (err, rows) ->
+                    return done 'empty', conn if rows.length == 0
+
                     # как открыли шипмент дадут id шипмента
                     shipment=
                         id: ''
@@ -251,6 +255,8 @@ app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
                 WHERE shipmentId = ?'
             ,   [req.params.shipmentId]
             ,   (err, items) ->
+                    return done 'empty', conn if items.length == 0
+                
                     # получили айтемы теперь вычитаем количество
                     updateItem=[]
 
