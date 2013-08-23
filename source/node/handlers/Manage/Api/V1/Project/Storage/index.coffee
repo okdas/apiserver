@@ -18,6 +18,7 @@ app.get '/:playerName/list', (req, res, next) ->
             req.db.getConnection (err, conn) ->
                 return done err, conn
 
+        # запрашиваем айтемы
         (conn, done) ->
             conn.query '
                 SELECT
@@ -35,6 +36,7 @@ app.get '/:playerName/list', (req, res, next) ->
                     console.log rows
                     return done err, conn, rows
 
+        # массив айтемов
         (conn, rows, done) ->
             player=
                 playerName: ''
@@ -46,7 +48,7 @@ app.get '/:playerName/list', (req, res, next) ->
                 player.items.push
                     material: item.material
                     amount: item.amount
-                    titleRu: item.titleRu
+                    title: item.titleRu
                     id: item.id
                     enchantments: []
 
@@ -92,6 +94,7 @@ app.get '/:playerName/shipments/list', (req, res, next) ->
             req.db.getConnection (err, conn) ->
                 return done err, conn
 
+        # все примитивно - запрос в таблицу шипментов
         (conn, done) ->
             conn.query '
                 SELECT
@@ -120,13 +123,13 @@ app.get '/:playerName/shipments/list', (req, res, next) ->
 app.post '/:playerName/shipments/open', (req, res, next) ->
     ###
     прислали кучу айтемов что делать:
-    1. нам прислали id player_item и реальное количество то есть ошибки быть не может
+    1. нам прислали id из player_item и реальное количество то есть ошибки быть не может
        и проверять не нужно (но! всетаки проверим, тем более меньше работы плагину)
     2. сразу создаем шипмент с этими айтемами
 
     req.body= [
         {
-            id: '5', это id из player_item
+            id: '5', # это id из player_item
             amount: 10
         },
         {
@@ -134,7 +137,6 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             amount: '2'
         }
     ]
-    нахер это все, перево
     ###
     async.waterfall [
 
@@ -165,12 +167,13 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
                         id: ''
                         items: []
 
+                    # проверяем amount шипментов
                     rows.map (tableItem) ->
                         req.body.map (reqItem) ->
                             if tableItem.id == parseInt reqItem.id
                                 shipment.items.push
                                     id: tableItem.id
-                                    amount: (if reqItem.amount > tableItem.amount then tableItem.amount else reqItem.amount)
+                                    amount: parseInt (if reqItem.amount > tableItem.amount then tableItem.amount else reqItem.amount)
 
                     return done err, conn, shipment
 
