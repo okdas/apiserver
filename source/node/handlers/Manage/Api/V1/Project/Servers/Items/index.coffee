@@ -16,6 +16,7 @@ app= module.exports= do express
 Отдает список предметов.
 ###
 app.get '/', access, (req, res, next) ->
+    console.log 'fffffffffffffffffffff'
     async.waterfall [
 
         (done) ->
@@ -23,7 +24,7 @@ app.get '/', access, (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM store_item'
+            conn.query 'SELECT * FROM item'
             ,   (err, rows) ->
                     return done err, conn, rows
 

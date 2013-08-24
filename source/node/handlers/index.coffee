@@ -99,14 +99,13 @@ exports.manage= () ->
     ###
     Методы API для работы c аутентифицированным пользователем.
     ###
-    app.use '/api/v1/user'
-    ,   require './Manage/Api/V1/User'
+    app.use '/api/v1/user', require './Manage/Api/V1/User'
 
     ###
     Методы API для работы c пользователями.
     ###
-    app.use '/api/v1/users'
-    ,   require './Manage/Api/V1/Users'
+    app.use '/api/v1/users', require './Manage/Api/V1/Users'
+
 
 
     ###
@@ -116,70 +115,51 @@ exports.manage= () ->
     ###
 
     ###
-    Методы API для работы c игроками.
+    Игрок
+
+    Игрок имеет предмет, шипмент, и ордер, поэтому это все его
     ###
-    app.use '/api/v1/players'
-    ,   require './Manage/Api/V1/Project/Players'
+
+    # Методы API для работы с игрокам.
+    app.use '/api/v1/players', require './Manage/Api/V1/Project/Players/Player'
+
+    #  Методы API для работы c ордерами.
+    app.use '/api/v1/players/orders', require './Manage/Api/V1/Project/Players/Order'
+
+    # Методы API для работы c аутентифицированным сервером.
+    app.use '/api/v1/players/server', require './Manage/Api/V1/Project/Players/MiddlewareServer'
+
+    # Методы API для плагина, требуют key сервера.
+    app.use '/api/v1/players/server/item', require './Manage/Api/V1/Project/Players/Item'
+
+
+
+    ###
+    Баккит
+    ###
+    # Методы API для работы c чарами.
+    app.use '/api/v1/bukkit/enchantments', require './Manage/Api/V1/Project/Bukkit/Enchantments'
+
+    # Методы API для работы c материалами.
+    app.use '/api/v1/bukkit/materials', require './Manage/Api/V1/Project/Bukkit/Materials'
+
+
+
 
     ###
     Методы API для работы c серверами.
     ###
-    app.use '/api/v1/servers'
-    ,   require './Manage/Api/V1/Project/Servers'
+    app.use '/api/v1/servers', require './Manage/Api/V1/Project/Servers'
 
     ###
     Методы API для работы c инстансами серверов.
     ###
-    app.use '/api/v1/servers/instances'
-    ,   require './Manage/Api/V1/Project/Servers/Instances'
-
+    app.use '/api/v1/servers/instances', require './Manage/Api/V1/Project/Servers/Instances'
 
     ###
-
-    Магазин
-
+    Методы API для работы c предметами сервера.
     ###
-
-    ###
-    Методы API для работы c заказами магазина.
-    ###
-    app.use '/api/v1/store/orders'
-    ,   require './Manage/Api/V1/Project/Store/Orders'
-
-    ###
-    Методы API для работы c чарами.
-    ###
-    app.use '/api/v1/bukkit/enchantments', require './Manage/Api/V1/Project/Bukkit/Enchantments'
-
-    ###
-    Методы API для работы c материалами.
-    ###
-    app.use '/api/v1/bukkit/materials', require './Manage/Api/V1/Project/Bukkit/Materials'
-
-    ###
-    Методы API для работы c предметами.
-    ###
-    app.use '/api/v1/store/items'
-    ,   require './Manage/Api/V1/Project/Store/Items'
-
-
-    ###
-
-    Сервер
-
-    ###
-
-    ###
-    Методы API для работы c аутентифицированным сервером.
-    ###
-    app.use '/api/v1/server', require './Manage/Api/V1/Project/Servers/MiddlewareServer'
-
-
-
-    ###
-    API для плагина
-    ###
-    app.use '/api/v1/server/storage', require './Manage/Api/V1/Project/Storage'
+    app.use '/api/v1/server/items', require './Manage/Api/V1/Project/Servers/Items'
 
 
 

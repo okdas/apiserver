@@ -201,8 +201,6 @@ app.controller 'StoreDashboardCtrl', ($scope) ->
 Контроллер списка покупок.
 ###
 app.controller 'StoreOrderListCtrl', ($scope, $location, Order) ->
-    $scope.state= 'load'
-
     load= ->
         $scope.orders= Order.query (orders) ->
             $scope.state= 'loaded'
@@ -218,8 +216,6 @@ app.controller 'StoreOrderListCtrl', ($scope, $location, Order) ->
 Контроллер материалов баккита
 ###
 app.controller 'StoreMaterialListCtrl', ($scope, $location, Material) ->
-    $scope.materials= {}
-
     load= ->
         $scope.materials= Material.query ->
             $scope.state= 'loaded'
@@ -274,8 +270,6 @@ app.controller 'StoreMaterialFormCtrl', ($scope, $route, $q, $location, Material
 Контроллер чар баккита
 ###
 app.controller 'StoreEnchantmentCtrl', ($scope, $location, Enchantment) ->
-    $scope.enchantments= {}
-
     load= ->
         $scope.enchantments= Enchantment.query ->
             $scope.state= 'loaded'
@@ -330,9 +324,6 @@ app.controller 'StoreEnchantmentFormCtrl', ($scope, $route, $q, $location, Encha
 Контроллер списка предметов.
 ###
 app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
-    $scope.items= {}
-    $scope.state= 'load'
-
     load= ->
         $scope.items= Item.query ->
             $scope.state= 'loaded'
