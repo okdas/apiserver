@@ -27,10 +27,10 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
         templateUrl: 'partials/store/materials/', controller: 'StoreMaterialListCtrl'
 
     $routeProvider.when '/store/materials/material/create',
-        templateUrl: 'partials/store/materials/material/forms/create/', controller: 'StoreMaterialFormCtrl'
+        templateUrl: 'partials/store/materials/material/form/', controller: 'StoreMaterialFormCtrl'
 
     $routeProvider.when '/store/materials/material/update/:materialId',
-        templateUrl: 'partials/store/materials/material/forms/update/', controller: 'StoreMaterialFormCtrl'
+        templateUrl: 'partials/store/materials/material/form/', controller: 'StoreMaterialFormCtrl'
 
     # Bukkit. Чары
 
@@ -38,10 +38,10 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
         templateUrl: 'partials/store/enchantments/', controller: 'StoreEnchantmentCtrl'
 
     $routeProvider.when '/store/enchantments/enchantment/create',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/create', controller: 'StoreEnchantmentFormCtrl'
+        templateUrl: 'partials/store/enchantments/enchantment/form/', controller: 'StoreEnchantmentFormCtrl'
 
     $routeProvider.when '/store/enchantments/enchantment/update/:enchantmentId',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/update', controller: 'StoreEnchantmentFormCtrl'
+        templateUrl: 'partials/store/enchantments/enchantment/form/', controller: 'StoreEnchantmentFormCtrl'
 
 
 
@@ -238,9 +238,11 @@ app.controller 'StoreMaterialFormCtrl', ($scope, $route, $q, $location, Material
     if $route.current.params.materialId
         $scope.material= Material.get $route.current.params, ->
             $scope.state= 'loaded'
+            $scope.action= 'update'
     else
         $scope.material= new Material
         $scope.state= 'loaded'
+        $scope.action= 'create'
 
     # Действия
 
@@ -292,9 +294,11 @@ app.controller 'StoreEnchantmentFormCtrl', ($scope, $route, $q, $location, Encha
     if $route.current.params.enchantmentId
         $scope.enchantment= Enchantment.get $route.current.params, ->
             $scope.state= 'loaded'
+            $scope.action= 'update'
     else
         $scope.enchantment= new Enchantment
         $scope.state= 'loaded'
+        $scope.action= 'create'
 
     # Действия
 

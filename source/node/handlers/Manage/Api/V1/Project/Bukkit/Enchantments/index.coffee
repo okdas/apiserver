@@ -28,7 +28,7 @@ app.post '/', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            con.query 'INSERT INTO bukkit_enchantment SET ?'
+            conn.query 'INSERT INTO bukkit_enchantment SET ?'
             ,   [req.body]
             ,   (err, resp) ->
                     return done err, conn
@@ -66,13 +66,13 @@ app.get '/', access, (req, res, next) ->
 Отдает чару.
 ###
 app.get '/:enchantmentId', access, (req, res, next) ->
-    req.db.getConnection (err, connection) ->
+    req.db.getConnection (err, conn) ->
         return next err if err
 
-        connection.query 'SELECT * FROM bukkit_enchantment WHERE id = ?'
+        conn.query 'SELECT * FROM bukkit_enchantment WHERE id = ?'
         ,   [req.params.enchantmentId]
         ,   (err, rows) ->
-                do connection.end
+                do conn.end
 
                 return next err if err
                 return res.json 404, null if not rows.length
@@ -95,7 +95,7 @@ app.put '/:enchantmentId', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            con.query 'UPDATE bukkit_enchantment SET ? WHERE id = ?'
+            conn.query 'UPDATE bukkit_enchantment SET ? WHERE id = ?'
             ,   [req.body, req.params.enchantmentId]
             ,   (err, resp) ->
                     return done err, conn
@@ -127,7 +127,7 @@ app.delete '/:enchantmentId', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            con.query 'DELETE FROM bukkit_enchantment WHERE id = ?'
+            conn.query 'DELETE FROM bukkit_enchantment WHERE id = ?'
             ,   [req.params.enchantmentId]
             ,   (err, resp) ->
                     return done err, conn

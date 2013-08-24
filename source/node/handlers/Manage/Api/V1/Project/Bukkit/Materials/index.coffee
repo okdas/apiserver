@@ -1,4 +1,5 @@
 express= require 'express'
+async= require 'async'
 
 access= (req, res, next) ->
     return next 401 if do req.isUnauthenticated
@@ -27,7 +28,7 @@ app.post '/', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            con.query 'INSERT INTO bukkit_material SET ?'
+            conn.query 'INSERT INTO bukkit_material SET ?'
             ,   [req.body]
             ,   (err, resp) ->
                     return done err, conn
@@ -94,7 +95,7 @@ app.put '/:materialId', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            con.query 'UPDATE bukkit_material SET ? WHERE id = ?'
+            conn.query 'UPDATE bukkit_material SET ? WHERE id = ?'
             ,   [req.body, req.params.materialId]
             ,   (err, resp) ->
                     return done err, conn
@@ -126,7 +127,7 @@ app.delete '/:materialId', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            con.query 'DELETE FROM bukkit_material WHERE id = ?'
+            conn.query 'DELETE FROM bukkit_material WHERE id = ?'
             ,   [req.params.materialId]
             ,   (err, resp) ->
                     return done err, conn
