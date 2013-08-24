@@ -128,8 +128,68 @@ app.on 'mount', (parent) -> # монтирует модуль к приложе�
     ###
     Обрабатывает переадресацию при отказе от оплаты (FailureURL)
     ###
-    app.get '/robokassa/failure', (req, res, next) ->
-        return res.redirect "/player/#/player/payments/#{payment.InvId}"
+    app.get '/failure', (req, res, next) ->
+
+        playerId= req.user.id
+        data= req.query
+
+        async.waterfall [
+
+            (done) -> # подключается к базе, начинает транзакцию
+                req.db.getConnection (err, conn) ->
+                    return done err, conn if err
+                    conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                        return done err, conn if err
+                        conn.query 'START TRANSACTION', (err) ->
+                            conn.transaction= true if not err
+                            return done err, conn
+
+            (conn, done) -> # закрывает платеж, если открыт
+                conn.query "
+                    UPDATE
+                        ?? as PlayerPayment
+                    SET
+                        PlayerPayment.status = ?,
+                        PlayerPayment.closedAt = NOW()
+                    WHERE
+                        PlayerPayment.id = ? AND
+                        PlayerPayment.playerId = ? AND
+                        PlayerPayment.closedAt IS NULL
+                    "
+                ,   ['player_payment', 'failure', playerId, payment.InvId]
+                ,   (err, resp) ->
+                        err= err or resp.changedRows != 1
+                        return done err, conn
+
+            (conn, done) -> # завершает транзакцию
+                conn.query 'COMMIT', (err) ->
+                    conn.transaction= null if not err
+                    return done err, conn
+
+        ],  (err, conn) ->
+
+                async.waterfall [
+
+                    (done) -> # журналирует ошибку
+                        return done null if not err
+                        console.log err
+                        return done null
+
+                    (done) -> # откатывает начатую транзакцию
+                        return done null if not conn or not conn.transaction
+                        conn.query 'ROLLBACK', (err) ->
+                            conn.transaction= null if not err
+                            return done err
+
+                    (done) -> # закрывает соединение
+                        return done null if not conn
+                        conn.end (err) ->
+                            return done err
+
+                ],  (err) ->
+                        do conn.destroy if conn and err
+
+                        return res.redirect "/player/#/player/payments/#{payment.InvId}"
 
 
 
