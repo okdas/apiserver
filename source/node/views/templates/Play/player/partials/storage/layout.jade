@@ -1,6 +1,0 @@
-extends ../layout
-
-append section-head-nav
-  ul.nav.nav-row
-    li(ng-repeat='serv in store.servers', ng-class='{active:serv.name==server.name}')
-      a(ng-href='#/storage/{{serv.name}}') {{serv.title}}

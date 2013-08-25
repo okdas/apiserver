@@ -1,4 +1,4 @@
-app= angular.module 'play', ['ngResource'], ($routeProvider) ->
+app= angular.module 'play', ['ngResource', 'ngRoute'], ($routeProvider) ->
 
     $routeProvider.when '/',
         templateUrl: 'partials/login/', controller: 'LoginCtrl'

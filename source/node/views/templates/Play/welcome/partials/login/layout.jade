@@ -1,4 +1,4 @@
-section.view-inner(ng-if="'loaded' == state", ng-animate="'view'")
+section.view-inner(ng-if="'loaded' == state")
     block section
 
     .container
@@ -22,3 +22,13 @@ section.view-inner(ng-if="'loaded' == state", ng-animate="'view'")
 
             .col-12.col-sm-9.col-lg-9.col-pull-3
                 block section-body
+
+section
+    block dialog
+
+        .dialog
+            .dialog-bg(ng-click='hideDialog()')
+            .container: .row: .col-12.dialog-container
+                include dialog/index
+
+        .dialog-overlay
