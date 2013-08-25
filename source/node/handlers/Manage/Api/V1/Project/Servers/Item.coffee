@@ -118,30 +118,34 @@ app.get '/:itemId', access, (req, res, next) ->
                     return done err, conn, item
 
         (conn, item, done) ->
-            conn.query "
-                SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level`
-                FROM store_item_enchantments as ie
-                JOIN store_enchantment as e
-                    ON ie.enchantmentId = e.id
-                WHERE ie.itemId = ?
-                ORDER BY ie.order
-                "
+            conn.query '
+                SELECT
+                    ofBukkit.id,
+                    ofBukkit.titleRu,
+                    ofBukkit.titleEn,
+                    ofItem.level,
+                    ofBukkit.levelmax,
+                    ofItem.order
+                FROM item_enchantment AS ofItem
+                JOIN bukkit_enchantment AS ofBukkit
+                    ON ofBukkit.id = ofItem.enchantmentId
+                WHERE ofItem.itemId = ?
+                ORDER BY ofItem.order'
             ,   [req.params.itemId]
             ,   (err, resp) ->
                     item.enchantments= resp
                     return done err, conn, item
 
         (conn, item, done) ->
-            conn.query "
+            conn.query '
                 SELECT
-                    Server.`id`,
-                    Server.`name`,
-                    Server.`title`
-                FROM store_item_servers as StoreItem
-                JOIN server as Server
-                    ON StoreItem.serverId = Server.id
-                WHERE StoreItem.itemId = ?
-                "
+                    connection.id,
+                    server.id,
+                    server.title
+                FROM server_item AS connection
+                JOIN server AS server
+                    ON server.id = connection.serverId
+                WHERE itemId = 1'
             ,   [req.params.itemId]
             ,   (err, resp) ->
                     item.servers= resp

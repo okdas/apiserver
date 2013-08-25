@@ -2,28 +2,60 @@ extends ../../../../layout
 extends ../../../layout
 
 block section-body
-    form(name='MaterialForm')
+    form(name='ItemForm')
         h3(style='text-align:center') Добавить предмет
 
         fieldset
-              input.input(placeholder='Название материала', type='text', required, ng-model='material.titleRu')
-              input.input(placeholder='Material name', type='text', required, ng-model='material.titleEn')
-              input.input(placeholder='Картинка', type='text', required, ng-model='material.imageUrl')
-              img(ng-src='{{material.imageUrl}}')
+            select.input(required, ng-model='item.material')
+                option(ng-repeat='material in materials', value='{{material.id}}', ng-selected='item.material == material.id') {{material.id}} - {{material.titleRu}} ({{material.titleEn}})
+            input.input(placeholder='Название предмета', type='text', required, ng-model='item.titleRu')
+            input.input(placeholder='Item name', type='text', required, ng-model='item.titleEn')
+            input.input(placeholder='Цена', type='text', required, ng-model='item.price')
 
-        fieldset
-              input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='material.id', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
-              input.input.input-auto(placeholder='Множитель зачарования', type='text', ng-model='material.enchantability', ng-pattern='/^([0-9]+)$/')
+
+        fieldset(name='ItemEnchantmentForm')
+            .row
+                .col-10
+                    select.input(ng-model='newEnchantment')
+                        option(ng-repeat='enchantment in enchantments', value='{{enchantment}}') {{enchantment.id}} - {{enchantment.titleRu}} ({{enchantment.titleEn}})
+                .col-1
+                    button.btn(ng-click='addEnchantment(newEnchantment)')
+                        i.icon-plus
+
+            .row(ng-repeat='itemEnchantment in item.enchantments')
+                .col-2 {{itemEnchantment.id}}
+                .col-6 {{itemEnchantment.titleRu}}
+                .col-2
+                    input.input(placeholder='Уровень', type='text', required, ng-model='itemEnchantment.level', value='{{itemEnchantment.level}}')
+                .col-1
+                    button.btn(ng-click='removeEnchantment(itemEnchantment)')
+                        i.icon-minus
+
+
+        fieldset(name='ItemServerForm')
+            .row
+                .col-11
+                    select.input(ng-model='newServer')
+                        option(ng-repeat='server in servers', value='{{server.id}}') {{server.title}}
+                .col-1
+                    button.btn(ng-click='addServer(newServer)')
+                        i.icon-plus
+
+            .row(ng-repeat='itemServer in item.servers')
+                .col-3 {{itemServer.title}}
+                .col-1
+                    button.btn(ng-click='removeServer(itemServer)')
+                        i.icon-minus
 
 
         fieldset(ng-if='action=="create"')
-            button.btn.btn-primary.btn-block(type='submit', ng-click='create(MaterialForm)', ng-disabled='!MaterialForm.$valid')
-                span Добавить материал
+            button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
+                span Добавить предмет
 
         fieldset(ng-if='action=="update"')
             .col-10
-                button.btn.btn-primary.btn-block(type='submit', ng-click='create(MaterialForm)', ng-disabled='!MaterialForm.$valid')
-                    span Обновить материал
+                button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
+                    span Обновить предмет
             .col-2
-                button.btn.btn-link.btn-block.text-left(ng-click='delete(MaterialForm)')
+                button.btn.btn-link.btn-block.text-left(ng-click='delete(ItemForm)')
                     span Удалить

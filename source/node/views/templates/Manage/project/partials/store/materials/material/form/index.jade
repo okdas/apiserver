@@ -6,14 +6,14 @@ block section-body
         h3(style='text-align:center') Добавить материал
 
         fieldset
-              input.input(placeholder='Название материала', type='text', required, ng-model='material.titleRu')
-              input.input(placeholder='Material name', type='text', required, ng-model='material.titleEn')
-              input.input(placeholder='Картинка', type='text', required, ng-model='material.imageUrl')
-              img(ng-src='{{material.imageUrl}}')
+            input.input(placeholder='Название материала', type='text', required, ng-model='material.titleRu')
+            input.input(placeholder='Material name', type='text', required, ng-model='material.titleEn')
+            input.input(placeholder='Картинка', type='text', required, ng-model='material.imageUrl')
+            img(ng-src='{{material.imageUrl}}')
 
         fieldset
-              input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='material.id', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
-              input.input.input-auto(placeholder='Множитель зачарования', type='text', ng-model='material.enchantability', ng-pattern='/^([0-9]+)$/')
+            input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='material.id', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
+            input.input.input-auto(placeholder='Множитель зачарования', type='text', ng-model='material.enchantability', ng-pattern='/^([0-9]+)$/')
 
 
         fieldset(ng-if='action=="create"')

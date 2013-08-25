@@ -352,11 +352,31 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Enchantment, ItemForm) ->
+app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, Server) ->
     $scope.errors= {}
     $scope.enchantment= {}
-    $scope.state= 'load'
 
+    if $route.current.params.itemId
+        $scope.item= Item.get $route.current.params, ->
+            $scope.materials= Material.query ->
+                $scope.enchantments= Enchantment.query ->
+                    $scope.servers= Server.query ->
+                        $scope.state= 'loaded'
+                        $scope.action= 'update'
+    else
+        $scope.item= new Item
+        $scope.state= 'loaded'
+        $scope.action= 'create'
+
+
+    $scope.addEnchantment= (newEnchantment) ->
+        return if not newEnchantment
+        enchantment= angular.copy newEnchantment
+        enchantment.level= 1
+        $scope.item.enchantments.push JSON.parse enchantment
+        console.log enchantment
+
+    ###
     $scope.form= do ItemForm.load
     $scope.form.then (form) ->
         console.log 'form loaded', form
@@ -408,3 +428,4 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Enchan
     $scope.delete= ->
         $scope.item.$delete ->
             $location.path '/store/items/list'
+    ###
