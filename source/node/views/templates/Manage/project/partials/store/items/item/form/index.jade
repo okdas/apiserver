@@ -16,10 +16,10 @@ block section-body
         fieldset(name='ItemEnchantmentForm')
             .row
                 .col-10
-                    select.input(ng-model='newEnchantment')
+                    select.input(ng-model='enchantment')
                         option(ng-repeat='enchantment in enchantments', value='{{enchantment}}') {{enchantment.id}} - {{enchantment.titleRu}} ({{enchantment.titleEn}})
                 .col-1
-                    button.btn(ng-click='addEnchantment(newEnchantment)')
+                    button.btn(ng-click='addEnchantment(enchantment)', ng-disabled='!enchantment')
                         i.icon-plus
 
             .row(ng-repeat='itemEnchantment in item.enchantments')
@@ -35,10 +35,10 @@ block section-body
         fieldset(name='ItemServerForm')
             .row
                 .col-11
-                    select.input(ng-model='newServer')
-                        option(ng-repeat='server in servers', value='{{server.id}}') {{server.title}}
+                    select.input(ng-model='server')
+                        option(ng-repeat='server in servers', value='{{server}}') {{server.title}}
                 .col-1
-                    button.btn(ng-click='addServer(newServer)')
+                    button.btn(ng-click='addServer(server)',ng-disabled='!server')
                         i.icon-plus
 
             .row(ng-repeat='itemServer in item.servers')

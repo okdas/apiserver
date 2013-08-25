@@ -353,9 +353,6 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
 Контроллер формы предмета.
 ###
 app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, Server) ->
-    $scope.errors= {}
-    $scope.enchantment= {}
-
     if $route.current.params.itemId
         $scope.item= Item.get $route.current.params, ->
             $scope.materials= Material.query ->
@@ -369,12 +366,28 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
         $scope.action= 'create'
 
 
-    $scope.addEnchantment= (newEnchantment) ->
-        return if not newEnchantment
-        enchantment= angular.copy newEnchantment
-        enchantment.level= 1
-        $scope.item.enchantments.push JSON.parse enchantment
-        console.log enchantment
+    $scope.addEnchantment= (enchantment) ->
+        newEnchantment= JSON.parse angular.copy enchantment
+        newEnchantment.level= 1
+        $scope.item.enchantments.push newEnchantment
+
+    $scope.removeEnchantment= (enchantment) ->
+        remPosition= null
+        $scope.item.enchantments.map (ench, i) ->
+            if ench.id == enchantment.id
+                $scope.item.enchantments.splice i, 1
+
+    $scope.addServer= (server) ->
+        newServer= JSON.parse angular.copy server
+        $scope.item.servers.push newServer
+
+    $scope.removeServer= (server) ->
+        remPosition= null
+        $scope.item.servers.map (srv, i) ->
+            if srv.id == server.id
+                $scope.item.servers.splice i, 1
+
+
 
     ###
     $scope.form= do ItemForm.load
