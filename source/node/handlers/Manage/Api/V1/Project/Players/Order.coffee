@@ -58,6 +58,9 @@ app.get '/:orderId', access, (req, res, next) ->
 
 
 
+###
+Все заказы игрока
+###
 app.get '/:playerId/list', access, (req, res, next) ->
     async.waterfall [
 

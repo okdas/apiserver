@@ -58,7 +58,8 @@ app.get '/', access, (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM server_instance'
+            conn.query '
+                SELECT * FROM server_instance'
             ,   (err, rows) ->
                     return done err, conn, rows
 
@@ -81,7 +82,8 @@ app.get '/:instanceId', access, (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM server_instance WHERE id = ?'
+            conn.query '
+            SELECT * FROM server_instance WHERE id = ?'
             ,   [req.params.instanceId]
             ,   (err, resp) ->
                     instance= do resp.shift if not err

@@ -49,7 +49,7 @@ app.factory 'PlayerList', ($resource) ->
 
 
 app.factory 'Player', ($resource) ->
-    $resource '/api/v1/players/:playerId', {},
+    $resource '/api/v1/players/player/:playerId', {},
         create:
             method: 'post'
 

@@ -20,7 +20,7 @@ block section-body
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(MaterialForm)', ng-disabled='!MaterialForm.$valid')
                 span Добавить материал
 
-        fieldset(ng-if='action=="update"')
+        fieldset(ng-if='action=="update"'): .row
             .col-10
                 button.btn.btn-primary.btn-block(type='submit', ng-click='create(MaterialForm)', ng-disabled='!MaterialForm.$valid')
                     span Обновить материал

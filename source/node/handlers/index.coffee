@@ -121,10 +121,10 @@ exports.manage= () ->
     ###
 
     # Методы API для работы с игрокам.
-    app.use '/api/v1/players', require './Manage/Api/V1/Project/Players/Player'
+    app.use '/api/v1/players/player', require './Manage/Api/V1/Project/Players/Player'
 
     #  Методы API для работы c ордерами.
-    app.use '/api/v1/players/orders', require './Manage/Api/V1/Project/Players/Order'
+    app.use '/api/v1/players/order', require './Manage/Api/V1/Project/Players/Order'
 
     # Методы API для работы c аутентифицированным сервером.
     app.use '/api/v1/players/server', require './Manage/Api/V1/Project/Players/MiddlewareServer'
@@ -149,17 +149,17 @@ exports.manage= () ->
     ###
     Методы API для работы c серверами.
     ###
-    app.use '/api/v1/servers', require './Manage/Api/V1/Project/Servers'
+    app.use '/api/v1/servers/server', require './Manage/Api/V1/Project/Servers/Server'
 
     ###
     Методы API для работы c инстансами серверов.
     ###
-    app.use '/api/v1/servers/instances', require './Manage/Api/V1/Project/Servers/Instances'
+    app.use '/api/v1/servers/instance', require './Manage/Api/V1/Project/Servers/Instance'
 
     ###
     Методы API для работы c предметами сервера.
     ###
-    app.use '/api/v1/server/items', require './Manage/Api/V1/Project/Servers/Items'
+    app.use '/api/v1/servers/item', require './Manage/Api/V1/Project/Servers/Item'
 
 
 

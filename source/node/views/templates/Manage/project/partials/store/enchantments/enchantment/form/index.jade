@@ -18,7 +18,7 @@ block section-body
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(EnchantmentForm)', ng-disabled='!EnchantmentForm.$valid')
                 span Добавить чары
 
-        fieldset(ng-if='action=="update"')
+        fieldset(ng-if='action=="update"'): .row
             .col-10
                 button.btn.btn-primary.btn-block(type='submit',ng-click='update(EnchantmentForm)',ng-disabled='!EnchantmentForm.$valid')
                     span Обновить чары

@@ -13,86 +13,6 @@ app= module.exports= do express
 
 
 ###
-Отдает список предметов.
-###
-app.get '/', access, (req, res, next) ->
-    console.log 'fffffffffffffffffffff'
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
-
-        (conn, done) ->
-            conn.query 'SELECT * FROM item'
-            ,   (err, rows) ->
-                    return done err, conn, rows
-
-    ],  (err, conn, rows) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, rows
-
-
-
-###
-Отдает предмет.
-###
-app.get '/:itemId', access, (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
-
-        (conn, done) ->
-            conn.query 'SELECT * FROM store_item WHERE id = ?'
-            ,   [req.params.itemId]
-            ,   (err, resp) ->
-                    item= do resp.shift if not err
-                    return done err, conn, item
-
-        (conn, item, done) ->
-            conn.query "
-                SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level`
-                FROM store_item_enchantments as ie
-                JOIN store_enchantment as e
-                    ON ie.enchantmentId = e.id
-                WHERE ie.itemId = ?
-                ORDER BY ie.order
-                "
-            ,   [req.params.itemId]
-            ,   (err, resp) ->
-                    item.enchantments= resp
-                    return done err, conn, item
-
-        (conn, item, done) ->
-            conn.query "
-                SELECT
-                    Server.`id`,
-                    Server.`name`,
-                    Server.`title`
-                FROM store_item_servers as StoreItem
-                JOIN server as Server
-                    ON StoreItem.serverId = Server.id
-                WHERE StoreItem.itemId = ?
-                "
-            ,   [req.params.itemId]
-            ,   (err, resp) ->
-                    item.servers= resp
-                    return done err, conn, item
-
-    ],  (err, conn, item) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 404, null if not item
-            return res.json 200, item
-
-
-
-###
 Добавляет предмет.
 ###
 app.post '/', access, (req, res, next) ->
@@ -154,6 +74,85 @@ app.post '/', access, (req, res, next) ->
 
             return next err if err
             return res.json 201, req.body
+
+
+
+###
+Отдает список предметов.
+###
+app.get '/', access, (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query 'SELECT * FROM item'
+            ,   (err, rows) ->
+                    return done err, conn, rows
+
+    ],  (err, conn, rows) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, rows
+
+
+
+###
+Отдает предмет.
+###
+app.get '/:itemId', access, (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query 'SELECT * FROM item WHERE id = ?'
+            ,   [req.params.itemId]
+            ,   (err, resp) ->
+                    item= do resp.shift if not err
+                    return done err, conn, item
+
+        (conn, item, done) ->
+            conn.query "
+                SELECT e.`id`, e.`identity`, e.`title`, e.`levelmax`, ie.`level`
+                FROM store_item_enchantments as ie
+                JOIN store_enchantment as e
+                    ON ie.enchantmentId = e.id
+                WHERE ie.itemId = ?
+                ORDER BY ie.order
+                "
+            ,   [req.params.itemId]
+            ,   (err, resp) ->
+                    item.enchantments= resp
+                    return done err, conn, item
+
+        (conn, item, done) ->
+            conn.query "
+                SELECT
+                    Server.`id`,
+                    Server.`name`,
+                    Server.`title`
+                FROM store_item_servers as StoreItem
+                JOIN server as Server
+                    ON StoreItem.serverId = Server.id
+                WHERE StoreItem.itemId = ?
+                "
+            ,   [req.params.itemId]
+            ,   (err, resp) ->
+                    item.servers= resp
+                    return done err, conn, item
+
+    ],  (err, conn, item) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 404, null if not item
+            return res.json 200, item
 
 
 
