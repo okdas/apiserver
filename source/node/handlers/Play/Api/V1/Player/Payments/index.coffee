@@ -45,7 +45,7 @@ app.on 'mount', (parent) ->
                     ORDER BY
                         PlayerPayment.createdAt DESC
                     "
-                ,   [req.user.id]
+                ,   ['player_payment', req.user.id]
                 ,   (err, rows) ->
                         data= rows if not err
                         return done err, conn
