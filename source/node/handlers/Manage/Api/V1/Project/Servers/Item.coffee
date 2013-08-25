@@ -28,12 +28,11 @@ app.post '/', access, (req, res, next) ->
 
         (conn, done) ->
             data=
-                title: req.body.title
-                imageUrl: req.body.imageUrl
                 material: req.body.material
-            conn.query "
-                INSERT INTO store_item SET ?
-                "
+                titleRu: req.body.titleRu
+                titleEn: req.body.titleEn
+                price: req.body.price
+            conn.query 'INSERT INTO item SET ?'
             ,   [data]
             ,   (err, resp) ->
                     id= resp.insertId if not err
@@ -43,11 +42,10 @@ app.post '/', access, (req, res, next) ->
             bulk= []
             for enchantment, order in req.body.enchantments
                 bulk.push [id, enchantment.id, enchantment.level, order]
-            conn.query "
-                INSERT INTO store_item_enchantments
+            conn.query '
+                INSERT INTO item_enchantment
                     (`itemId`, `enchantmentId`, `level`, `order`)
-                VALUES ?
-                "
+                VALUES ?'
             ,   [bulk]
             ,   (err, resp) ->
                     return done err, conn, id
@@ -57,7 +55,7 @@ app.post '/', access, (req, res, next) ->
             for server in req.body.servers
                 bulk.push [id, server.id]
             conn.query "
-                INSERT INTO store_item_servers
+                INSERT INTO server_item
                     (`itemId`, `serverId`)
                 VALUES ?
                 "
@@ -164,7 +162,6 @@ app.get '/:itemId', access, (req, res, next) ->
 Обновляет предмет.
 ###
 app.put '/:itemId', access, (req, res, next) ->
-
     itemId= req.params.itemId
     delete req.body.id
 
@@ -187,14 +184,14 @@ app.put '/:itemId', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
-            conn.query 'UPDATE store_item SET ? WHERE id = ?'
-            ,   [item, itemId]
+            conn.query 'UPDATE item SET ? WHERE id = ?'
+            ,   [item, req.params.itemId]
             ,   (err, resp) ->
                     console.log arguments
                     return done err, conn
 
         (conn, done) ->
-            conn.query 'DELETE FROM store_item_enchantments WHERE itemId = ?'
+            conn.query 'DELETE FROM item_enchantment WHERE itemId = ?'
             ,   [itemId]
             ,   (err, resp) ->
                     return done err, conn if err
@@ -204,14 +201,14 @@ app.put '/:itemId', access, (req, res, next) ->
                     for enchantment, order in enchantments
                         bulk.push [itemId, enchantment.id, enchantment.level, order]
                     conn.query "
-                        INSERT INTO store_item_enchantments (`itemId`, `enchantmentId`, `level`, `order`) VALUES ?
+                        INSERT INTO item_enchantment (`itemId`, `enchantmentId`, `level`, `order`) VALUES ?
                         "
                     ,   [bulk]
                     ,   (err, resp) ->
                             return done err, conn
 
         (conn, done) ->
-            conn.query 'DELETE FROM store_item_servers WHERE itemId = ?'
+            conn.query 'DELETE FROM server_item WHERE itemId = ?'
             ,   [itemId]
             ,   (err, resp) ->
                     return done err, conn if err
@@ -220,7 +217,7 @@ app.put '/:itemId', access, (req, res, next) ->
                     bulk= []
                     for server in servers
                         bulk.push [itemId, server.id]
-                    conn.query 'INSERT INTO store_item_servers (`itemId`, `serverId`) VALUES ?'
+                    conn.query 'INSERT INTO server_item (`itemId`, `serverId`) VALUES ?'
                     ,   [bulk]
                     ,   (err, resp) ->
                             return done err, conn
@@ -249,7 +246,7 @@ app.delete '/:itemId', access, (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'DELETE FROM store_item WHERE id = ?'
+            conn.query 'DELETE FROM item WHERE id = ?'
             ,   [req.params.itemId]
             ,   (err, resp) ->
                     item= {} if not err

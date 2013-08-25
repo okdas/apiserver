@@ -133,19 +133,19 @@ app.factory 'Order', ($resource) ->
 ###
 app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
 
-    @loadEnchantments= () ->
+    @loadEnchantments= ->
         dfd= do $q.defer
         Enchantment.query (enchantments) ->
             dfd.resolve enchantments
         dfd.promise
 
-    @loadServers= () ->
+    @loadServers= ->
         dfd= do $q.defer
         Server.query (servers) ->
             dfd.resolve servers
         dfd.promise
 
-    @load= () =>
+    @load= =>
         dfd= do $q.defer
         result= $q.all [
             @loadEnchantments()
@@ -349,6 +349,7 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
         do load
 
 
+
 ###
 Контроллер формы предмета.
 ###
@@ -362,13 +363,17 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
                         $scope.action= 'update'
     else
         $scope.item= new Item
-        $scope.state= 'loaded'
-        $scope.action= 'create'
+        $scope.materials= Material.query ->
+            $scope.enchantments= Enchantment.query ->
+                $scope.servers= Server.query ->
+                    $scope.state= 'loaded'
+                    $scope.action= 'create'
 
 
     $scope.addEnchantment= (enchantment) ->
         newEnchantment= JSON.parse angular.copy enchantment
         newEnchantment.level= 1
+        $scope.item.enchantments= [] if not $scope.item.enchantments
         $scope.item.enchantments.push newEnchantment
 
     $scope.removeEnchantment= (enchantment) ->
@@ -379,6 +384,7 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
 
     $scope.addServer= (server) ->
         newServer= JSON.parse angular.copy server
+        $scope.item.servers= [] if not $scope.item.servers
         $scope.item.servers.push newServer
 
     $scope.removeServer= (server) ->
@@ -387,38 +393,6 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
             if srv.id == server.id
                 $scope.item.servers.splice i, 1
 
-
-
-    ###
-    $scope.form= do ItemForm.load
-    $scope.form.then (form) ->
-        console.log 'form loaded', form
-
-        $scope.enchantments= form.enchantments
-        $scope.servers= form.servers
-
-        if $route.current.params.itemId
-            $scope.item= Item.get $route.current.params, ->
-                $scope.state= 'loaded'
-        else
-            $scope.item= new Item
-            $scope.item.enchantments= []
-            $scope.state= 'loaded'
-
-    # Чары предмета
-
-    $scope.addEnchantment= (enchantment) ->
-        return if not $scope.enchantment
-        enchantment= angular.copy $scope.enchantment
-        $scope.enchantment= null
-        enchantment.level= 1
-        $scope.item.enchantments.push enchantment
-
-    $scope.remEnchantment= (enchantment) ->
-        enchantments= []
-        angular.forEach $scope.item.enchantments, (e) ->
-            enchantments.push e if enchantment != e
-        $scope.item.enchantments= enchantments
 
     # Действия
 
@@ -441,4 +415,3 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
     $scope.delete= ->
         $scope.item.$delete ->
             $location.path '/store/items/list'
-    ###

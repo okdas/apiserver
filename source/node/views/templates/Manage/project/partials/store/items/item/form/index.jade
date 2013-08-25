@@ -54,7 +54,7 @@ block section-body
 
         fieldset(ng-if='action=="update"')
             .col-10
-                button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
+                button.btn.btn-primary.btn-block(type='submit', ng-click='update(ItemForm)', ng-disabled='!ItemForm.$valid')
                     span Обновить предмет
             .col-2
                 button.btn.btn-link.btn-block.text-left(ng-click='delete(ItemForm)')

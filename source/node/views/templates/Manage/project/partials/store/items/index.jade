@@ -8,6 +8,7 @@ block section-body
                 th
                 th M
                 th.col-flex: .sortable: .sortable-cell Название
+                th Цена
                 th
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
@@ -16,6 +17,7 @@ block section-body
                 td {{item.id}}
                 td {{item.material}}
                 td {{item.titleRu}}
+                td {{item.price}}
                 td
                     a(href='#/store/items/item/update/{{item.id}}')
                         button.btn.btn-success
