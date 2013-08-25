@@ -16,6 +16,7 @@ block section-body
                 .col-4
                     input.input(placeholder='Порт', type='text', ng-model='instance.port')
 
+
         fieldset(ng-if='action=="create"')
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(InstanceForm)', ng-disabled='!InstanceForm.$valid')
                 span Создать инстанс
