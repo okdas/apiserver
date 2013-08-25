@@ -1,13 +1,3 @@
-.btn-primary {
-    color:#eee;
-    background-color:#428bca;
-    border-color:#428bca;
-}
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
-    color:#fff;
-    background-color:#357ebd;
-    border-color:#3071a9;
-}
 
 .btn[disabled] {
     background:#eee;
@@ -19,23 +9,29 @@
 
 
 .btn {
-    margin:0;
-    padding:11px 15px 13px;
+    margin: 0;
+    padding: 11px 15px;
+    line-height: 21px;
+    font-size: 14px;
     color:#eee;
     text-shadow:
         0 1px 0 rgba(0,0,0,0.15)
     ;
-    border:0px solid transparent;
-    border-radius:1px;
+    border: 1px solid transparent;
+    border-radius: 1px;
     background-image:
         linear-gradient(#43a6e2, #277ac1)
     ;
-    cursor:pointer;
+    cursor: pointer;
 }
 .btn-primary {
+    color:#eee;
+    background-color:#428bca;
     background-image:
         linear-gradient(hsl(264, 33%, 57%), hsl(264, 33%, 51%))
     ;
+    border-color:#428bca;
+    border: 1px solid #7a59ab;
 }
 
 .btn:hover {
@@ -48,7 +44,12 @@
         inset 0 11px 22px 1px #38a9ed
     ;
 }
-.btn-primary:hover {
+
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
+    color:#fff;
+    background-color:#357ebd;
+    border-color:#3071a9;
+    border: 1px solid #7a59ab;
     box-shadow:
         inset 0 -1px 5px -1px rgba(0,0,0,0.2),
         inset 0 11px 22px 1px hsl(264, 33%, 61%)
@@ -73,9 +74,47 @@
     ;
 }
 
+.btn.btn-link, .btn.btn-link:focus, .btn.btn-link:active, .btn.btn-link.active {
+    background: transparent;
+    border-color: transparent;
+    box-shadow: none;
+    text-shadow: none;
+}
+.btn.btn-link {
+    &.pull-right {
+        padding-right: 0; border-right: 0;
+    }
+
+    color:#aaa;
+    &, & u {
+        text-decoration: none;
+    }
+    &:hover {
+        color:#999;
+        & u {
+            text-decoration: underline;
+        }
+    }
+
+}
+
+.btn-link.link-primary {
+    color: #7a59ab;
+    &:hover {
+        color: #62468B;
+    }
+}
+
 .btn-small {
-    padding:7px 15px 9px;
-    line-height:14px;
+    border-width:0;
+    padding: 0 15px;
+    font-size: 14px; line-height: 20px;
+    letter-spacing: 0px;
+    text-transform: none;
+
+    & u {
+        line-height: inherit;
+    }
 }
 
 
