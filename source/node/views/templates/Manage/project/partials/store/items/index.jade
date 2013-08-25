@@ -6,16 +6,16 @@ block section-body
         thead
             tr
                 th
-                th.col-flex: .sortable: .sortable-cell Предмет в магазине
+                th M
+                th.col-flex: .sortable: .sortable-cell Название
                 th
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
         tbody
             tr(ng-repeat='item in items')
                 td {{item.id}}
-                td
-                    img.img(ng-src='{{item.imageUrl}}')
-                    a(ng-click='showDetails(item)') {{item.title}}
+                td {{item.material}}
+                td {{item.titleRu}}
                 td
                     a(href='#/store/items/item/update/{{item.id}}')
                         button.btn.btn-success

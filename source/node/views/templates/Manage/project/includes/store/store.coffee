@@ -16,10 +16,10 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
         templateUrl: 'partials/store/items/', controller: 'StoreItemListCtrl'
 
     $routeProvider.when '/store/items/item/create',
-        templateUrl: 'partials/store/items/item/forms/create/', controller: 'StoreItemFormCtrl'
+        templateUrl: 'partials/store/items/item/form/', controller: 'StoreItemFormCtrl'
 
     $routeProvider.when '/store/items/item/update/:itemId',
-        templateUrl: 'partials/store/items/item/forms/update/', controller: 'StoreItemFormCtrl'
+        templateUrl: 'partials/store/items/item/form/', controller: 'StoreItemFormCtrl'
 
     # Bukkit. Материалы
 
@@ -52,69 +52,6 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
 Ресурсы
 
 ###
-
-
-###
-Модель заказа.
-###
-app.factory 'Order', ($resource) ->
-    $resource '/api/v1/store/orders/:orderId',
-        orderId:'@id'
-
-
-###
-Модель предмета.
-###
-app.factory 'Item', ($resource) ->
-    $resource '/api/v1/store/items/:itemId',
-        itemId:'@id'
-    ,
-
-        create:
-            method:'post'
-
-        update:
-            method:'put'
-            params:
-                itemId:'@id'
-
-        delete:
-            method:'delete'
-            params:
-                itemId:'@id'
-
-
-###
-Модель формы предмета.
-###
-app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
-
-    @loadEnchantments= () ->
-        dfd= do $q.defer
-        Enchantment.query (enchantments) ->
-            dfd.resolve enchantments
-        dfd.promise
-
-    @loadServers= () ->
-        dfd= do $q.defer
-        Server.query (servers) ->
-            dfd.resolve servers
-        dfd.promise
-
-    @load= () =>
-        dfd= do $q.defer
-        result= $q.all [
-            @loadEnchantments()
-            @loadServers()
-        ]
-        result.then (data) ->
-            data=
-                enchantments: data[0]
-                servers: data[1]
-            dfd.resolve data
-        dfd.promise
-
-    @
 
 
 ###
@@ -154,6 +91,74 @@ app.factory 'Enchantment', ($resource) ->
             method: 'delete'
             params:
                 enchantmentId: '@id'
+
+
+
+app.factory 'Server', ($resource) ->
+    $resource '/api/v1/servers/server'
+
+
+
+###
+Модель предмета.
+###
+app.factory 'Item', ($resource) ->
+    $resource '/api/v1/servers/item/:itemId', {},
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                itemId: '@id'
+
+        delete:
+            method: 'delete'
+            params:
+                itemId: '@id'
+
+
+
+###
+Модель заказа.
+###
+app.factory 'Order', ($resource) ->
+    $resource '/api/v1/store/orders/:orderId',
+        orderId:'@id'
+
+
+
+###
+Модель формы предмета.
+###
+app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
+
+    @loadEnchantments= () ->
+        dfd= do $q.defer
+        Enchantment.query (enchantments) ->
+            dfd.resolve enchantments
+        dfd.promise
+
+    @loadServers= () ->
+        dfd= do $q.defer
+        Server.query (servers) ->
+            dfd.resolve servers
+        dfd.promise
+
+    @load= () =>
+        dfd= do $q.defer
+        result= $q.all [
+            @loadEnchantments()
+            @loadServers()
+        ]
+        result.then (data) ->
+            data=
+                enchantments: data[0]
+                servers: data[1]
+            dfd.resolve data
+        dfd.promise
+
+    @
 
 
 
@@ -228,7 +233,7 @@ app.controller 'StoreMaterialListCtrl', ($scope, $location, Material) ->
 
 
 ###
-Контроллер формы чара.
+Контроллер формы материала.
 ###
 app.controller 'StoreMaterialFormCtrl', ($scope, $route, $q, $location, Material) ->
     if $route.current.params.materialId
