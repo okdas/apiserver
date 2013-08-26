@@ -1,7 +1,12 @@
 app= angular.module 'play', ['ngAnimate', 'ngRoute', 'ngResource'], ($routeProvider) ->
 
     $routeProvider.when '/',
-        templateUrl: 'partials/', controller: 'PlayerCtrl'
+        templateUrl: 'partials/', controller: 'PlayerCtrl', resolve:
+            subscriptionList: ($q, Subscription) ->
+                dfd= do $q.defer
+                Subscription.query (subscriptions) ->
+                    dfd.resolve subscriptions
+                dfd.promise
 
     $routeProvider.when '/payments',
         templateUrl:'partials/payments/', controller:'PlayerPaymentListCtrl'
@@ -23,6 +28,12 @@ app.factory 'PlayerPayment', ($resource) ->
     $resource '/api/v1/player/payments/:paymentId', {paymentId:'@id'},
         query: {method:'GET', isArray:true, cache:true}
         create: {method:'POST'}
+
+
+app.factory 'Subscription', ($resource) ->
+    $resource '/api/v1/player/subscriptions/:subscriptionId/:action', {subscriptionId:'@id'},
+        query: {method:'GET', isArray:true, cache:true}
+        subscribe: {method:'POST', params:{action:'subscribe'}}
 
 
 app.controller 'ViewCtrl', ($scope, $location, $window, Player) ->
@@ -50,8 +61,14 @@ app.controller 'ViewCtrl', ($scope, $location, $window, Player) ->
         $scope.showDialog 'pay'
 
 
-app.controller 'PlayerCtrl', ($scope, $route, Player) ->
-
+app.controller 'PlayerCtrl', ($scope, $route, Player, subscriptionList) ->
+    $scope.subscriptions= subscriptionList
+    $scope.subscribe= (subscription) ->
+        console.log 'подписаться', subscription
+        subscription.$subscribe () ->
+                console.log 'подписался'
+        ,   () ->
+                console.log 'не удалось подписаться'
 
 app.controller 'PlayerPaymentCreateCtrl', ($scope, $location, PlayerPayment, $log) ->
     $scope.payment= new PlayerPayment

@@ -36,15 +36,20 @@ app.get '/', access, (req, res, next) ->
                 SELECT
                     Player.id,
                     Player.name,
-                    PlayerBalance.amount as balance
+                    PlayerBalance.amount as balance,
+                    Subscription.name as subscription
                 FROM
                     ?? as Player
                 JOIN
                     ?? as PlayerBalance ON PlayerBalance.playerId = Player.id
+                LEFT OUTER JOIN
+                    ?? as PlayerSubscription ON PlayerSubscription.id = Player.id
+                LEFT OUTER JOIN
+                    ?? as Subscription ON Subscription.id = PlayerSubscription.id
                 WHERE
                     Player.id = ?
                 "
-            ,   ['player', 'player_balance', id]
+            ,   ['player', 'player_balance', 'player_subscription', 'subscription', id]
             ,   (err, resp) ->
                     player= do resp.shift if not err
                     return done err, conn, player

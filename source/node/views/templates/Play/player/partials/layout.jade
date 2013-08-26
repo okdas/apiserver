@@ -1,4 +1,4 @@
-section.view-inner(ng-if='"ready"==state'): block section
+section.view-inner.view-inner-ready(ng-if='"ready"==state'): block section
 
     .container: block section-container
 
@@ -29,7 +29,7 @@ section.view-inner(ng-if='"ready"==state'): block section
 
 
 
-section.view-inner(ng-if='"error"==state'): block error
+section.view-inner.view-inner-error(ng-if='"error"==state'): block error
     .container
         .row
             .col-12 Ошибка! {{error}}
