@@ -106,7 +106,7 @@ app.get '/', access, (req, res, next) ->
             items.map (item) ->
                 item.servers= []
                 itemIds.push item.id
-            
+
             conn.query '
                 SELECT
                     connection.itemId,

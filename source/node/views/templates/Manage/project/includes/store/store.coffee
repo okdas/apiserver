@@ -173,7 +173,25 @@ app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
 ###
 Фильтр чар в редакторе для предмета.
 ###
-app.filter 'filterItemEnchantment', ->
+app.filter 'filterExistsServer', ->
+    (servers, itemServers) ->
+        filtered= []
+
+        if !itemServers
+            return servers
+        else
+            servers.map (server) ->
+                itemServers.map (itemServer) ->
+                    if server.id != itemServer.id
+                        filtered.push server
+            console.log filtered
+            console.log itemServers
+            return filtered
+
+
+
+###
+app.filter 'filterExistsServer', ->
     (enchantments, item) ->
         filtered= []
         angular.forEach enchantments, (enchantment) ->
@@ -183,6 +201,7 @@ app.filter 'filterItemEnchantment', ->
 
             filtered.push enchantment if not found
         filtered
+###
 
 
 
@@ -369,6 +388,9 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
                     $scope.state= 'loaded'
                     $scope.action= 'create'
 
+    $scope.changeMaterial= (material) ->
+        $scope.item.titleRu= JSON.parse(material).titleRu
+        $scope.item.titleEn= JSON.parse(material).titleEn
 
     $scope.addEnchantment= (enchantment) ->
         newEnchantment= JSON.parse angular.copy enchantment
@@ -393,10 +415,10 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
             if srv.id == server.id
                 $scope.item.servers.splice i, 1
 
-
     # Действия
 
     $scope.create= (ItemForm) ->
+        $scope.item.material= JSON.parse($scope.item.material).id
         $scope.item.$create ->
             $location.path '/store/items/list', (err) ->
                 $scope.errors= err.data.errors
