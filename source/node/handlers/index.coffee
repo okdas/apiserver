@@ -49,10 +49,16 @@ exports.play= (parent) ->
     ,   require './Play/Api/V1/Player/Payments'
 
     ###
+    Методы API для работы с подписками.
+    ###
+    app.use '/api/v1/player/subscriptions'
+    ,   require './Play/Api/V1/Player/Subscriptions'
+
+    ###
     Методы API для работы игрока с магазином.
     ###
-    app.use '/api/v1/player/store'
-    ,   require './Play/Api/V1/Player/Store'
+    app.use '/api/v1/store'
+    ,   require './Play/Api/V1/Store'
 
 
     ###

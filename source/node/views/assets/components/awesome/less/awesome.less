@@ -432,8 +432,16 @@ html {
 .view-outer {
 }
 .view-inner {
-    position:absolute; width:100%; min-height:100%; padding-top:50px;
-    background:#fff;
+    position: absolute;
+    width: 100%;
+    min-height: 100%;
+    padding-top: 50px;
+
+    &.view-inner-ready {
+        background: #fff;
+    }
+    &.view-inner-error {
+    }
 }
 
 .view-title {

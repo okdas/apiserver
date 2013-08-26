@@ -1,0 +1,87 @@
+extends ./layout
+
+block section-head-title
+    a(href='#/') Добро пожаловать в магазин
+
+append section-body
+    style.
+        .item--title, .item--price {
+            line-height:32px;
+        }
+
+        .item--btn,
+        .item--input {
+            min-width: 32px;
+            height: 32px; max-height: 32px;
+            margin: 0; padding: 5px 10px; line-height: 20px !important;
+            border-width: 1px; border-radius: 2px;
+            font: inherit;
+            vertical-align: middle;
+        }
+        .item--amount {
+            width: 64px;
+        }
+        .t-col {
+            padding:15px !important;
+            white-space: nowrap;
+        }
+        .t-col:not(:first-child) {
+            padding-left: 0 !important;
+        }
+
+        .input.input-primary {
+            color: #5D31A0;
+        }
+        .input.input-primary.ng-valid {
+            border-color: #7A59AB;
+        }
+
+        .input-group > .input:not(:last-child) {
+            display: inline-block;
+            margin-right: -1px;
+            border-radius: 2px 0 0 2px;
+        }
+    .store--server
+        h3.store--server-title.pull-left Магазин на сервере «{{store.server.title}}»
+        .server--items
+            table.table.items
+                tbody
+                    tr(ng-repeat='item in store.server.items', ng-controller='StoreServerItemCtrl')
+
+                        td.t-col
+                            img.item--image(width='32', height='32', ng-src='{{item.imageUrl}}')
+
+                        td.t-col.col-flex
+                            a.link-primary.item--title {{item.titleRu}}
+
+                        td.t-col
+                            b.item--price {{item.price | currency:'₨'}}
+
+                        td.t-col
+                            .input-group
+                                input.input.input-primary.item--input.item--amount(ng-model='amount', name='amount', type='text', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
+                                button.btn.btn-primary.item--btn(ng-click='buyItem(item)') +
+
+append section-side
+    .storage--server(ng-controller='StoreServerCartCtrl')
+        h3.storage--server-total Корзина на «{{cart.title}}»
+            span.pull-right {{cart.total | currency:'₨'}}
+        .storage--items
+            table.table.items
+                tbody
+                    tr(ng-repeat='item in cart.items', ng-controller='StoreServerCartItemCtrl')
+                        
+                        td.t-col
+                            img.item--image(width='32', height='32', ng-src='{{item.imageUrl}}')
+                        
+                        td.t-col.col-flex
+                            a.item--title {{item.titleRu}}
+
+                        td.t-col
+                            b.item--price {{item.price * item.amount | currency:'₨'}}
+
+                        td.t-col
+                            .input-group
+                                input.input.input-info.item--input.item--amount(ng-model='item.amount', name='servers[{{s}}][items[{{i}}][amount]', type='text', min='1', max='99999', ng-pattern='/^[0-9]{1,5}$/', required, autocomplete='off')
+                                button.btn.btn-info.item--btn(ng-click='remItem(item)') -
+        button.btn.btn-block(ng-click='order(cart)') Оплатить {{cart.total | currency:'₨'}}
