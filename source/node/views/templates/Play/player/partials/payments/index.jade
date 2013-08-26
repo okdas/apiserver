@@ -8,62 +8,9 @@ block section-head-title--payments
 block section-side
     button.btn.btn-block.btn-primary(ng-click='showPayDialog()') Пожертвовать еще
 
+
 block section-body
-    style.
-        .table tr:hover > td a.cel {
-            color:#2a6496;
-            text-decoration:underline;
-        }
-        span.b {
-            display:block;
-        }
-        span.time {
-            opacity:0.7;
-        }
-        .col,
-        .cel {
-            display:block;
-            color:#aaa;
-            white-space:nowrap;
-        }
-        .col-primary,
-        .cel-primary {
-            color:#428bca;
-        }
-        .col.col-right,
-        .cel.cel-right {
-            text-align:right;
-        }
-        .panel {
-            font:20px/25px 'Segoe UI semilight';
-            background:#f9f9f9;
-            border:0; border-top:1px solid #eee;
-            border-radius:1px;
-        }
 
-        .player--payment-title {
-            font-weight:700;
-        }
-
-        .player--carma,
-        .player--carma:hover {
-            text-decoration:none;
-        }
-        .player--carma-value {
-            font-size: 73px;
-            line-height: 73px;
-            font-family: 'segoe ui semibold';
-        }
-
-        .player--rank,
-        .player--rank:hover {
-            text-decoration:none;
-        }
-        .player--rank-value {
-            font-size: 37px;
-            line-height: 37px;
-            font-family: 'segoe ui'; font-weight:700;
-        }
     table.table.player--payments
 
         -//thead.t-clean

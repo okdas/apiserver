@@ -284,7 +284,27 @@ table {
 }
 
 .table > thead.t-clean > tr > th {
-    background:transparent;
+    background: transparent;
+}
+
+.table tr:hover > td a.cel {
+    color:#2a6496;
+    text-decoration: underline;
+}
+
+.col,
+.cel {
+    display: block;
+    color: #aaa;
+    white-space: nowrap;
+}
+.col-primary,
+.cel-primary {
+    color: #428bca;
+}
+.col.col-right,
+.cel.cel-right {
+    text-align: right;
 }
 
 .col-flex {
@@ -310,6 +330,14 @@ table {
 }
 .table-col-sortable:hover:before, .table-col-sortable:hover:after {
     color:rgba(0,0,0,.3);
+}
+
+
+.panel {
+    font:20px/25px 'Segoe UI semilight';
+    background:#f9f9f9;
+    border:0; border-top:1px solid #eee;
+    border-radius:1px;
 }
 
 
