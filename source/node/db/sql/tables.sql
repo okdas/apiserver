@@ -24,7 +24,8 @@ CREATE TABLE IF NOT EXISTS `bukkit_material` (
 -- Дамп структуры для таблица apiserver.server
 CREATE TABLE IF NOT EXISTS `server` (
   `id` int(10) NOT NULL COMMENT 'serverId',
-  `title` varchar(50) NOT NULL,
+  `name` VARCHAR(45) NOT NULL
+  `title` varchar(45) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='список серверов будет тут';
 
