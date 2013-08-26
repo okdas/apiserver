@@ -57,7 +57,7 @@ CREATE TABLE `player_payment` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `playerId` int(10) NOT NULL,
   `amount` int(10) NOT NULL,
-  `status` enum('pending','success','error') DEFAULT 'pending',
+  `status` enum('pending','success','failure') DEFAULT 'pending',
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `closedAt` timestamp NULL DEFAULT NULL,
   PRIMARY KEY (`id`),
