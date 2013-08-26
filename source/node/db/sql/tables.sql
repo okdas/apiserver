@@ -71,6 +71,7 @@ CREATE TABLE `player_payment` (
 -- Дамп структуры для таблица apiserver.subscription
 CREATE TABLE IF NOT EXISTS `subscription` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(45) NOT NULL,
   `titleRu` varchar(45) NOT NULL,
   `titleEn` varchar(45) NOT NULL,
   `createdAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -225,6 +226,7 @@ CREATE TABLE IF NOT EXISTS `player_subscription` (
   `id` int(10) NOT NULL AUTO_INCREMENT,
   `playerId` int(10) NOT NULL,
   `subscriptionId` int(10) NOT NULL,
+  `score` INT(3) NOT NULL DEFAULT 1,
   PRIMARY KEY (`id`),
   KEY `subscription_player_id` (`playerId`),
   KEY `subscription_id` (`subscriptionId`),
