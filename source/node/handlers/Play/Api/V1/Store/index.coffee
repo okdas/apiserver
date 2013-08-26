@@ -137,7 +137,7 @@ app.get '/servers', access, (req, res, next) ->
 
 
 app.post '/servers/:serverId(\\d+)/order', access, (req, res, next) ->
-    console.log req.body, req.params
+    return res.json 400, false
 
     playerId= req.user.id
     serverId= req.body.serverId
