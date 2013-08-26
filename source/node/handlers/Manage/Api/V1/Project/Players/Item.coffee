@@ -2,7 +2,7 @@ express= require 'express'
 async= require 'async'
 
 ###
-Методы API для работы c серверами.
+Методы API для работы c шипментами.
 ###
 app= module.exports= do express
 

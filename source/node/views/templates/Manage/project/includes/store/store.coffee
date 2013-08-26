@@ -16,21 +16,32 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
         templateUrl: 'partials/store/items/', controller: 'StoreItemListCtrl'
 
     $routeProvider.when '/store/items/item/create',
-        templateUrl: 'partials/store/items/item/forms/create/', controller: 'StoreItemFormCtrl'
+        templateUrl: 'partials/store/items/item/form/', controller: 'StoreItemFormCtrl'
 
     $routeProvider.when '/store/items/item/update/:itemId',
-        templateUrl: 'partials/store/items/item/forms/update/', controller: 'StoreItemFormCtrl'
+        templateUrl: 'partials/store/items/item/form/', controller: 'StoreItemFormCtrl'
 
-    # Магазин. Чары
+    # Bukkit. Материалы
+
+    $routeProvider.when '/store/materials/list',
+        templateUrl: 'partials/store/materials/', controller: 'StoreMaterialListCtrl'
+
+    $routeProvider.when '/store/materials/material/create',
+        templateUrl: 'partials/store/materials/material/form/', controller: 'StoreMaterialFormCtrl'
+
+    $routeProvider.when '/store/materials/material/update/:materialId',
+        templateUrl: 'partials/store/materials/material/form/', controller: 'StoreMaterialFormCtrl'
+
+    # Bukkit. Чары
 
     $routeProvider.when '/store/enchantments/list',
         templateUrl: 'partials/store/enchantments/', controller: 'StoreEnchantmentCtrl'
 
     $routeProvider.when '/store/enchantments/enchantment/create',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/create', controller: 'StoreEnchantmentFormCtrl'
+        templateUrl: 'partials/store/enchantments/enchantment/form/', controller: 'StoreEnchantmentFormCtrl'
 
     $routeProvider.when '/store/enchantments/enchantment/update/:enchantmentId',
-        templateUrl: 'partials/store/enchantments/enchantment/forms/update', controller: 'StoreEnchantmentFormCtrl'
+        templateUrl: 'partials/store/enchantments/enchantment/form/', controller: 'StoreEnchantmentFormCtrl'
 
 
 
@@ -44,6 +55,71 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
 
 
 ###
+Модель материала.
+###
+app.factory 'Material', ($resource) ->
+    $resource '/api/v1/bukkit/materials/:materialId', {},
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                materialId: '@id'
+
+        delete:
+            method: 'delete'
+            params:
+                materialId: '@id'
+
+
+
+###
+Модель чар.
+###
+app.factory 'Enchantment', ($resource) ->
+    $resource '/api/v1/bukkit/enchantments/:enchantmentId', {},
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                enchantmentId: '@id'
+
+        delete:
+            method: 'delete'
+            params:
+                enchantmentId: '@id'
+
+
+
+app.factory 'ServerList', ($resource) ->
+    $resource '/api/v1/servers/server'
+
+
+
+###
+Модель предмета.
+###
+app.factory 'Item', ($resource) ->
+    $resource '/api/v1/servers/item/:itemId', {},
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                itemId: '@id'
+
+        delete:
+            method: 'delete'
+            params:
+                itemId: '@id'
+
+
+
+###
 Модель заказа.
 ###
 app.factory 'Order', ($resource) ->
@@ -51,46 +127,25 @@ app.factory 'Order', ($resource) ->
         orderId:'@id'
 
 
-###
-Модель предмета.
-###
-app.factory 'Item', ($resource) ->
-    $resource '/api/v1/store/items/:itemId',
-        itemId:'@id'
-    ,
-
-        create:
-            method:'post'
-
-        update:
-            method:'put'
-            params:
-                itemId:'@id'
-
-        delete:
-            method:'delete'
-            params:
-                itemId:'@id'
-
 
 ###
 Модель формы предмета.
 ###
 app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
 
-    @loadEnchantments= () ->
+    @loadEnchantments= ->
         dfd= do $q.defer
         Enchantment.query (enchantments) ->
             dfd.resolve enchantments
         dfd.promise
 
-    @loadServers= () ->
+    @loadServers= ->
         dfd= do $q.defer
         Server.query (servers) ->
             dfd.resolve servers
         dfd.promise
 
-    @load= () =>
+    @load= =>
         dfd= do $q.defer
         result= $q.all [
             @loadEnchantments()
@@ -106,28 +161,6 @@ app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
     @
 
 
-###
-Модель чар.
-###
-app.factory 'Enchantment', ($resource) ->
-    $resource '/api/v1/store/enchantments/:enchantmentId',
-        enchantmentId:'@id'
-    ,
-
-        create:
-            method:'post'
-
-        update:
-            method:'patch'
-            params:
-                enchantmentId:'@id'
-
-        delete:
-            method:'delete'
-            params:
-                enchantmentId:'@id'
-
-
 
 
 
@@ -140,7 +173,25 @@ app.factory 'Enchantment', ($resource) ->
 ###
 Фильтр чар в редакторе для предмета.
 ###
-app.filter 'filterItemEnchantment', ->
+app.filter 'filterExistsServer', ->
+    (servers, itemServers) ->
+        filtered= []
+
+        if !itemServers
+            return servers
+        else
+            servers.map (server) ->
+                itemServers.map (itemServer) ->
+                    if server.id != itemServer.id
+                        filtered.push server
+            console.log filtered
+            console.log itemServers
+            return filtered
+
+
+
+###
+app.filter 'filterExistsServer', ->
     (enchantments, item) ->
         filtered= []
         angular.forEach enchantments, (enchantment) ->
@@ -150,6 +201,7 @@ app.filter 'filterItemEnchantment', ->
 
             filtered.push enchantment if not found
         filtered
+###
 
 
 
@@ -173,8 +225,6 @@ app.controller 'StoreDashboardCtrl', ($scope) ->
 Контроллер списка покупок.
 ###
 app.controller 'StoreOrderListCtrl', ($scope, $location, Order) ->
-    $scope.state= 'load'
-
     load= ->
         $scope.orders= Order.query (orders) ->
             $scope.state= 'loaded'
@@ -183,13 +233,121 @@ app.controller 'StoreOrderListCtrl', ($scope, $location, Order) ->
     do load
 
 
+
+
+
+###
+Контроллер материалов баккита
+###
+app.controller 'StoreMaterialListCtrl', ($scope, $location, Material) ->
+    load= ->
+        $scope.materials= Material.query ->
+            $scope.state= 'loaded'
+
+    do load
+
+    $scope.reload= ->
+        do load
+
+
+
+###
+Контроллер формы материала.
+###
+app.controller 'StoreMaterialFormCtrl', ($scope, $route, $q, $location, Material) ->
+    if $route.current.params.materialId
+        $scope.material= Material.get $route.current.params, ->
+            $scope.state= 'loaded'
+            $scope.action= 'update'
+    else
+        $scope.material= new Material
+        $scope.state= 'loaded'
+        $scope.action= 'create'
+
+    # Действия
+
+    $scope.create= (MaterialForm) ->
+        $scope.material.$create ->
+            $location.path '/store/materials/list', (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        MaterialForm[input].$setValidity error.error, false
+
+    $scope.update= (MaterialForm) ->
+        $scope.material.$update ->
+            $location.path '/store/materials/list', (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        MaterialForm[input].$setValidity error.error, false
+
+    $scope.delete= ->
+        $scope.material.$delete ->
+            $location.path '/store/materials/list'
+
+
+
+
+
+###
+Контроллер чар баккита
+###
+app.controller 'StoreEnchantmentCtrl', ($scope, $location, Enchantment) ->
+    load= ->
+        $scope.enchantments= Enchantment.query ->
+            $scope.state= 'loaded'
+
+    do load
+
+    $scope.reload= ->
+        do load
+
+
+
+###
+Контроллер формы чара.
+###
+app.controller 'StoreEnchantmentFormCtrl', ($scope, $route, $q, $location, Enchantment) ->
+    if $route.current.params.enchantmentId
+        $scope.enchantment= Enchantment.get $route.current.params, ->
+            $scope.state= 'loaded'
+            $scope.action= 'update'
+    else
+        $scope.enchantment= new Enchantment
+        $scope.state= 'loaded'
+        $scope.action= 'create'
+
+    # Действия
+
+    $scope.create= (EnchantmentForm) ->
+        $scope.enchantment.$create ->
+            $location.path '/store/enchantments/list', (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        EnchantmentForm[input].$setValidity error.error, false
+
+    $scope.update= (EnchantmentForm) ->
+        $scope.enchantment.$update ->
+            $location.path '/store/enchantments/list', (err) ->
+                $scope.errors= err.data.errors
+                if 400 == err.status
+                    angular.forEach err.data.errors, (error, input) ->
+                        EnchantmentForm[input].$setValidity error.error, false
+
+    $scope.delete= ->
+        $scope.enchantment.$delete ->
+            $location.path '/store/enchantments/list'
+
+
+
+
+
 ###
 Контроллер списка предметов.
 ###
 app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
-    $scope.items= {}
-    $scope.state= 'load'
-
     load= ->
         $scope.items= Item.query ->
             $scope.state= 'loaded'
@@ -210,47 +368,57 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
         do load
 
 
+
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Enchantment, ItemForm) ->
-    $scope.errors= {}
-    $scope.enchantment= {}
-    $scope.state= 'load'
+app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, ServerList) ->
+    if $route.current.params.itemId
+        $scope.item= Item.get $route.current.params, ->
+            $scope.materials= Material.query ->
+                $scope.enchantments= Enchantment.query ->
+                    $scope.servers= ServerList.query ->
+                        $scope.state= 'loaded'
+                        $scope.action= 'update'
+    else
+        $scope.item= new Item
+        $scope.materials= Material.query ->
+            $scope.enchantments= Enchantment.query ->
+                $scope.servers= ServerList.query ->
+                    $scope.state= 'loaded'
+                    $scope.action= 'create'
 
-    $scope.form= do ItemForm.load
-    $scope.form.then (form) ->
-        console.log 'form loaded', form
-
-        $scope.enchantments= form.enchantments
-        $scope.servers= form.servers
-
-        if $route.current.params.itemId
-            $scope.item= Item.get $route.current.params, ->
-                $scope.state= 'loaded'
-        else
-            $scope.item= new Item
-            $scope.item.enchantments= []
-            $scope.state= 'loaded'
-
-    # Чары предмета
+    $scope.changeMaterial= (material) ->
+        $scope.item.titleRu= JSON.parse(material).titleRu
+        $scope.item.titleEn= JSON.parse(material).titleEn
 
     $scope.addEnchantment= (enchantment) ->
-        return if not $scope.enchantment
-        enchantment= angular.copy $scope.enchantment
-        $scope.enchantment= null
-        enchantment.level= 1
-        $scope.item.enchantments.push enchantment
+        newEnchantment= JSON.parse angular.copy enchantment
+        newEnchantment.level= 1
+        $scope.item.enchantments= [] if not $scope.item.enchantments
+        $scope.item.enchantments.push newEnchantment
 
-    $scope.remEnchantment= (enchantment) ->
-        enchantments= []
-        angular.forEach $scope.item.enchantments, (e) ->
-            enchantments.push e if enchantment != e
-        $scope.item.enchantments= enchantments
+    $scope.removeEnchantment= (enchantment) ->
+        remPosition= null
+        $scope.item.enchantments.map (ench, i) ->
+            if ench.id == enchantment.id
+                $scope.item.enchantments.splice i, 1
+
+    $scope.addServer= (server) ->
+        newServer= JSON.parse angular.copy server
+        $scope.item.servers= [] if not $scope.item.servers
+        $scope.item.servers.push newServer
+
+    $scope.removeServer= (server) ->
+        remPosition= null
+        $scope.item.servers.map (srv, i) ->
+            if srv.id == server.id
+                $scope.item.servers.splice i, 1
 
     # Действия
 
     $scope.create= (ItemForm) ->
+        $scope.item.material= JSON.parse($scope.item.material).id
         $scope.item.$create ->
             $location.path '/store/items/list', (err) ->
                 $scope.errors= err.data.errors
@@ -269,76 +437,3 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Enchan
     $scope.delete= ->
         $scope.item.$delete ->
             $location.path '/store/items/list'
-
-
-###
-Контроллер списка чар.
-###
-app.controller 'StoreEnchantmentCtrl', ($scope, $location, Enchantment) ->
-    $scope.enchantments= {}
-    $scope.state= 'load'
-
-
-    load= ->
-        $scope.enchantments= Enchantment.query ->
-            $scope.state= 'loaded'
-            console.log 'Чары загружены'
-
-    do load
-
-
-    $scope.showDetails= (enchantment) ->
-        $scope.dialog.enchantment= enchantment
-        $scope.dialog.templateUrl= 'enchantment/dialog/'
-        $scope.showDialog true
-
-
-    $scope.hideDetails= ->
-        $scope.dialog.enchantment= null
-        do $scope.hideDialog
-
-
-    $scope.reload= ->
-        do load
-
-
-###
-Контроллер формы чар.
-###
-app.controller 'StoreEnchantmentFormCtrl', ($scope, $route, $location, Enchantment) ->
-    $scope.errors= {}
-    $scope.state= 'load'
-
-    # Чары
-
-    if $route.current.params.enchantmentId
-        $scope.enchantment= Enchantment.get $route.current.params, ->
-            $scope.state= 'loaded'
-    else
-        $scope.enchantment= new Enchantment
-        $scope.state= 'loaded'
-
-    # Действия
-
-    $scope.create= (EnchantmentForm) ->
-        $scope.enchantment.$create ->
-            $location.path '/store/enchantments/list'
-        ,  (err) ->
-            $scope.errors= err.data.errors
-            if 400 == err.status
-                angular.forEach err.data.errors, (error, input) ->
-                    EnchantmentForm[input].$setValidity error.error, false
-
-    $scope.update= (EnchantmentForm) ->
-        $scope.enchantment.$update ->
-            $location.path '/store/enchantments/list'
-        ,  (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        EnchantmentForm[input].$setValidity error.error, false
-
-    $scope.delete= ->
-        $scope.enchantment.$delete ->
-            $location.path '/store/enchantments/list'
-        ,   () ->
