@@ -94,7 +94,7 @@ app.factory 'Enchantment', ($resource) ->
 
 
 
-app.factory 'Server', ($resource) ->
+app.factory 'ServerList', ($resource) ->
     $resource '/api/v1/servers/server'
 
 
@@ -353,19 +353,19 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, Server) ->
+app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, ServerList) ->
     if $route.current.params.itemId
         $scope.item= Item.get $route.current.params, ->
             $scope.materials= Material.query ->
                 $scope.enchantments= Enchantment.query ->
-                    $scope.servers= Server.query ->
+                    $scope.servers= ServerList.query ->
                         $scope.state= 'loaded'
                         $scope.action= 'update'
     else
         $scope.item= new Item
         $scope.materials= Material.query ->
             $scope.enchantments= Enchantment.query ->
-                $scope.servers= Server.query ->
+                $scope.servers= ServerList.query ->
                     $scope.state= 'loaded'
                     $scope.action= 'create'
 

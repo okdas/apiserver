@@ -7,7 +7,8 @@ block section-body
         h3(style='text-align:center') Создание сервера
 
         fieldset
-            input.input(placeholder='Имя сервера', type='text', required, ng-model='server.title')
+            input.input(placeholder='Название сервера', type='text', required, ng-model='server.title')
+            input.input(placeholder='Name', type='text', required, ng-model='server.name')
             input.input(placeholder='Ключ', type='text', required, ng-model='server.key')
 
         fieldset(ng-if='action=="create"')

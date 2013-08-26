@@ -16,6 +16,8 @@ app= module.exports= do express
 Добавляет предмет.
 ###
 app.post '/', access, (req, res, next) ->
+    console.log req.body
+
     async.waterfall [
 
         (done) ->
@@ -39,6 +41,10 @@ app.post '/', access, (req, res, next) ->
                     return done err, conn, id
 
         (conn, id, done) ->
+            # а есть ли вобще энчаты у предмета
+            if not req.body.enchantments
+                return done null, conn, id
+
             bulk= []
             for enchantment, order in req.body.enchantments
                 bulk.push [id, enchantment.id, enchantment.level, order]
@@ -51,6 +57,10 @@ app.post '/', access, (req, res, next) ->
                     return done err, conn, id
 
         (conn, id, done) ->
+            # а есть ли сервера
+            if not req.body.servers
+                return done null, conn, id
+
             bulk= []
             for server in req.body.servers
                 bulk.push [id, server.id]
@@ -89,6 +99,31 @@ app.get '/', access, (req, res, next) ->
             conn.query 'SELECT * FROM item'
             ,   (err, rows) ->
                     return done err, conn, rows
+
+        (conn, items, done) ->
+            itemIds= []
+
+            items.map (item) ->
+                item.servers= []
+                itemIds.push item.id
+            
+            conn.query '
+                SELECT
+                    connection.itemId,
+                    server.id AS serverId,
+                    server.title
+                FROM server_item AS connection
+                JOIN server AS server
+                    ON server.id = connection.serverId
+                WHERE itemId IN (?)'
+            ,   [itemIds]
+            ,   (err, rows) ->
+                    items.map (item) ->
+                        rows.map (server) ->
+                            if item.id == server.itemId
+                                item.servers.push server
+
+                    return done err, conn, items
 
     ],  (err, conn, rows) ->
             do conn.end if conn
@@ -143,7 +178,7 @@ app.get '/:itemId', access, (req, res, next) ->
                 FROM server_item AS connection
                 JOIN server AS server
                     ON server.id = connection.serverId
-                WHERE itemId = 1'
+                WHERE itemId = ?'
             ,   [req.params.itemId]
             ,   (err, resp) ->
                     item.servers= resp

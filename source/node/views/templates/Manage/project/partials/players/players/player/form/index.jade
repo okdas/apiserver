@@ -6,14 +6,14 @@ block section-body
         h3(style='text-align:center') Игрок
 
         fieldset
-            input.input(placeholder='Имя', type='text', required, ng-model='player.name')
+            input.input(placeholder='Имя', type='text', required, ng-maxlength='50', ng-model='player.name')
 
             div(ng-if='action=="create"')
-                input.input(placeholder='Пароль sha1', type='text', required, ng-model='player.pass')
+                input.input(placeholder='Пароль sha1', type='text', required, ng-maxlength='40', ng-model='player.pass')
 
         fieldset
-            input.input.input-auto(placeholder='Email', type='text', required, ng-model='player.email')
-            input.input.input-auto(placeholder='Phone', type='text', ng-model='player.phone')
+            input.input.input-auto(placeholder='Email', type='text', required, ng-maxlength='50', ng-model='player.email')
+            input.input.input-auto(placeholder='Phone', type='text', ng-maxlength='15', ng-pattern='/^\+\d+/', ng-model='player.phone')
 
 
         fieldset(ng-if='action=="create"')
