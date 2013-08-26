@@ -10,10 +10,19 @@ app= angular.module 'play', ['ngAnimate', 'ngRoute', 'ngResource'], ($routeProvi
         templateUrl: 'partials/payments/payment/', controller:'PlayerPaymentCtrl'
 
 
+app.factory '$cache', ($cacheFactory) ->
+    $cacheFactory 'play'
+
+
 app.factory 'Player', ($resource) ->
     $resource '/api/v1/player/:action', {},
         login: {method:'post', params:{action:'login'}}
         logout: {method:'post', params:{action:'logout'}}
+
+app.factory 'PlayerPayment', ($resource) ->
+    $resource '/api/v1/player/payments/:paymentId', {paymentId:'@id'},
+        query: {method:'GET', isArray:true, cache:true}
+        create: {method:'POST'}
 
 
 app.controller 'ViewCtrl', ($scope, $location, $window, Player) ->
@@ -26,6 +35,9 @@ app.controller 'ViewCtrl', ($scope, $location, $window, Player) ->
     $scope.hideDialog= () ->
         $scope.dialog.overlay= null
 
+    $scope.view=
+        state: null
+
     $scope.player= Player.get () ->
             $scope.state= 'ready'
     ,   (err) ->
@@ -34,18 +46,11 @@ app.controller 'ViewCtrl', ($scope, $location, $window, Player) ->
                 error: err
                 title: 'Не удалось загрузить пользователя'
 
-
-app.controller 'PlayerCtrl', ($scope, $route, Player) ->
-
     $scope.showPayDialog= () ->
         $scope.showDialog 'pay'
 
 
-
-app.factory 'PlayerPayment', ($resource) ->
-    $resource '/api/v1/player/payments/:paymentId', {paymentId:'@id'},
-        query: {method:'GET', isArray:true, cache:true}
-        create: {method:'POST'}
+app.controller 'PlayerCtrl', ($scope, $route, Player) ->
 
 
 app.controller 'PlayerPaymentCreateCtrl', ($scope, $location, PlayerPayment, $log) ->
@@ -60,10 +65,12 @@ app.controller 'PlayerPaymentCreateCtrl', ($scope, $location, PlayerPayment, $lo
                 $log.error 'запись о пополнении не создана'
 
 
-app.controller 'PlayerPaymentListCtrl', ($scope, $route, PlayerPayment, $log) ->
-    $scope.payments= PlayerPayment.query $route.current.params, () ->
+app.controller 'PlayerPaymentListCtrl', ($scope, PlayerPayment, $log) ->
+    $scope.state= null
+    $scope.payments= PlayerPayment.query () ->
         $scope.state= 'ready'
 
-app.controller 'PlayerPaymentCtrl', ($scope, $route, PlayerPayment, $log) ->
-    $scope.payment= PlayerPayment.get $route.current.params, () ->
+app.controller 'PlayerPaymentCtrl', ($scope, $routeParams, PlayerPayment, $log) ->
+    $scope.state= null
+    $scope.payment= PlayerPayment.get $routeParams, () ->
         $scope.state= 'ready'
