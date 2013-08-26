@@ -7,9 +7,9 @@ block section-body
         h3(style='text-align:center') Создание сервера
 
         fieldset
-            input.input(placeholder='Название сервера', type='text', required, ng-model='server.title')
-            input.input(placeholder='Name', type='text', required, ng-model='server.name')
-            input.input(placeholder='Ключ', type='text', required, ng-model='server.key')
+            input.input(placeholder='Название сервера', type='text', required, ng-maxlength='50', ng-model='server.title')
+            input.input(placeholder='Name', type='text', required, ng-maxlength='50', ng-model='server.name')
+            input.input(placeholder='Ключ', type='text', required, ng-maxlength='50', ng-model='server.key')
 
         fieldset(ng-if='action=="create"')
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(SeverForm)', ng-disabled='!ServerForm.$valid')
