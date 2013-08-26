@@ -1,9 +1,0 @@
-extends ../layout
-
-block section-head-title
-  span Добро пожаловать, {{player.name}}
-
-block section-body
-  h1 История пополнений
-  .player--payments
-    .player--payment(ng-repeat='payment in payments') {{payment}}

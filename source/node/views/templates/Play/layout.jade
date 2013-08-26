@@ -13,6 +13,7 @@ html(lang='ru', ng-app='play', ng-cloak)
 
         script(src='/scripts/libs/jquery/1.10.2/jquery.min.js')
         script(src='/scripts/libs/angularjs/1.2.0rc1/angular.min.js')
+        script(src='/scripts/libs/angularjs/1.2.0rc1/i18n/angular-locale_ru-ru.js')
         script(src='/scripts/libs/angularjs/1.2.0rc1/angular-animate.min.js')
         script(src='/scripts/libs/angularjs/1.2.0rc1/angular-route.min.js')
         script(src='/scripts/libs/angularjs/1.2.0rc1/angular-resource.min.js')
@@ -25,14 +26,4 @@ html(lang='ru', ng-app='play', ng-cloak)
 
       section
         block view-outer
-
-          .view.view-outer(ng-view)
-
-      section
-        block dialog
-
-          .dialog(ng-if='dialog.overlay', ng-animate='"dialog"')
-              .dialog-bg(ng-click='hideDialog()')
-              .container: .row: .col-12.dialog-container(ng-include='dialog.templateUrl')
-
-          .dialog-overlay(ng-if='dialog.overlay', ng-animate='"dialog-overlay"')
+          .view(ng-view)

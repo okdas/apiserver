@@ -5,8 +5,10 @@ SessionStore= require 'connect-redis'
 SessionStore= SessionStore App
 
 
-exports.play= () ->
+exports.play= (parent) ->
     app= do App
+
+    app.set 'config', parent.get 'config'
 
     passport= new Passport
     passport.serializeUser (user, done) ->
@@ -51,6 +53,14 @@ exports.play= () ->
     ###
     app.use '/api/v1/player/store'
     ,   require './Play/Api/V1/Player/Store'
+
+
+    ###
+    Методы для обработки платежей игрока.
+    ###
+    app.use '/payment/robokassa'
+    ,   require './Play/Payment/Robokassa'
+
 
     app
 
