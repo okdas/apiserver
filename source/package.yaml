@@ -22,10 +22,11 @@ config:
         payment:
             'robokassa':
                 merchantUrl: http://test.robokassa.ru/Index.aspx # merchantUrl: https://auth.robokassa.ru/Merchant/Index.aspx
-                merchant: awesome39
+                merchant: tehfreak
                 pass1: b9f1c6834f49a8e8
                 pass2: f4f397e82f26bd34
-
+                resultUrl: http://play.local.awesome39.com:8000/payment/robokassa/result
+                successUrl: http://play.local.awesome39.com:8000/payment/robokassa/success
 
     development:
 
@@ -44,8 +45,6 @@ config:
         payment:
             'robokassa':
                 merchantUrl: http://play.local.awesome39.com:8000/payment/robokassa/debug
-                resultUrl: http://play.local.awesome39.com:8000/payment/robokassa/result
-                successUrl: http://play.local.awesome39.com:8000/payment/robokassa/success
 
     production:
 
