@@ -24,4 +24,3 @@ module.exports= (req, res, next) ->
 
             req.server= server
             return do next
-
