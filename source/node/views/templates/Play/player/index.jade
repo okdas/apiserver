@@ -16,16 +16,11 @@ append header
   .navbar.navbar-inverse.navbar-static-top
     .container
       .row
-        .col-12.col-sm-9.col-lg-9
+        .col-12
           a.navbar-brand(href='./')
             span FLYDEV
           ul.nav.navbar-nav
-            li: a(href='#/store') Магазин
-          ul.nav.navbar-nav
-            li: a(href='#/storage') Склад
-        .col-12.col-sm-3.col-lg-3
-          {{player.name}}
-          .pull-right.btn-group.dropdown(ng-if='player')
-            a.btn.btn-small(href='', ng-click='logout()') Личный кабинет
-            ul.dropdown-menu
-              li: a(href='#/player') Личный кабинет
+            li: a(href='/store') Магазин
+            li: a(href='/storage') Склад
+          ul.nav.navbar-nav.pull-right
+            li: a(href='/player') {{player.name}}
