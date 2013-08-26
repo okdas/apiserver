@@ -9,10 +9,10 @@ app= angular.module 'project.servers', ['ngResource','ngRoute'], ($routeProvider
         templateUrl: 'partials/servers/servers/', controller: 'ServersServerListCtrl'
 
     $routeProvider.when '/servers/server/create',
-        templateUrl: 'partials/servers/servers/server/forms/create', controller: 'ServersServerFormCtrl'
+        templateUrl: 'partials/servers/servers/server/form/', controller: 'ServersServerFormCtrl'
 
     $routeProvider.when '/servers/server/update/:serverId',
-        templateUrl: 'partials/servers/servers/server/forms/update', controller: 'ServersServerFormCtrl'
+        templateUrl: 'partials/servers/servers/server/form/', controller: 'ServersServerFormCtrl'
 
     # Серверы. Инстансы
 
@@ -20,10 +20,10 @@ app= angular.module 'project.servers', ['ngResource','ngRoute'], ($routeProvider
         templateUrl: 'partials/servers/instances/', controller: 'ServersInstanceListCtrl'
 
     $routeProvider.when '/servers/instance/create',
-        templateUrl: 'partials/servers/instances/instance/forms/create', controller: 'ServersInstanceFormCtrl'
+        templateUrl: 'partials/servers/instances/instance/form/', controller: 'ServersInstanceFormCtrl'
 
     $routeProvider.when '/servers/instance/update/:instanceId',
-        templateUrl: 'partials/servers/instances/instance/forms/update', controller: 'ServersInstanceFormCtrl'
+        templateUrl: 'partials/servers/instances/instance/form/', controller: 'ServersInstanceFormCtrl'
 
 
 
@@ -40,7 +40,7 @@ app= angular.module 'project.servers', ['ngResource','ngRoute'], ($routeProvider
 Модель сервера.
 ###
 app.factory 'Server', ($resource) ->
-    $resource '/api/v1/servers/:serverId', {},
+    $resource '/api/v1/servers/server/:serverId', {},
         create:
             method: 'post'
 
@@ -59,7 +59,7 @@ app.factory 'Server', ($resource) ->
 Модель инстанса.
 ###
 app.factory 'Instance', ($resource) ->
-    $resource '/api/v1/instances/:instanceId', {},
+    $resource '/api/v1/servers/instance/:instanceId', {},
         create:
             method: 'post'
 
@@ -95,24 +95,12 @@ app.controller 'ServersDashboardCtrl', ($scope, $q) ->
 Контроллер списка серверов.
 ###
 app.controller 'ServersServerListCtrl', ($scope, Server) ->
-    $scope.server= {}
-    $scope.state= 'load'
-
     load= ->
         $scope.servers= Server.query ->
             $scope.state= 'loaded'
             console.log 'Сервера загружены'
 
     do load
-
-    $scope.showDetails= (server) ->
-        $scope.dialog.server= server
-        $scope.dialog.templateUrl= 'server/dialog/'
-        $scope.showDialog true
-
-    $scope.hideDetails= ->
-        $scope.dialog.server= null
-        do $scope.hideDialog
 
     $scope.reload= ->
         do load
@@ -122,16 +110,16 @@ app.controller 'ServersServerListCtrl', ($scope, Server) ->
 Контроллер формы сервера.
 ###
 app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
-    $scope.errors= {}
-    $scope.state= 'load'
-
     if $route.current.params.serverId
+        console.log $route.current.params.serverId
         $scope.server= Server.get $route.current.params, ->
             $scope.state= 'loaded'
-            console.log arguments
+            $scope.action= 'update'
+
     else
         $scope.server= new Server
         $scope.state= 'loaded'
+        $scope.action= 'create'
 
     # Действия
 
@@ -160,9 +148,6 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
 Контроллер инстанса.
 ###
 app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
-    $scope.instance= {}
-    $scope.state= 'load'
-
     load= ->
         $scope.instances= Instance.query ->
             $scope.state= 'loaded'
@@ -187,16 +172,14 @@ app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
 Контроллер формы инстанса.
 ###
 app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, Server) ->
-    $scope.errors= {}
-    $scope.state= 'load'
-
     if $route.current.params.instanceId
         $scope.instance= Instance.get $route.current.params, ->
             $scope.state= 'loaded'
-            console.log arguments
+            $scope.action= 'update'
     else
         $scope.instance= new Instance
         $scope.state= 'loaded'
+        $scope.action= 'create'
 
     $scope.servers= Server.query ->
 
