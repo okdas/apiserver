@@ -16,6 +16,7 @@ append head-scripts
     include includes/servers/servers.coffee
     include includes/store/store.coffee
     include includes/project.coffee
+    include ../manage.coffee
 
 
 
@@ -47,7 +48,7 @@ append body
                         li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
 
                             a.dropdown-toggle(href='', ng-click='toggleDropdown()')
-                                strong {{user.username}} 
+                                strong {{user.name}} 
                                 b.caret
 
                             ul.dropdown-menu

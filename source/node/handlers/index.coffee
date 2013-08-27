@@ -82,6 +82,8 @@ module.exports= ->
 
 
 
+
+
     ###
     Баккит
     ###
@@ -90,6 +92,7 @@ module.exports= ->
 
     # Методы API для работы c материалами.
     app.use '/api/v1/bukkit/materials', require './Manage/Api/V1/Project/Bukkit/Materials'
+
 
 
 
@@ -111,21 +114,17 @@ module.exports= ->
 
 
 
-    ###
 
-    Рассылка
-
-    ###
 
     ###
     Методы API для рассылки писем.
     ###
-    app.use '/api/v1/sender/mail', require './Manage/Api/V1/Sender/Mail'
+    app.use '/api/v1/sender/mail', require './Manage/Api/V1/Project/Players/Mail'
 
     ###
     Методы API для рассылки смс.
     ###
-    app.use '/api/v1/sender/sms', require './Manage/Api/V1/Sender/Sms'
+    app.use '/api/v1/sender/sms', require './Manage/Api/V1/Project/Players/Sms'
 
 
 
