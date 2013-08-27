@@ -6,13 +6,13 @@ app= angular.module 'engine.users', ['ngResource','ngRoute'], ($routeProvider) -
         templateUrl: 'partials/users/', controller: 'UsersDashboardCtrl'
 
     $routeProvider.when '/users/user/list',
-        templateUrl: 'partials/users/user/', controller: 'UsersUserListCtrl'
+        templateUrl: 'partials/users/users/', controller: 'UsersUserListCtrl'
 
     $routeProvider.when '/users/user/create',
-        templateUrl: 'partials/users/user/form/', controller: 'UsersUserFormCtrl'
+        templateUrl: 'partials/users/users/user/form/', controller: 'UsersUserFormCtrl'
 
     $routeProvider.when '/users/user/update/:userId',
-        templateUrl: 'partials/users/user/form/', controller: 'UsersUserFormCtrl'
+        templateUrl: 'partials/users/users/user/form/', controller: 'UsersUserFormCtrl'
 
 
 
@@ -69,7 +69,7 @@ app.controller 'UsersDashboardCtrl', ($scope, $q) ->
 ###
 app.controller 'UsersUserListCtrl', ($scope, User) ->
     load= ->
-        $scope.servers= User.query ->
+        $scope.users= User.query ->
             $scope.state= 'loaded'
 
     do load
@@ -82,21 +82,21 @@ app.controller 'UsersUserListCtrl', ($scope, User) ->
 Контроллер формы сервера.
 ###
 app.controller 'UsersUserFormCtrl', ($scope, $route, $location, User) ->
-    if $route.current.params.serverId
-        console.log $route.current.params.serverId
-        $scope.server= User.get $route.current.params, ->
+    if $route.current.params.userId
+        console.log $route.current.params.userId
+        $scope.user= User.get $route.current.params, ->
             $scope.state= 'loaded'
             $scope.action= 'update'
 
     else
-        $scope.server= new User
+        $scope.user= new User
         $scope.state= 'loaded'
         $scope.action= 'create'
 
     # Действия
 
     $scope.create= (UserForm) ->
-        $scope.server.$create ->
+        $scope.user.$create ->
             $location.path '/users/user/list', (err) ->
                 $scope.errors= err.data.errors
                 if 400 == err.status
@@ -104,7 +104,7 @@ app.controller 'UsersUserFormCtrl', ($scope, $route, $location, User) ->
                         UserForm[input].$setValidity error.error, false
 
     $scope.update= (UserForm) ->
-        $scope.server.$update ->
+        $scope.user.$update ->
             $location.path '/users/user/list', (err) ->
                 $scope.errors= err.data.errors
                 if 400 == err.status
@@ -112,5 +112,5 @@ app.controller 'UsersUserFormCtrl', ($scope, $route, $location, User) ->
                         UserForm[input].$setValidity error.error, false
 
     $scope.delete= ->
-        $scope.server.$delete ->
+        $scope.user.$delete ->
             $location.path '/users/user/list'

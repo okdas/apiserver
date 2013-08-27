@@ -1,9 +1,9 @@
-if !angular.module 'manage'
-    app= angular.module 'manage', ['ngAnimate', 'ngResource', 'ngRoute'], ($routeProvider) ->
-        $routeProvider.otherwise
-            redirectTo: '/'
-else
-    app= angular.module 'manage'
+#if !angular.module 'manage'
+#    app= angular.module 'manage', ['ngAnimate', 'ngResource', 'ngRoute'], ($routeProvider) ->
+#        $routeProvider.otherwise
+#            redirectTo: '/'
+#else
+app= angular.module 'manage'
 
 
 
@@ -33,7 +33,6 @@ app.controller 'CurrentUserCtrl', ($scope, $window, CurrentUser) ->
         $scope.dropdown.isOpen= !$scope.dropdown.isOpen
 
     $scope.user= CurrentUser.get ->
-        console.log $scope.user
         console.log 'пользователь получен'
 
     $scope.logout= ->
