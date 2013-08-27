@@ -88,6 +88,7 @@ app.factory 'Instance', ($resource) ->
 Контроллер панели управления.
 ###
 app.controller 'ServersDashboardCtrl', ($scope, $q) ->
+    console.log 'ffffffffffffffffffff'
     $scope.state= 'loaded'
 
 

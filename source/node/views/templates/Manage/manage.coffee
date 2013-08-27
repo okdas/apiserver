@@ -1,6 +1,9 @@
-app = angular.module 'manage', ['ngAnimate', 'ngResource', 'ngRoute'], ($routeProvider) ->
+if !angular.module 'manage'
+    app= angular.module 'manage', ['ngAnimate', 'ngResource', 'ngRoute'], ($routeProvider) ->
         $routeProvider.otherwise
             redirectTo: '/'
+else
+    app= angular.module 'manage'
 
 
 
