@@ -19,20 +19,10 @@ config:
 
             timezone: Z
 
-        payment:
-            'robokassa':
-                merchantUrl: http://test.robokassa.ru/Index.aspx # merchantUrl: https://auth.robokassa.ru/Merchant/Index.aspx
-                merchant: tehfreak
-                pass1: b9f1c6834f49a8e8
-                pass2: f4f397e82f26bd34
-                resultUrl: http://play.local.awesome39.com:8000/payment/robokassa/result
-                successUrl: http://play.local.awesome39.com:8000/payment/robokassa/success
 
     development:
 
         installed: false
-
-        host: local.awesome39.com
 
         db:
             database: apiserver
@@ -42,15 +32,10 @@ config:
 
             debug: true
 
-        payment:
-            'robokassa':
-                merchantUrl: http://play.local.awesome39.com:8000/payment/robokassa/debug
 
     production:
 
         installed: true
-
-        host: flydev.awesome39.com
 
         db: # http://red.flydev.net/issues/5#note-3
             database: apiserver
