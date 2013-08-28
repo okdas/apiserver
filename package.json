@@ -19,6 +19,7 @@
     "start": "node app/node.js"
   },
   "devDependencies": {
+    "coffee-script": "latest",
     "grunt": "latest",
     "grunt-contrib-clean": "latest",
     "grunt-contrib-copy": "latest",
