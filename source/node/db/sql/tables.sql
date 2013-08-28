@@ -146,8 +146,10 @@ CREATE TABLE IF NOT EXISTS `player_item` (
 -- Дамп структуры для таблица apiserver.player_item_enchantment
 CREATE TABLE IF NOT EXISTS `player_item_enchantment` (
   `itemId` int(10) NOT NULL,
-  `enchantmentId` varchar(45) NOT NULL,
+  `enchantmentId` varchar(15) NOT NULL,
   `level` int(3) NOT NULL,
+  `order` int(3) DEFAULT NULL,
+  PRIMARY KEY (`itemId`,`enchantmentId`),
   KEY `player_item_id` (`itemId`),
   KEY `player_item_enchantment_id` (`enchantmentId`),
   CONSTRAINT `player_item_enchantment_id` FOREIGN KEY (`enchantmentId`) REFERENCES `bukkit_enchantment` (`id`),
