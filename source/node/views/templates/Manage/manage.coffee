@@ -71,4 +71,4 @@ app.controller 'ViewCtrl', ($scope, $location, $http, $window, CurrentUser) ->
             user.pass= loginForm.password.$modelValue
             $window.location.href= 'project/'
         , ->
-            $scope.user.password= ''
+            $scope.user.pass= ''
