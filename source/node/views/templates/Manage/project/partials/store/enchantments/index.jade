@@ -6,8 +6,8 @@ block section-body
         thead
             tr
                 th ID
-                th.col-flex: .sortable: .sortable-cell Название чара
-                th English
+                th.col-flex: .sortable: .sortable-cell Название чар
+                th Min
                 th Max
                 th
                     button.btn.btn-info(ng-click='reload()')
@@ -16,9 +16,9 @@ block section-body
         tbody
             tr(ng-repeat='enchantment in enchantments')
                 td {{enchantment.id}}
-                td {{enchantment.titleRu}}
-                td {{enchantment.titleEn}}
-                td {{enchantment.levelmax}}
+                td {{enchantment.titleRu}} ({{enchantment.titleEn}})
+                td {{enchantment.levelMin}}
+                td {{enchantment.levelMax}}
                 td
                     a(ng-href='#/store/enchantments/enchantment/update/{{enchantment.id}}')
                         button.btn.btn-success
