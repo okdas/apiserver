@@ -15,7 +15,7 @@
     }
   },
   "scripts": {
-    "prestart": "grunt.cmd",
+    "prestart": "grunt",
     "start": "node app/node.js"
   },
   "devDependencies": {
@@ -23,12 +23,13 @@
     "grunt-contrib-clean": "0.5.0",
     "grunt-contrib-copy": "0.4.1",
     "grunt-contrib-coffee": "0.7.0",
-    "grunt-contrib-jade": "0.5.1",
+    "grunt-contrib-jade": "0.8.0",
     "grunt-contrib-less": "0.6.4",
     "grunt-yaml": "0.2.1",
-    "grunt-cli": "0.1.9"
+    "grunt-cli": "0.1.9",
+    "coffee-script": "1.6.3"
   },
   "engines": {
-    "node": "~0.11.x"
+    "node": "0.10.17"
   }
 }
