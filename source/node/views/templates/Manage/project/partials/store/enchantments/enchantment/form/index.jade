@@ -11,7 +11,8 @@ block section-body
 
         fieldset
             input.input.input-auto(placeholder='Идентификатор в игре', type='text', required, ng-model='enchantment.id', ng-pattern='/^([0-9]+)(:([0-9]+))?$/')
-            input.input.input-auto(placeholder='Максимальный уровень', type='text', required, ng-model='enchantment.levelmax', ng-pattern='/^([0-9]+)$/')
+            input.input.input-auto(placeholder='Минимальный уровень', type='text', required, ng-model='enchantment.levelMin', ng-pattern='/^([0-9]+)$/')
+            input.input.input-auto(placeholder='Максимальный уровень', type='text', required, ng-model='enchantment.levelMax', ng-pattern='/^([0-9]+)$/')
 
 
         fieldset(ng-if='action=="create"')

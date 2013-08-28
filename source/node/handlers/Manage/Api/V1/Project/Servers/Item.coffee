@@ -157,7 +157,7 @@ app.get '/:itemId', access, (req, res, next) ->
                     ofBukkit.titleRu,
                     ofBukkit.titleEn,
                     ofItem.level,
-                    ofBukkit.levelmax,
+                    ofBukkit.levelMax,
                     ofItem.order
                 FROM item_enchantment AS ofItem
                 JOIN bukkit_enchantment AS ofBukkit
