@@ -1,9 +1,10 @@
 -- Дамп структуры для таблица apiserver.bukkit_enchantment
 CREATE TABLE IF NOT EXISTS `bukkit_enchantment` (
   `id` varchar(15) NOT NULL,
-  `titleRu` varchar(50) NOT NULL,
-  `titleEn` varchar(50) NOT NULL,
-  `levelmax` int(10) NOT NULL,
+  `titleRu` varchar(45) NOT NULL,
+  `titleEn` varchar(45) NOT NULL,
+  `levelMin` int(3) DEFAULT '1',
+  `levelMax` int(3) DEFAULT '127',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='существующие чары';
 
@@ -12,8 +13,8 @@ CREATE TABLE IF NOT EXISTS `bukkit_enchantment` (
 -- Дамп структуры для таблица apiserver.bukkit_material
 CREATE TABLE IF NOT EXISTS `bukkit_material` (
   `id` varchar(15) NOT NULL,
-  `titleRu` varchar(50) NOT NULL,
-  `titleEn` varchar(50) NOT NULL,
+  `titleRu` varchar(45) NOT NULL,
+  `titleEn` varchar(45) NOT NULL,
   `imageUrl` mediumtext NOT NULL,
   `enchantability` int(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
