@@ -1,9 +1,10 @@
 -- Дамп структуры для таблица apiserver.bukkit_enchantment
 CREATE TABLE IF NOT EXISTS `bukkit_enchantment` (
   `id` varchar(15) NOT NULL,
-  `titleRu` varchar(50) NOT NULL,
-  `titleEn` varchar(50) NOT NULL,
-  `levelmax` int(10) NOT NULL,
+  `titleRu` varchar(45) NOT NULL,
+  `titleEn` varchar(45) NOT NULL,
+  `levelMin` int(3) DEFAULT '1',
+  `levelMax` int(3) DEFAULT '127',
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='существующие чары';
 
@@ -12,8 +13,8 @@ CREATE TABLE IF NOT EXISTS `bukkit_enchantment` (
 -- Дамп структуры для таблица apiserver.bukkit_material
 CREATE TABLE IF NOT EXISTS `bukkit_material` (
   `id` varchar(15) NOT NULL,
-  `titleRu` varchar(50) NOT NULL,
-  `titleEn` varchar(50) NOT NULL,
+  `titleRu` varchar(45) NOT NULL,
+  `titleEn` varchar(45) NOT NULL,
   `imageUrl` mediumtext NOT NULL,
   `enchantability` int(3) DEFAULT NULL,
   PRIMARY KEY (`id`)
@@ -46,7 +47,7 @@ CREATE TABLE IF NOT EXISTS `player` (
 -- Дамп структуры для таблица apiserver.player_balance
 CREATE TABLE `player_balance` (
   `playerId` int(10) NOT NULL,
-  `amount` float NOT NULL DEFAULT '0',
+  `amount` decimal(8,2) NOT NULL DEFAULT '0.00',
   `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`playerId`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -113,7 +114,7 @@ CREATE TABLE IF NOT EXISTS `item_enchantment` (
   `itemId` int(10) NOT NULL,
   `enchantmentId` varchar(15) NOT NULL,
   `level` int(3) NOT NULL,
-  `order` int(3) NOT NULL,
+  `order` int(3) NULL,
   KEY `item_enchantment_id_idx` (`enchantmentId`),
   KEY `item_id` (`itemId`),
   CONSTRAINT `item_enchantment_id` FOREIGN KEY (`enchantmentId`) REFERENCES `bukkit_enchantment` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION,
@@ -148,6 +149,7 @@ CREATE TABLE IF NOT EXISTS `player_item_enchantment` (
   `itemId` int(10) NOT NULL,
   `enchantmentId` varchar(45) NOT NULL,
   `level` int(3) NOT NULL,
+  `order` INT(3) NULL,
   KEY `player_item_id` (`itemId`),
   KEY `player_item_enchantment_id` (`enchantmentId`),
   CONSTRAINT `player_item_enchantment_id` FOREIGN KEY (`enchantmentId`) REFERENCES `bukkit_enchantment` (`id`),
