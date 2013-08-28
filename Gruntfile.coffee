@@ -91,11 +91,11 @@ module.exports= (grunt) ->
         #            }
         #        ]
 
-        docco:
-            debug:
-                src: ['**/*.coffee'],
-                options:
-                    output: 'spec/docs/'
+        #docco:
+        #    debug:
+        #        src: ['**/*.coffee'],
+        #        options:
+        #            output: 'spec/docs/'
 
 
 
@@ -107,8 +107,8 @@ module.exports= (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-less'
     grunt.loadNpmTasks 'grunt-yaml'
     #grunt.loadNpmTasks 'grunt-coffeelint'
-    grunt.loadNpmTasks 'grunt-docco'
+    #grunt.loadNpmTasks 'grunt-docco'
 
     grunt.registerTask 'default', ['clean', 'yaml', 'coffee', 'jade', 'less', 'copy']
     #grunt.registerTask 'lint', ['coffeelint']
-    grunt.registerTask 'doc', ['docco']
+    #grunt.registerTask 'doc', ['docco']
