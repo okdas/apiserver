@@ -12,13 +12,13 @@ append head-scripts
 
     script(src='/scripts/libs/jquery-ui-1.10.3.custom.min.js')
 
-    
+
     include includes/players/players.coffee
     include includes/servers/servers.coffee
     include includes/store/store.coffee
     include includes/project.coffee
     include ../manage.coffee
-   
+
 
 
 append body
@@ -49,7 +49,7 @@ append body
                         li.dropdown(ng-controller='CurrentUserCtrl', ng-class='{open:dropdown.isOpen}')
 
                             a.dropdown-toggle(href='', ng-click='toggleDropdown()')
-                                strong {{user.name}} 
+                                strong='{{user.name}} '
                                 b.caret
 
                             ul.dropdown-menu
