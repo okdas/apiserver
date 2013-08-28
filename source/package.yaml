@@ -11,7 +11,7 @@ config:
 
     default:
 
-        port: 8000
+        port: 8001
 
         db:
             host: 176.31.14.255
