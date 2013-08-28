@@ -2,6 +2,7 @@ extends ../../layout
 extends ../layout
 
 block section-body
+    input.input(ng-model='materialSearch')
     table.table
         thead
             tr
@@ -15,7 +16,7 @@ block section-body
                         i.icon-refresh
 
         tbody
-            tr(ng-repeat='material in materials')
+            tr(ng-repeat='material in materials | filter:materialSearch')
                 td {{material.id}}
                 td {{material.titleRu}}
                 td {{material.titleEn}}

@@ -2,6 +2,7 @@ extends ../../layout
 extends ../layout
 
 block section-body
+    input.input(placeholder='Поиск', ng-model='playerSearch')
     table.table.players
         thead
             tr
@@ -13,7 +14,7 @@ block section-body
                         i.icon-refresh
 
         tbody
-            tr(ng-repeat='player in players')
+            tr(ng-repeat='player in players | filter:playerSearch')
                 td {{player.id}}
                 td {{player.name}}
                 td {{player.balance}}

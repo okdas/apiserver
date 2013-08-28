@@ -2,6 +2,7 @@ extends ../../layout
 extends ../layout
 
 block section-body
+    input.input(placeholder='Поиск', ng-model='itemSearch')
     table.table.items
         thead
             tr
@@ -14,7 +15,7 @@ block section-body
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
         tbody
-            tr(ng-repeat='item in items')
+            tr(ng-repeat='item in items | filter:itemSearch')
                 td {{item.id}}
                 td {{item.material}}
                 td {{item.titleRu}}
