@@ -16,7 +16,6 @@ app= module.exports= do express
 Добавляет предмет.
 ###
 app.post '/', access, (req, res, next) ->
-    console.log req.body
 
     async.waterfall [
 
@@ -34,6 +33,8 @@ app.post '/', access, (req, res, next) ->
                 titleRu: req.body.titleRu
                 titleEn: req.body.titleEn
                 price: req.body.price
+                amount: req.body.amount
+
             conn.query 'INSERT INTO item SET ?'
             ,   [data]
             ,   (err, resp) ->
@@ -157,7 +158,7 @@ app.get '/:itemId', access, (req, res, next) ->
                     ofBukkit.titleRu,
                     ofBukkit.titleEn,
                     ofItem.level,
-                    ofBukkit.levelmax,
+                    ofBukkit.levelMax,
                     ofItem.order
                 FROM item_enchantment AS ofItem
                 JOIN bukkit_enchantment AS ofBukkit

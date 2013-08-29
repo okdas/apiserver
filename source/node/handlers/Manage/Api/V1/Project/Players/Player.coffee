@@ -59,7 +59,6 @@ app.get '/', access, (req, res, next) ->
                 SELECT
                     player.id,
                     player.name,
-                    player.balance,
                     player.email,
                     player.phone
                 FROM player AS player'

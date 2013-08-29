@@ -2,6 +2,7 @@ extends ../../layout
 extends ../layout
 
 block section-body
+    input.input(placeholder='Поиск', ng-model='itemSearch')
     table.table.items
         thead
             tr
@@ -9,17 +10,19 @@ block section-body
                 th M
                 th.col-flex: .sortable: .sortable-cell Название
                 th Сервера
+                th Кол
                 th Цена
                 th
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
         tbody
-            tr(ng-repeat='item in items')
+            tr(ng-repeat='item in items | filter:itemSearch')
                 td {{item.id}}
                 td {{item.material}}
                 td {{item.titleRu}}
                 td
                     span(ng-repeat='server in item.servers')= '{{server.title}} '
+                td {{item.amount}}
                 td {{item.price}}
                 td
                     a(href='#/store/items/item/update/{{item.id}}')

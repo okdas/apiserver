@@ -11,7 +11,7 @@ config:
 
     default:
 
-        port: 8000
+        port: 8001
 
         db:
             host: 176.31.14.255
@@ -19,20 +19,10 @@ config:
 
             timezone: Z
 
-        payment:
-            'robokassa':
-                merchantUrl: http://test.robokassa.ru/Index.aspx # merchantUrl: https://auth.robokassa.ru/Merchant/Index.aspx
-                merchant: tehfreak
-                pass1: b9f1c6834f49a8e8
-                pass2: f4f397e82f26bd34
-                resultUrl: http://play.local.awesome39.com:8000/payment/robokassa/result
-                successUrl: http://play.local.awesome39.com:8000/payment/robokassa/success
 
     development:
 
         installed: false
-
-        host: local.awesome39.com
 
         db:
             database: apiserver
@@ -42,15 +32,10 @@ config:
 
             debug: true
 
-        payment:
-            'robokassa':
-                merchantUrl: http://play.local.awesome39.com:8000/payment/robokassa/debug
 
     production:
 
         installed: true
-
-        host: flydev.awesome39.com
 
         db: # http://red.flydev.net/issues/5#note-3
             database: apiserver
@@ -62,25 +47,25 @@ config:
 
 
 
-scripts:
-    start: node node.js
-
-
 
 dependencies:
 
-    async: latest
-    extend: latest
+    async: 0.2.9
+    extend: 1.1.3
 
-    express: latest
-    jade: latest
+    express: 3.3.7
 
-    passport: latest
+    passport: 0.1.17
 
-    connect-redis: latest
-    redis: latest
-    mysql: latest
+    connect-redis: 1.4.5
+    redis: 0.8.4
+    mysql: 2.0.0-alpha8
 
-    log: latest
-    request: latest
-    nodemailer: latest
+    log: 1.4.0
+    request: 2.27.0
+    nodemailer: 0.5.2
+
+
+
+engines:
+    node: <=0.10.17

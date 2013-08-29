@@ -7,55 +7,22 @@ append head-links
 
 
 
+
+
 append head-scripts
+
+    script(src='/scripts/libs/jquery-ui-1.10.3.custom.min.js')
+
     script.
-        var app= angular.module('manage', ['ngAnimate', 'ngResource', 'ngRoute']);
+        var app= angular.module('manage', ['ngAnimate', 'ngResource', 'ngRoute'], function($routeProvider) {
+            $routeProvider.otherwise({
+                redirectTo: '/'
+            })
+        })
 
-        app.factory('CurrentUser', function ($resource) {
-            var CurrentUser= $resource('/api/v1/user/:action', {}, {
-                login: {method:'post', params:{action:'login'}},
-            });
-            return CurrentUser;
-        });
+    include manage.coffee
 
-        app.controller('ViewCtrl', function ($scope, $location, $http, $window, CurrentUser) {
-            $scope.referer= $location.absUrl();
 
-            $scope.dialog= {
-                overlay: false
-            };
-            $scope.showDialog= function (type) {
-                $scope.dialog.overlay= type;
-            }
-            $scope.hideDialog= function () {
-                $scope.dialog.overlay= false;
-            }
-            $scope.hide= function () {
-                $location.path('/');
-            }
-
-            $scope.$on('$locationChangeSuccess', function () {
-                switch ($location.path()) {
-                    case '/login':
-                        $scope.showDialog('login');
-                        break;
-                    default:
-                        $scope.hideDialog();
-                }
-            });
-
-            $scope.user= new CurrentUser();
-
-            $scope.login= function (loginForm) {
-                $scope.user.$login(function (user) {
-                    user.pass= loginForm.password.$modelValue;
-                    $window.location.href= 'project/';
-                    //$window.location.reload(true);
-                }, function () {
-                    $scope.user.password= '';
-                });
-            }
-        });
 
 
 

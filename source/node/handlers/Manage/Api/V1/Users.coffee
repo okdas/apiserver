@@ -13,22 +13,6 @@ app= module.exports= do express
 
 
 ###
-Отдает список пользователей.
-###
-app.get '/', access, (req, res, next) ->
-    req.db.getConnection (err, connection) ->
-        return next err if err
-
-        connection.query 'SELECT * FROM users_user'
-        ,   (err, rows) ->
-                do connection.end
-
-                return next err if err
-                return res.json 200, rows
-
-
-
-###
 Добавляет пользователя.
 ###
 app.post '/', access, (req, res, next) ->
@@ -47,9 +31,28 @@ app.post '/', access, (req, res, next) ->
 
 
 ###
+Отдает список пользователей.
+###
+app.get '/', access, (req, res, next) ->
+    req.db.getConnection (err, connection) ->
+        return next err if err
+
+        connection.query 'SELECT * FROM users_user'
+        ,   (err, rows) ->
+                do connection.end
+
+                return next err if err
+                return res.json 200, rows
+
+
+
+
+
+
+###
 Отдает пользователя.
 ###
-app.get '/user/:userId', access, (req, res, next) ->
+app.get '/:userId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -67,7 +70,7 @@ app.get '/user/:userId', access, (req, res, next) ->
 ###
 Обновляет пользователя.
 ###
-app.patch '/user/:userId', access, (req, res, next) ->
+app.put '/:userId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -85,7 +88,7 @@ app.patch '/user/:userId', access, (req, res, next) ->
 ###
 Удаляет пользователя.
 ###
-app.delete '/user/:userId', access, (req, res, next) ->
+app.delete '/:userId', access, (req, res, next) ->
     req.db.getConnection (err, connection) ->
         return next err if err
 
@@ -95,4 +98,4 @@ app.delete '/user/:userId', access, (req, res, next) ->
                 do connection.end
 
                 return next err if err
-                return res.json 200, {}
+                return res.json 200

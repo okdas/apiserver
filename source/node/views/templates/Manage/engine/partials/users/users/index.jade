@@ -1,0 +1,25 @@
+extends ../../layout
+extends ../layout
+
+block section-body
+    table.table.players
+        thead
+            tr
+                th
+                th.col-flex: .sortable: .sortable-cell Имя
+                th
+                    button.btn.btn-info(ng-click='reload()')
+                        i.icon-refresh
+
+        tbody
+            tr(ng-repeat='user in users')
+                td {{server.id}}
+                td {{user.name}}
+                td
+                    a(href='#/users/user/update/{{user.id}}')
+                        button.btn.btn-success
+                            i.icon-wrench
+
+    .row
+        .col-12
+            a(href='#/users/user/create')= 'Создать'

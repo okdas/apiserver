@@ -1,0 +1,25 @@
+extends ../../../../layout
+extends ../../../layout
+
+
+block section-body
+    form(name='UserForm')
+        h3(style='text-align:center') Пользователь
+
+        fieldset
+            input.input(placeholder='Имя пользователя', type='text', required, ng-maxlength='50', ng-model='user.name')
+
+            input.input(placeholder='Пароль (sha1)', type='text', ng-if='action=="create"', required, ng-maxlength='50', ng-model='user.pass')
+
+
+        fieldset(ng-if='action=="create"')
+            button.btn.btn-primary.btn-block(type='submit', ng-click='create(UserForm)', ng-disabled='!UserForm.$valid')
+                span Создать пользователя
+
+        fieldset(ng-if='action=="update"'): .row
+            .col-10
+                button.btn.btn-primary.btn-block(type='submit',ng-click='update(UserForm)',ng-disabled='!UserForm.$valid')
+                    span Обновить пользователя
+            .col-2
+                button.btn.btn-link.btn-block.text-left(ng-click='delete(UserForm)')
+                    span Удалить

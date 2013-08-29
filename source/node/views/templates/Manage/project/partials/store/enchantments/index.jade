@@ -2,23 +2,24 @@ extends ../../layout
 extends ../layout
 
 block section-body
+    input.input(placeholder='Поиск', ng-model='enchantmentSearch')
     table.table
         thead
             tr
                 th ID
                 th.col-flex: .sortable: .sortable-cell Название чара
-                th English
+                th Min
                 th Max
                 th
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
 
         tbody
-            tr(ng-repeat='enchantment in enchantments')
+            tr(ng-repeat='enchantment in enchantments | filter:enchantmentSearch')
                 td {{enchantment.id}}
-                td {{enchantment.titleRu}}
-                td {{enchantment.titleEn}}
-                td {{enchantment.levelmax}}
+                td {{enchantment.titleRu}} ({{enchantment.titleEn}})
+                td {{enchantment.levelMin}}
+                td {{enchantment.levelMax}}
                 td
                     a(ng-href='#/store/enchantments/enchantment/update/{{enchantment.id}}')
                         button.btn.btn-success
