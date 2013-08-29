@@ -10,6 +10,7 @@ block section-body
                 th M
                 th.col-flex: .sortable: .sortable-cell Название
                 th Сервера
+                th Кол
                 th Цена
                 th
                     button.btn.btn-info(ng-click='reload()')
@@ -21,6 +22,7 @@ block section-body
                 td {{item.titleRu}}
                 td
                     span(ng-repeat='server in item.servers')= '{{server.title}} '
+                td {{item.amount}}
                 td {{item.price}}
                 td
                     a(href='#/store/items/item/update/{{item.id}}')
