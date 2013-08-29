@@ -195,6 +195,7 @@ abbr {
     color:#333;
 }
 
+
 .section-head-title, .section-head-nav {
     display:inline-block; vertical-align:middle;
     margin:15px 0;
@@ -251,10 +252,13 @@ table {
 .table > thead > tr > td,
 .table > tbody > tr > th,
 .table > tbody > tr > td {
-    padding:12px 15px;
-    font: inherit; font-weight:normal; color:#777;
-    background:#f9f9f9;
-    border-top:1px solid #fff;
+    padding: 12px 15px;
+    line-height: normal;
+    font: inherit;
+    font-weight: normal;
+    color: #777;
+    background: #f9f9f9;
+    border-top: 1px solid #fff;
 }
 .table > thead > tr > th,
 .table > tbody > tr > th {
@@ -276,7 +280,31 @@ table {
 .table > thead:first-child > tr:first-child > td,
 .table > tbody:first-child > tr:first-child > th,
 .table > tbody:first-child > tr:first-child > td {
-    border-top:0;
+    //border-right:0;
+}
+
+.table > thead.t-clean > tr > th {
+    background: transparent;
+}
+
+.table tr:hover > td a.cel {
+    color:#2a6496;
+    text-decoration: underline;
+}
+
+.col,
+.cel {
+    display: block;
+    color: #aaa;
+    white-space: nowrap;
+}
+.col-primary,
+.cel-primary {
+    color: #428bca;
+}
+.col.col-right,
+.cel.cel-right {
+    text-align: right;
 }
 
 .col-flex {
@@ -302,6 +330,14 @@ table {
 }
 .table-col-sortable:hover:before, .table-col-sortable:hover:after {
     color:rgba(0,0,0,.3);
+}
+
+
+.panel {
+    font:20px/25px 'Segoe UI semilight';
+    background:#f9f9f9;
+    border:0; border-top:1px solid #eee;
+    border-radius:1px;
 }
 
 
@@ -396,8 +432,16 @@ html {
 .view-outer {
 }
 .view-inner {
-    position:absolute; width:100%; min-height:100%; padding-top:50px;
-    background:#fff;
+    position: absolute;
+    width: 100%;
+    min-height: 100%;
+    padding-top: 50px;
+
+    &.view-inner-ready {
+        background: #fff;
+    }
+    &.view-inner-error {
+    }
 }
 
 .view-title {
@@ -447,4 +491,25 @@ html {
 .view.ng-leave,
 .view.ng-enter.ng-enter-active {
     opacity:1;
+}
+
+.hidden-inline-lg {
+    display: inline;
+}
+.visible-block-lg, .visible-inline-lg {
+    display: none;
+}
+@media (min-width: @screen-tablet) and (max-width: @screen-tablet-max) {
+
+}
+@media (min-width: @screen-desktop) {
+    .visible-block-lg {
+        display: block;
+    }
+    .visible-inline-lg {
+        display: inline;
+    }
+    .hidden-inline-lg {
+        display: none;
+    }
 }

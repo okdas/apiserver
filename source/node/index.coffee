@@ -85,6 +85,4 @@ module.exports= (cfg, log, done) ->
         config= app.get 'config'
 
         handlers= require './handlers'
-
-        app.use App.vhost "play.#{config.host}", do handlers.play
-        app.use App.vhost "manage.#{config.host}", do handlers.manage
+        app.use handlers app

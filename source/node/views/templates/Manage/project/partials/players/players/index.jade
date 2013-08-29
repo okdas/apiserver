@@ -1,34 +1,27 @@
 extends ../../layout
-
-block section-head-title
-    a(href='#/players') Управление игроками
-
-block section-head-nav
-    ul.nav.nav-row
-        li.active: a Игроки
-        li: a(href='#/players/group/list') Группы
-        li: a(href='#/players/permission/list') Разрешения
-        li: a(href='#/players/sender/mail') Рассылка
+extends ../layout
 
 block section-body
+    input.input(placeholder='Поиск', ng-model='playerSearch')
     table.table.players
         thead
             tr
                 th #
-                th.col-flex: .table-col: .table-col-sortable Игрок и его группы
-                th: .table-col: .table-col-sortable Активность
-                th: .table-col: .table-col-sortable Платежеспособность
+                th.col-flex: .table-col: .table-col-sortable Игрок
+                th
+                    button.btn.btn-info(ng-click='reload()')
+                        i.icon-refresh
 
         tbody
-            tr(ng-repeat='player in players')
+            tr(ng-repeat='player in players | filter:playerSearch')
                 td {{player.id}}
+                td {{player.name}}
                 td
-                    a.player-name(href='', ng-click='showDetails(player)') {{player.name}}
-                    span(ng-repeat='group in player.groups')
-                        span {{group}}
-                        span(ng-if='!$last'), 
-                td
-                td
+                    a(ng-href='#/players/player/update/{{player.id}}')
+                        button.btn.btn-success
+                            i.icon-wrench
 
-    script(type='text/ng-template', id='player/dialog/')
-        include player/dialog/index
+
+    .row
+        .col-12
+            a(href='#/players/player/create')= 'Создать'
