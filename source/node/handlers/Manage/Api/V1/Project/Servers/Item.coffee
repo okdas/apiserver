@@ -16,6 +16,7 @@ app= module.exports= do express
 Добавляет предмет.
 ###
 app.post '/', access, (req, res, next) ->
+    console.log '!!!!!!!!!', req.body
 
     async.waterfall [
 
@@ -60,7 +61,7 @@ app.post '/', access, (req, res, next) ->
         (conn, id, done) ->
             # а есть ли сервера
             if not req.body.servers
-                return done null, conn, id
+                return done null, conn
 
             bulk= []
             for server in req.body.servers
@@ -76,6 +77,7 @@ app.post '/', access, (req, res, next) ->
 
         (conn, done) ->
             conn.query 'COMMIT', (err) ->
+                console.log err
                 return done err, conn
 
     ],  (err, conn) ->
