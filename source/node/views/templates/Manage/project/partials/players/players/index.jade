@@ -8,6 +8,7 @@ block section-body
             tr
                 th #
                 th.col-flex: .table-col: .table-col-sortable Игрок
+                th Актив
                 th
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
@@ -16,6 +17,11 @@ block section-body
             tr(ng-repeat='player in players | filter:playerSearch')
                 td {{player.id}}
                 td {{player.name}}
+                td
+                    button(ng-if='!player.enabledAt', ng-click='activate(player)').btn.btn-success
+                        i.icon-unchecked
+                    button(ng-if='player.enabledAt', ng-click='deactivate(player)').btn.btn-success
+                        i.icon-sign-blank
                 td
                     a(ng-href='#/players/player/update/{{player.id}}')
                         button.btn.btn-success

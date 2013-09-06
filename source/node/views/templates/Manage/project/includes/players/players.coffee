@@ -65,6 +65,24 @@ app.factory 'Player', ($resource) ->
 
 
 
+app.factory 'PlayerActivate', ($resource) ->
+    $resource '/api/v1/players/player/activate/:playerId', {},
+        activate:
+            method: 'get'
+            params:
+                playerId: '@id'
+
+
+
+app.factory 'PlayerDeactivate', ($resource) ->
+    $resource '/api/v1/players/player/deactivate/:playerId', {},
+        deactivate:
+            method: 'get'
+            params:
+                playerId: '@id'
+
+
+
 app.factory 'PlayerGroupList', ($resource) ->
     $resource '/api/v1/players/groups', {}
 
@@ -103,13 +121,23 @@ app.controller 'PlayersDashboardCtrl', ($scope) ->
 ###
 Контроллер списка игроков.
 ###
-app.controller 'PlayersPlayerListCtrl', ($scope, Player) ->
+app.controller 'PlayersPlayerListCtrl', ($scope, Player, PlayerActivate, PlayerDeactivate) ->
     load= ->
         $scope.players= Player.query ->
             $scope.state= 'loaded'
             console.log 'Пользователи загружены'
 
     do load
+
+    $scope.activate= (player) ->
+        doActivatePlayer = new PlayerActivate player
+        doActivatePlayer.$activate ->
+            do load
+
+    $scope.deactivate= (player) ->
+        doActivatePlayer = new PlayerDeactivate player
+        doActivatePlayer.$deactivate ->
+            do load
 
     $scope.reload= ->
         do load

@@ -60,7 +60,9 @@ app.get '/', access, (req, res, next) ->
                     player.id,
                     player.name,
                     player.email,
-                    player.phone
+                    player.phone,
+                    player.createdAt,
+                    player.enabledAt
                 FROM player AS player'
             ,   (err, rows) ->
                     return done err, conn, rows
@@ -88,9 +90,10 @@ app.get '/:playerId', access, (req, res, next) ->
                 SELECT
                     player.id,
                     player.name,
-                    player.balance,
                     player.email,
-                    player.phone
+                    player.phone,
+                    player.createdAt,
+                    player.enabledAt
                 FROM player AS player
                 WHERE id = ?'
             ,   [req.params.playerId]
@@ -155,6 +158,70 @@ app.delete '/:playerId', access, (req, res, next) ->
 
         (conn, done) ->
             conn.query 'DELETE FROM player WHERE id = ?'
+            ,   [req.params.playerId]
+            ,   (err, resp) ->
+                    return done err, conn
+
+        (conn, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn
+
+    ],  (err, conn) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200
+
+
+
+###
+Актививруем игрока
+###
+app.get '/activate/:playerId', access, (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn if err
+                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return done err, conn if err
+                    conn.query 'START TRANSACTION', (err) ->
+                        return done err, conn
+
+        (conn, done) ->
+            conn.query 'UPDATE player SET enabledAt = NOW() WHERE id = ?'
+            ,   [req.params.playerId]
+            ,   (err, resp) ->
+                    return done err, conn
+
+        (conn, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn
+
+    ],  (err, conn) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200
+
+
+
+###
+Актививруем игрока
+###
+app.get '/deactivate/:playerId', access, (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn if err
+                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return done err, conn if err
+                    conn.query 'START TRANSACTION', (err) ->
+                        return done err, conn
+
+        (conn, done) ->
+            conn.query 'UPDATE player SET enabledAt = NULL WHERE id = ?'
             ,   [req.params.playerId]
             ,   (err, resp) ->
                     return done err, conn

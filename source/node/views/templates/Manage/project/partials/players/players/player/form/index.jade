@@ -13,7 +13,12 @@ block section-body
 
         fieldset
             input.input.input-auto(placeholder='Email', type='text', required, ng-maxlength='50', ng-model='player.email')
-            input.input.input-auto(placeholder='Phone', type='text', ng-maxlength='15', ng-pattern='/^\+\d+/', ng-model='player.phone')
+            input.input.input-auto(placeholder='Phone', type='text', ng-maxlength='15', ng-model='player.phone')
+
+
+        fieldset(ng-if='action=="update"')
+            {{player.createdAt}}
+            {{player.enabledAt}}
 
 
         fieldset(ng-if='action=="create"')
