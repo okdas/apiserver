@@ -15,8 +15,6 @@ log= new Log 'main', fs.createWriteStream cfg.logfile
 
 ###
 if cluster.isMaster
-    require('pid')(cfg.pidfile)
-
     nWorkers= (do os.cpus).length
     for i in [1..nWorkers]
         worker= do cluster.fork
