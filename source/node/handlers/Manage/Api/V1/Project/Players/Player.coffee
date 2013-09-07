@@ -125,8 +125,13 @@ app.put '/:playerId', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
+            data=
+                name: req.body.name
+                email: req.body.email
+                phone: req.body.phone
+
             conn.query 'UPDATE player SET ? WHERE id = ?'
-            ,   [req.body, req.params.playerId]
+            ,   [data, req.params.playerId]
             ,   (err, resp) ->
                     return done err, conn
 
