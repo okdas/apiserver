@@ -20,6 +20,7 @@ app.on 'mount', (parent) ->
 
     emailAddress= cfg.sender.email.address
     emailPassword= cfg.sender.email.password
+    emailSign= cfg.sender.email.sign
 
 
 
@@ -87,7 +88,7 @@ sendEmail= (req, res, next) ->
     mail=
         bcc: req.body.to.join ','
         subject: req.body.subject
-        text: req.body.text
+        text: req.body.text + '\n' + emailSign
         headers:
             precedence: 'bulk'
 

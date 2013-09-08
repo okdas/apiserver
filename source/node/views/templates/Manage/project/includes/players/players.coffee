@@ -130,12 +130,12 @@ app.controller 'PlayersPlayerListCtrl', ($scope, Player, PlayerActivate, PlayerD
     do load
 
     $scope.activate= (player) ->
-        doActivatePlayer = new PlayerActivate player
+        doActivatePlayer= new PlayerActivate player
         doActivatePlayer.$activate ->
             do load
 
     $scope.deactivate= (player) ->
-        doActivatePlayer = new PlayerDeactivate player
+        doActivatePlayer= new PlayerDeactivate player
         doActivatePlayer.$deactivate ->
             do load
 

@@ -23,6 +23,7 @@ config:
             email:
                 address: 'admin@google.com'
                 password: 'password123'
+                sign: 'oki'
 
             sms:
                 id: 'id'
