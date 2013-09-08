@@ -16,16 +16,6 @@ app= angular.module 'project.players', ['ngResource','ngRoute'], ($routeProvider
     $routeProvider.when '/players/player/update/:playerId',
         templateUrl: 'partials/players/players/player/form/', controller: 'PlayersPlayerFormCtrl'
 
-    # Игроки. Группы
-
-    $routeProvider.when '/players/group/list',
-        templateUrl: 'partials/players/group/list/', controller: 'PlayersGroupListCtrl'
-
-    # Игроки. Разрешения
-
-    $routeProvider.when '/players/permission/list',
-        templateUrl: 'partials/players/permission/list/', controller: 'PlayersPermissionListCtrl'
-
     # Игроки. Рассылка
 
     $routeProvider.when '/players/sender/mail',
@@ -33,6 +23,25 @@ app= angular.module 'project.players', ['ngResource','ngRoute'], ($routeProvider
 
     $routeProvider.when '/players/sender/sms',
         templateUrl: 'partials/players/sender/sms/', controller: 'PlayersSenderSmsCtrl'
+
+    # Игроки. Платежи
+
+    $routeProvider.when '/players/payment/list',
+        templateUrl: 'partials/players/payments/', controller: 'PlayersPaymentListCtrl'
+
+
+    # Игроки. Группы
+
+    #$routeProvider.when '/players/group/list',
+    #    templateUrl: 'partials/players/group/list/', controller: 'PlayersGroupListCtrl'
+
+    # Игроки. Разрешения
+
+    #$routeProvider.when '/players/permission/list',
+    #    templateUrl: 'partials/players/permission/list/', controller: 'PlayersPermissionListCtrl'
+
+
+
 
 
 
@@ -45,6 +54,20 @@ app= angular.module 'project.players', ['ngResource','ngRoute'], ($routeProvider
 
 app.factory 'PlayerList', ($resource) ->
     $resource '/api/v1/players', {}
+
+
+
+app.factory 'PaymentList', ($resource) ->
+    $resource '/api/v1/players/payment', {}
+
+
+
+app.factory 'PaymentClose', ($resource) ->
+    $resource '/api/v1/players/payment/close/:paymentId', {},
+        close:
+            method: 'put'
+            params:
+                paymentId: '@id'
 
 
 
@@ -130,12 +153,12 @@ app.controller 'PlayersPlayerListCtrl', ($scope, Player, PlayerActivate, PlayerD
     do load
 
     $scope.activate= (player) ->
-        doActivatePlayer = new PlayerActivate player
+        doActivatePlayer= new PlayerActivate player
         doActivatePlayer.$activate ->
             do load
 
     $scope.deactivate= (player) ->
-        doActivatePlayer = new PlayerDeactivate player
+        doActivatePlayer= new PlayerDeactivate player
         doActivatePlayer.$deactivate ->
             do load
 
@@ -144,9 +167,8 @@ app.controller 'PlayersPlayerListCtrl', ($scope, Player, PlayerActivate, PlayerD
 
 
 
-
 ###
-Контроллер формы чара.
+Контроллер формы игрока.
 ###
 app.controller 'PlayersPlayerFormCtrl', ($scope, $route, $q, $location, Player) ->
     if $route.current.params.playerId
@@ -179,6 +201,29 @@ app.controller 'PlayersPlayerFormCtrl', ($scope, $route, $q, $location, Player) 
     $scope.delete= ->
         $scope.player.$delete ->
             $location.path '/players/player/list'
+
+
+
+###
+Контроллер списка платежей.
+###
+app.controller 'PlayersPaymentListCtrl', ($scope, PaymentList, PaymentClose) ->
+    load= ->
+        $scope.payments= PaymentList.query ->
+            $scope.state= 'loaded'
+            console.log 'Платежи загружены'
+
+    do load
+
+
+    $scope.close= (payment) ->
+        doClosePayment= new PaymentClose payment
+        doClosePayment.$close ->
+            do load
+
+
+    $scope.reload= ->
+        do load
 
 
 

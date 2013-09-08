@@ -4,8 +4,15 @@ App= require 'express'
 SessionStore= require 'connect-redis'
 SessionStore= SessionStore App
 
-module.exports= ->
-    app= do App
+
+
+app= module.exports= do App
+
+app.on 'mount', (parent) ->
+    app.set 'config', parent.get 'config'
+
+    app.enable 'strict routing'
+
 
     passport= new Passport
     passport.serializeUser (user, done) ->
@@ -18,24 +25,34 @@ module.exports= ->
     app.use App.session
         key:'manage.sid', secret:'user'
         store: new SessionStore
+
     app.use do passport.initialize
     app.use do passport.session
+
+
+
+    app.use App.static "#{__dirname}/../views/templates/Manage"
+
 
 
     app.get '/', (req, res, next) ->
         return do next if do req.isUnauthenticated
         return res.redirect '/project/'
 
+
+
     app.get '/project', (req, res, next) ->
         return do next if do req.isAuthenticated
         return res.redirect '/'
+
+
 
     app.get '/engine', (req, res, next) ->
         return do next if do req.isAuthenticated
         return res.redirect '/'
 
 
-    app.use App.static "#{__dirname}/../views/templates/Manage"
+
 
 
     ###
@@ -70,6 +87,9 @@ module.exports= ->
 
     # Методы API для работы с игрокам.
     app.use '/api/v1/players/player', require './Manage/Api/V1/Project/Players/Player'
+
+    # Методы API для работы с платежами.
+    app.use '/api/v1/players/payment', require './Manage/Api/V1/Project/Players/Payment'
 
     #  Методы API для работы c ордерами.
     app.use '/api/v1/players/order', require './Manage/Api/V1/Project/Players/Order'
@@ -117,17 +137,19 @@ module.exports= ->
 
 
     ###
-    Методы API для рассылки писем.
+    Методы API для рассылки писем и смс.
     ###
-    app.use '/api/v1/sender/mail', require './Manage/Api/V1/Project/Players/Mail'
+    app.use '/api/v1/sender', require './Manage/Api/V1/Project/Players/Sender'
+
+
+
+
 
     ###
-    Методы API для рассылки смс.
+    Обрабатывает ошибку
     ###
-    app.use '/api/v1/sender/sms', require './Manage/Api/V1/Project/Players/Sms'
-
-
-
-
-
-    app
+    app.use (err, req, res, next) ->
+        res.status 500
+        res.json
+            name: err.name
+            message: err.message
