@@ -19,14 +19,17 @@ app.on 'mount', (parent) ->
     ,   (req, res) ->
             res.json 200
 
-
-
     app.put '/close/:paymentId(\\d+)'
     ,   access
     ,   closePayment
     ,   (req, res) ->
             res.json 200
 
+    app.put '/cancel/:paymentId(\\d+)'
+    ,   access
+    ,   cancelPayment
+    ,   (req, res) ->
+            res.json 200
 
 
 
@@ -59,7 +62,8 @@ listPayment= (req, res, next) ->
                     payment.closedAt
                 FROM player_payment AS payment
                 JOIN player AS player
-                    ON player.id = payment.playerId'
+                    ON player.id = payment.playerId
+                ORDER BY payment.createdAt DESC, payment.closedAt DESC'
             ,   (err, rows) ->
                     return done err, conn, rows
 
@@ -88,6 +92,38 @@ closePayment= (req, res, next) ->
 
         (conn, done) ->
             conn.query 'UPDATE player_payment SET closedAt = NOW(), status = "success" WHERE id = ?'
+            ,   [req.params.paymentId]
+            ,   (err, resp) ->
+                    return done err, conn
+
+        (conn, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn
+
+    ],  (err, conn) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200
+
+
+
+###
+Отменяет платеж
+###
+cancelPayment= (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn if err
+                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return done err, conn if err
+                    conn.query 'START TRANSACTION', (err) ->
+                        return done err, conn
+
+        (conn, done) ->
+            conn.query 'UPDATE player_payment SET closedAt = NULL, status = "pending" WHERE id = ?'
             ,   [req.params.paymentId]
             ,   (err, resp) ->
                     return done err, conn

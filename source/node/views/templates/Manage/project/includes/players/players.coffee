@@ -71,6 +71,15 @@ app.factory 'PaymentClose', ($resource) ->
 
 
 
+app.factory 'PaymentCancel', ($resource) ->
+    $resource '/api/v1/players/payment/cancel/:paymentId', {},
+        cancel:
+            method: 'put'
+            params:
+                paymentId: '@id'
+
+
+
 app.factory 'Player', ($resource) ->
     $resource '/api/v1/players/player/:playerId', {},
         create:
@@ -207,7 +216,7 @@ app.controller 'PlayersPlayerFormCtrl', ($scope, $route, $q, $location, Player) 
 ###
 Контроллер списка платежей.
 ###
-app.controller 'PlayersPaymentListCtrl', ($scope, PaymentList, PaymentClose) ->
+app.controller 'PlayersPaymentListCtrl', ($scope, PaymentList, PaymentClose, PaymentCancel) ->
     load= ->
         $scope.payments= PaymentList.query ->
             $scope.state= 'loaded'
@@ -219,6 +228,12 @@ app.controller 'PlayersPaymentListCtrl', ($scope, PaymentList, PaymentClose) ->
     $scope.close= (payment) ->
         doClosePayment= new PaymentClose payment
         doClosePayment.$close ->
+            do load
+
+
+    $scope.cancel= (payment) ->
+        doCancelPayment= new PaymentCancel payment
+        doCancelPayment.$cancel ->
             do load
 
 
