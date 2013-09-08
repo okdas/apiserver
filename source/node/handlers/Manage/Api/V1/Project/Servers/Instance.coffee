@@ -74,7 +74,7 @@ app.get '/', access, (req, res, next) ->
 ###
 Отдает инстанс.
 ###
-app.get '/:instanceId', access, (req, res, next) ->
+app.get '/:instanceId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -101,7 +101,7 @@ app.get '/:instanceId', access, (req, res, next) ->
 ###
 Изменяет инстанс
 ###
-app.put '/:instanceId', access, (req, res, next) ->
+app.put '/:instanceId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -135,7 +135,7 @@ app.put '/:instanceId', access, (req, res, next) ->
 ###
 Удаляет инстанс
 ###
-app.delete '/:instanceId', access, (req, res, next) ->
+app.delete '/:instanceId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->

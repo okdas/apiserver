@@ -17,8 +17,9 @@ block section-body
 
 
         fieldset(ng-if='action=="update"')
-            {{player.createdAt}}
-            {{player.enabledAt}}
+            p Создан: {{player.createdAt}}
+            p Активирован: {{player.enabledAt}}
+            p Баланс: {{player.amount}}
 
 
         fieldset(ng-if='action=="create"')

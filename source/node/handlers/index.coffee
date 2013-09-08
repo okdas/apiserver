@@ -13,6 +13,7 @@ app.on 'mount', (parent) ->
 
     app.enable 'strict routing'
 
+
     passport= new Passport
     passport.serializeUser (user, done) ->
         console.log 'serialize user', user
@@ -86,6 +87,9 @@ app.on 'mount', (parent) ->
 
     # Методы API для работы с игрокам.
     app.use '/api/v1/players/player', require './Manage/Api/V1/Project/Players/Player'
+
+    # Методы API для работы с платежами.
+    app.use '/api/v1/players/payment', require './Manage/Api/V1/Project/Players/Payment'
 
     #  Методы API для работы c ордерами.
     app.use '/api/v1/players/order', require './Manage/Api/V1/Project/Players/Order'

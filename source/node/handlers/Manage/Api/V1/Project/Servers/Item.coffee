@@ -16,8 +16,6 @@ app= module.exports= do express
 Добавляет предмет.
 ###
 app.post '/', access, (req, res, next) ->
-    console.log '!!!!!!!!!', req.body
-
     async.waterfall [
 
         (done) ->
@@ -139,7 +137,7 @@ app.get '/', access, (req, res, next) ->
 ###
 Отдает предмет.
 ###
-app.get '/:itemId', access, (req, res, next) ->
+app.get '/:itemId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -199,7 +197,7 @@ app.get '/:itemId', access, (req, res, next) ->
 ###
 Обновляет предмет.
 ###
-app.put '/:itemId', access, (req, res, next) ->
+app.put '/:itemId(\\d+)', access, (req, res, next) ->
     itemId= req.params.itemId
     delete req.body.id
 
@@ -276,7 +274,7 @@ app.put '/:itemId', access, (req, res, next) ->
 ###
 Удаляет предмет.
 ###
-app.delete '/:itemId', access, (req, res, next) ->
+app.delete '/:itemId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->

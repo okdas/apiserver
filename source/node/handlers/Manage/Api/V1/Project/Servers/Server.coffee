@@ -72,7 +72,7 @@ app.get '/', access, (req, res, next) ->
 ###
 Отдает сервер.
 ###
-app.get '/:serverId', access, (req, res, next) ->
+app.get '/:serverId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -98,7 +98,7 @@ app.get '/:serverId', access, (req, res, next) ->
 ###
 Изменяет сервер
 ###
-app.put '/:serverId', access, (req, res, next) ->
+app.put '/:serverId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -132,7 +132,7 @@ app.put '/:serverId', access, (req, res, next) ->
 ###
 Удаляет сервер
 ###
-app.delete '/:serverId', access, (req, res, next) ->
+app.delete '/:serverId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
