@@ -19,6 +19,17 @@ config:
 
             timezone: Z
 
+        sender:
+            email:
+                address: 'admin@google.com'
+                password: 'password123'
+                sign: 'oki'
+
+            sms:
+                id: 'id'
+                key: 'key'
+                from: 'from'
+
 
     development:
 

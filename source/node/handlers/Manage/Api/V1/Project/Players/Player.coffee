@@ -78,7 +78,7 @@ app.get '/', access, (req, res, next) ->
 ###
 Отдает игрока.
 ###
-app.get '/:playerId', access, (req, res, next) ->
+app.get '/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -92,9 +92,12 @@ app.get '/:playerId', access, (req, res, next) ->
                     player.name,
                     player.email,
                     player.phone,
+                    balance.amount,
                     player.createdAt,
                     player.enabledAt
                 FROM player AS player
+                JOIN player_balance AS balance
+                    ON balance.playerId = player.id
                 WHERE id = ?'
             ,   [req.params.playerId]
             ,   (err, resp) ->
@@ -113,7 +116,7 @@ app.get '/:playerId', access, (req, res, next) ->
 ###
 Обновляет игрока.
 ###
-app.put '/:playerId', access, (req, res, next) ->
+app.put '/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -125,8 +128,13 @@ app.put '/:playerId', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
+            data=
+                name: req.body.name
+                email: req.body.email
+                phone: req.body.phone
+
             conn.query 'UPDATE player SET ? WHERE id = ?'
-            ,   [req.body, req.params.playerId]
+            ,   [data, req.params.playerId]
             ,   (err, resp) ->
                     return done err, conn
 
@@ -145,7 +153,7 @@ app.put '/:playerId', access, (req, res, next) ->
 ###
 Удаляет игрока.
 ###
-app.delete '/:playerId', access, (req, res, next) ->
+app.delete '/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -177,7 +185,7 @@ app.delete '/:playerId', access, (req, res, next) ->
 ###
 Актививруем игрока
 ###
-app.get '/activate/:playerId', access, (req, res, next) ->
+app.get '/activate/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -207,9 +215,9 @@ app.get '/activate/:playerId', access, (req, res, next) ->
 
 
 ###
-Актививруем игрока
+Деактививруем игрока
 ###
-app.get '/deactivate/:playerId', access, (req, res, next) ->
+app.get '/deactivate/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->

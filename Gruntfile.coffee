@@ -3,7 +3,7 @@ module.exports= (grunt) ->
         pkg: grunt.file.readJSON 'package.json'
 
         clean:
-            all: ['<%= pkg.config.build.app.node %>/']
+            all: ['<%= pkg.config.build.app.root %>/']
 
         coffee:
             main:

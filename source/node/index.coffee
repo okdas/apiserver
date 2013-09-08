@@ -84,5 +84,4 @@ module.exports= (cfg, log, done) ->
     app.configure ->
         config= app.get 'config'
 
-        handlers= require './handlers'
-        app.use handlers app
+        app.use require './handlers'

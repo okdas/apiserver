@@ -226,7 +226,7 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
 ###
 Закрывает шипмент
 ###
-app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
+app.get '/:playerName/shipments/:shipmentId(\\d+)/close', (req, res, next) ->
     ###
     1. надо получить все айтемы шипмента, записать массив
     2. вычест количество из storage_item, сделать там апдейт
@@ -256,7 +256,7 @@ app.get '/:playerName/shipments/:shipmentId/close', (req, res, next) ->
             ,   [req.params.shipmentId]
             ,   (err, items) ->
                     return done 'empty', conn if items.length == 0
-                
+
                     # получили айтемы теперь вычитаем количество
                     updateItem=[]
 

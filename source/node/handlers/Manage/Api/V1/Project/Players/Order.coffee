@@ -37,7 +37,7 @@ app.get '/', access, (req, res, next) ->
 ###
 Отдает заказ.
 ###
-app.get '/:orderId', access, (req, res, next) ->
+app.get '/:orderId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -61,7 +61,7 @@ app.get '/:orderId', access, (req, res, next) ->
 ###
 Все заказы игрока
 ###
-app.get '/:playerId/list', access, (req, res, next) ->
+app.get '/:playerId(\\d+)/list', access, (req, res, next) ->
     async.waterfall [
 
         (done) ->

@@ -1,0 +1,27 @@
+extends ../../layout
+extends ../layout
+
+block section-body
+    input.input(placeholder='Поиск', ng-model='paymentSearch')
+    table.table.players
+        thead
+            tr
+                th #
+                th.col-flex: .table-col: .table-col-sortable Игрок
+                th Сумма
+                th Статус
+                th
+                    button.btn.btn-info(ng-click='reload()')
+                        i.icon-refresh
+
+        tbody
+            tr(ng-repeat='payment in payments | filter:paymentSearch')
+                td {{payment.id}}
+                td
+                    a(ng-href='#/players/player/update/{{payment.playerId}}')
+                        {{payment.name}}
+                td {{payment.amount}}
+                td {{payment.status}}
+                td
+                    button.btn.btn-info(ng-if='!payment.closedAt', ng-click='close(payment)')
+                        i.icon-ok-sign
