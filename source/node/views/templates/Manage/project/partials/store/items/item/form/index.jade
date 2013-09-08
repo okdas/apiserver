@@ -3,7 +3,7 @@ extends ../../../layout
 
 block section-body
     form(name='ItemForm')
-        h3(style='text-align:center') Добавить предмет
+        h3(style='text-align:center') Предмет
 
         fieldset
             select.input(required, ng-model='item.material', ng-change='changeMaterial(item.material)')
@@ -12,9 +12,9 @@ block section-body
             input.input(placeholder='Item name', type='text', required, ng-model='item.titleEn')
             .row
                 .col-5
-                    input.input(placeholder='Количество', type='text', required, ng-model='item.amount')
+                    input.input(placeholder='Количество', type='text', required, ng-pattern='/^[0-9]+$/', ng-model='item.amount')
                 .col-5
-                    input.input(placeholder='Цена', type='text', required, ng-model='item.price')
+                    input.input(placeholder='Цена', type='text', required, ng-pattern='/^[0-9]+[\\.]?[0-9]{0,2}$/', ng-model='item.price')
 
 
         fieldset(name='ItemEnchantmentForm')
