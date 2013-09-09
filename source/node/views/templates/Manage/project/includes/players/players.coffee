@@ -57,23 +57,9 @@ app.factory 'PlayerList', ($resource) ->
 
 
 
-app.factory 'PaymentList', ($resource) ->
-    $resource '/api/v1/players/payment', {}
-
-
-
-app.factory 'PaymentClose', ($resource) ->
-    $resource '/api/v1/players/payment/close/:paymentId', {},
-        close:
-            method: 'put'
-            params:
-                paymentId: '@id'
-
-
-
-app.factory 'PaymentCancel', ($resource) ->
-    $resource '/api/v1/players/payment/cancel/:paymentId', {},
-        cancel:
+app.factory 'Payment', ($resource) ->
+    $resource '/api/v1/players/payment/:paymentId', {},
+        change:
             method: 'put'
             params:
                 paymentId: '@id'
@@ -216,24 +202,24 @@ app.controller 'PlayersPlayerFormCtrl', ($scope, $route, $q, $location, Player) 
 ###
 Контроллер списка платежей.
 ###
-app.controller 'PlayersPaymentListCtrl', ($scope, PaymentList, PaymentClose, PaymentCancel) ->
+app.controller 'PlayersPaymentListCtrl', ($scope, Payment) ->
     load= ->
-        $scope.payments= PaymentList.query ->
+        $scope.payments= Payment.query ->
+            $scope.paymentStatuses= [
+                'pending'
+                'success'
+                'failure'
+            ]
+
             $scope.state= 'loaded'
             console.log 'Платежи загружены'
 
     do load
 
 
-    $scope.close= (payment) ->
-        doClosePayment= new PaymentClose payment
-        doClosePayment.$close ->
-            do load
-
-
-    $scope.cancel= (payment) ->
-        doCancelPayment= new PaymentCancel payment
-        doCancelPayment.$cancel ->
+    $scope.change= (payment) ->
+        doChangePayment= new Payment payment
+        doChangePayment.$change ->
             do load
 
 

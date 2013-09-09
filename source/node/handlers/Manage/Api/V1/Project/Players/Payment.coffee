@@ -19,6 +19,12 @@ app.on 'mount', (parent) ->
     ,   (req, res) ->
             res.json 200
 
+    app.put '/:paymentId(\\d+)'
+    ,   access
+    ,   changePayment
+    ,   (req, res) ->
+            res.json 200
+
     app.put '/close/:paymentId(\\d+)'
     ,   access
     ,   closePayment
@@ -73,6 +79,41 @@ listPayment= (req, res, next) ->
             return next err if err
             return res.json 404, null if not payments
             return res.json 200, payments
+
+
+
+###
+Изменяет платеж
+###
+changePayment= (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn if err
+                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return done err, conn if err
+                    conn.query 'START TRANSACTION', (err) ->
+                        return done err, conn
+
+        (conn, done) ->
+            if req.body.status == 'success'
+                q= "UPDATE player_payment SET closedAt = NOW(), status = '#{req.body.status}' WHERE id = #{req.params.paymentId}"
+            else
+                q= "UPDATE player_payment SET closedAt = NULL, status = '#{req.body.status}' WHERE id = #{req.params.paymentId}"
+
+            conn.query q, (err, resp) ->
+                    return done err, conn
+
+        (conn, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn
+
+    ],  (err, conn) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200
 
 
 

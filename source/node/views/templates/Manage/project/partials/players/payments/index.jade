@@ -10,7 +10,6 @@ block section-body
                 th.col-flex: .table-col: .table-col-sortable Игрок
                 th Открыт
                 th Сумма
-                th Статус
                 th
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
@@ -23,9 +22,6 @@ block section-body
                         {{payment.name}}
                 td {{payment.createdAt}}
                 td {{payment.amount}}
-                td {{payment.status}}
                 td
-                    button.btn.btn-info(ng-if='!payment.closedAt', ng-click='close(payment)')
-                        i.icon-unchecked
-                    button.btn.btn-info(ng-if='payment.closedAt', ng-click='cancel(payment)')
-                        i.icon-sign-blank
+                    select.input(required, ng-model='payment.status', ng-change='change(payment)')
+                        option(ng-repeat='status in paymentStatuses', value='{{status}}', ng-selected='payment.status == status') {{status}}
