@@ -21,6 +21,10 @@ config:
 
         sender:
             email:
+                host: 'smtp.gmail.com'
+                port: '465'
+                secureConnection: true
+
                 address: 'admin@google.com'
                 password: 'password123'
                 sign: 'oki'

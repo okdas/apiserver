@@ -18,8 +18,13 @@ app.on 'mount', (parent) ->
     smsKey= cfg.sender.sms.key
     smsFrom= cfg.sender.sms.from
 
+    emailHost= cfg.sender.email.host
+    emailPort= cfg.sender.email.port
+    emailSecureConnection= cfg.sender.email.secureConnection
+
     emailAddress= cfg.sender.email.address
     emailPassword= cfg.sender.email.password
+
     emailSign= cfg.sender.email.sign
 
 
@@ -73,14 +78,18 @@ sendSms= (req, res, next) ->
 
 
 
-
+###
+Отправляет рассылку на почту
+###
 sendEmail= (req, res, next) ->
     return next 'there are no numbers' if req.body.to.length == 0
     return next 'text is empty' if not req.body.text
 
 
     smtp= nodemailer.createTransport 'SMTP',
-        service: 'Gmail'
+        host: emailHost
+        secureConnection: emailSecureConnection
+        port: emailPort
         auth:
             user: emailAddress
             pass: emailPassword
