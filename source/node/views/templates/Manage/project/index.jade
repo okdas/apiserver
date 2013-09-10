@@ -16,6 +16,7 @@ append head-scripts
     include includes/players/players.coffee
     include includes/servers/servers.coffee
     include includes/store/store.coffee
+    include includes/tags/tags.coffee
     include includes/project.coffee
     include ../manage.coffee
 
@@ -40,6 +41,9 @@ append body
                             b.caret
 
                         li: a(href='#/store') Магазин 
+                            b.caret
+
+                        li: a(href='#/tags') Теги 
                             b.caret
 
                     ul.nav.navbar-nav.pull-right

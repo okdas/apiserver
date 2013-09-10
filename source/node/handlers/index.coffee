@@ -146,6 +146,15 @@ app.on 'mount', (parent) ->
 
 
     ###
+    Методы API для рассылки писем и смс.
+    ###
+    app.use '/api/v1/tags', require './Manage/Api/V1/Project/Tags/Tag'
+
+
+
+
+
+    ###
     Обрабатывает ошибку
     ###
     app.use (err, req, res, next) ->
