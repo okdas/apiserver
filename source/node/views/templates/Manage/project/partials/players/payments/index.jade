@@ -23,5 +23,5 @@ block section-body
                 td {{payment.createdAt}}
                 td {{payment.amount}}
                 td
-                    select.input(required, ng-model='payment.status', ng-change='change(payment)')
+                    select.input(required, ng-model='payment.status', ng-change='change(payment)', style='width:110px')
                         option(ng-repeat='status in paymentStatuses', value='{{status}}', ng-selected='payment.status == status') {{status}}
