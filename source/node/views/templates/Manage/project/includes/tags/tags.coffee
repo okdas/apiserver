@@ -92,22 +92,18 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
 
     # Действия
 
+    ###
     $scope.create= (TagForm) ->
         $scope.tag.$create ->
             $location.path '/tags/tag/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        TagForm[input].$setValidity error.error, false
+                console.log 'err', err
 
     $scope.update= (TagForm) ->
         $scope.tag.$update ->
             $location.path '/tags/tag/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        TagForm[input].$setValidity error.error, false
+                console.log 'err', err
 
     $scope.delete= ->
         $scope.tag.$delete ->
             $location.path '/tags/tag/list'
+    ###

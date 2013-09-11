@@ -119,13 +119,14 @@ getTag= (req, res, next) ->
                 SELECT * FROM tag WHERE id = ?'
             ,   [req.params.tagId]
             ,   (err, resp) ->
-                    return done err, conn, resp
+                    tag= do resp.shift if not err
+                    return done err, conn, tag
 
-    ],  (err, conn, resp) ->
+    ],  (err, conn, tag) ->
             do conn.end if conn
 
             return next err if err
-            return res.json 200, resp
+            return res.json 200, tag
 
 
 
