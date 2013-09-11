@@ -30,7 +30,7 @@ app= angular.module 'project.tags', ['ngResource','ngRoute'], ($routeProvider) -
 
 
     $routeProvider.when '/tags/itemtag/list',
-        templateUrl: 'partials/tags/servertags/', controller: 'TagsItemTagListCtrl'
+        templateUrl: 'partials/tags/itemtags/', controller: 'TagsItemTagListCtrl'
 
     $routeProvider.when '/tags/servertag/create',
         templateUrl: 'partials/tags/itemtags/itemtag/form/', controller: 'TagsItemTagFormCtrl'
@@ -171,9 +171,10 @@ app.controller 'TagsServerTagListCtrl', ($scope, ServerList, TagServer) ->
 ###
 app.controller 'TagsServerTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
     if $route.current.params.tagId
-        $scope.tag= Tag.get $route.current.params, ->
-            $scope.state= 'loaded'
-            $scope.action= 'update'
+        $scope.servers= ServerList.query ->
+            $scope.tag= Tag.get $route.current.params, ->
+                $scope.state= 'loaded'
+                $scope.action= 'update'
     else
         $scope.tag= new Tag
         $scope.state= 'loaded'

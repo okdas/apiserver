@@ -27,11 +27,32 @@ app.post '/', access, (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
+            data=
+                name: req.body.name
+                title: req.body.title
+                key: req.body.key
+
             conn.query 'INSERT INTO server SET ?'
-            ,   [req.body]
+            ,   [data]
             ,   (err, resp) ->
                     server= req.body
                     server.id= resp.insertId
+                    return done err, conn, server
+
+        (conn, server, done) ->
+            # а есть ли вобще энчаты у предмета
+            if not req.body.tags
+                return done null, conn, server
+
+            bulk= []
+            for tag in req.body.tag
+                bulk.push [server.id, tag.id]
+            conn.query '
+                INSERT INTO server_tag
+                    (`serverId`, `tagId`)
+                VALUES ?'
+            ,   [bulk]
+            ,   (err, resp) ->
                     return done err, conn, server
 
         (conn, server, done) ->
@@ -80,10 +101,38 @@ app.get '/:serverId(\\d+)', access, (req, res, next) ->
                 return done err, conn
 
         (conn, done) ->
-            conn.query 'SELECT * FROM server WHERE id = ?'
+            conn.query '
+                SELECT
+                    server.id,
+                    server.name,
+                    server.title,
+                    server.key,
+                    tag.id AS tagId,
+                    tag.name AS tagName
+                FROM server AS server
+                JOIN server_tag AS connection
+                    ON connection.serverId = server.id
+                JOIN tag AS tag
+                    ON tag.id = connection.tagId
+                WHERE server.id = ?'
             ,   [req.params.serverId]
-            ,   (err, resp) ->
-                    server= do resp.shift if not err
+            ,   (err, rows) ->
+                    server=
+                        id: ''
+                        name: ''
+                        title: ''
+                        key: ''
+                        tags: []
+
+                    rows.map (srv) ->
+                        server.id= srv.id
+                        server.name= srv.name
+                        server.title= srv.title
+                        server.key= srv.key
+                        server.tags.push
+                            id: srv.tagId
+                            name: srv.tagName
+
                     return done err, conn, server
 
     ],  (err, conn, server) ->
@@ -99,6 +148,14 @@ app.get '/:serverId(\\d+)', access, (req, res, next) ->
 Изменяет сервер
 ###
 app.put '/:serverId(\\d+)', access, (req, res, next) ->
+    serverId= req.params.serverId
+    delete req.body.id
+
+    server= req.body
+
+    tags= server.tags or []
+    delete server.tags
+
     async.waterfall [
 
         (done) ->
@@ -111,11 +168,27 @@ app.put '/:serverId(\\d+)', access, (req, res, next) ->
 
         (conn, done) ->
             conn.query 'UPDATE server SET ? WHERE id = ?'
-            ,   [req.body, req.params.serverId]
+            ,   [server, req.params.serverId]
             ,   (err, resp) ->
-                    server= req.body
                     server.id= req.params.serverId
                     return done err, conn
+
+        (conn, done) ->
+            conn.query 'DELETE FROM server_tag WHERE serverId = ?'
+            ,   [serverId]
+            ,   (err, resp) ->
+                    return done err, conn if err
+                    return done err, conn if not tags.length
+
+                    bulk= []
+                    for tag in tags
+                        bulk.push [serverId, tag.id]
+                    conn.query '
+                        INSERT INTO server_tag (`serverId`, `tagId`) VALUES ?
+                        '
+                    ,   [bulk]
+                    ,   (err, resp) ->
+                            return done err, conn
 
         (conn, done) ->
             conn.query 'COMMIT', (err) ->

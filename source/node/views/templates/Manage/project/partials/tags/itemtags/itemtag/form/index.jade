@@ -1,0 +1,37 @@
+extends ../../../../layout
+extends ../../../layout
+
+
+block section-body
+    form(name='TagForm')
+        h3(style='text-align:center') Тег
+
+        fieldset
+            input.input(placeholder='Name', type='text', required, ng-maxlength='50', ng-model='tag.name')
+
+
+        fieldset: .row
+            .col-6
+                input.input(placeholder='В единственном числе', type='text', required, ng-maxlength='50', ng-model='tag.titleRuSingular')
+            .col-6
+                input.input(placeholder='Во множественном', type='text', required, ng-maxlength='50', ng-model='tag.titleRuPlural')
+
+
+        fieldset: .row
+            .col-6
+                input.input(placeholder='Singular', type='text', required, ng-maxlength='50', ng-model='tag.titleEnSingular')
+            .col-6
+                input.input(placeholder='Plural', type='text', required, ng-maxlength='50', ng-model='tag.titleEnPlural')
+
+
+        fieldset(ng-if='action=="create"')
+            button.btn.btn-primary.btn-block(type='submit', ng-click='create(TagForm)', ng-disabled='!TagForm.$valid')
+                span Создать тег
+
+        fieldset(ng-if='action=="update"'): .row
+            .col-10
+                button.btn.btn-primary.btn-block(type='submit',ng-click='update(TagForm)',ng-disabled='!TagForm.$valid')
+                    span Обновить тег
+            .col-2
+                button.btn.btn-link.btn-block.text-left(ng-click='delete(TagForm)')
+                    span Удалить
