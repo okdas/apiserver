@@ -90,9 +90,13 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
         $scope.state= 'loaded'
         $scope.action= 'create'
 
+    $scope.tagEntity= [
+        'server'
+        'item'
+    ]
+
     # Действия
 
-    ###
     $scope.create= (TagForm) ->
         $scope.tag.$create ->
             $location.path '/tags/tag/list', (err) ->
@@ -106,4 +110,3 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
     $scope.delete= ->
         $scope.tag.$delete ->
             $location.path '/tags/tag/list'
-    ###

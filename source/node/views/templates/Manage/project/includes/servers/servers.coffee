@@ -111,7 +111,6 @@ app.controller 'ServersServerListCtrl', ($scope, Server) ->
 ###
 app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
     if $route.current.params.serverId
-        console.log $route.current.params.serverId
         $scope.server= Server.get $route.current.params, ->
             $scope.state= 'loaded'
             $scope.action= 'update'

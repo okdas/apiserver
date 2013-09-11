@@ -99,6 +99,11 @@ app.factory 'ServerList', ($resource) ->
 
 
 
+app.factory 'TagList', ($resource) ->
+    $resource '/api/v1/tags/'
+
+
+
 ###
 Модель предмета.
 ###
@@ -118,13 +123,6 @@ app.factory 'Item', ($resource) ->
                 itemId: '@id'
 
 
-
-###
-Модель заказа.
-###
-app.factory 'Order', ($resource) ->
-    $resource '/api/v1/store/orders/:orderId',
-        orderId:'@id'
 
 
 
@@ -372,25 +370,29 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, ServerList) ->
+app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, ServerList, TagList) ->
     if $route.current.params.itemId
         $scope.item= Item.get $route.current.params, ->
             $scope.materials= Material.query ->
                 $scope.enchantments= Enchantment.query ->
                     $scope.servers= ServerList.query ->
-                        $scope.state= 'loaded'
-                        $scope.action= 'update'
+                        $scope.tags= TagList.query ->
+                            $scope.state= 'loaded'
+                            $scope.action= 'update'
     else
         $scope.item= new Item
         $scope.materials= Material.query ->
             $scope.enchantments= Enchantment.query ->
                 $scope.servers= ServerList.query ->
-                    $scope.state= 'loaded'
-                    $scope.action= 'create'
+                    $scope.tags= TagList.query ->
+                        $scope.state= 'loaded'
+                        $scope.action= 'create'
+
 
     $scope.changeMaterial= (material) ->
         $scope.item.titleRu= JSON.parse(material).titleRu
         $scope.item.titleEn= JSON.parse(material).titleEn
+
 
     $scope.addEnchantment= (enchantment) ->
         newEnchantment= JSON.parse angular.copy enchantment
@@ -398,22 +400,39 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
         $scope.item.enchantments= [] if not $scope.item.enchantments
         $scope.item.enchantments.push newEnchantment
 
+
     $scope.removeEnchantment= (enchantment) ->
         remPosition= null
         $scope.item.enchantments.map (ench, i) ->
             if ench.id == enchantment.id
                 $scope.item.enchantments.splice i, 1
 
+
     $scope.addServer= (server) ->
         newServer= JSON.parse angular.copy server
         $scope.item.servers= [] if not $scope.item.servers
         $scope.item.servers.push newServer
+
 
     $scope.removeServer= (server) ->
         remPosition= null
         $scope.item.servers.map (srv, i) ->
             if srv.id == server.id
                 $scope.item.servers.splice i, 1
+
+
+    $scope.addTag= (tag) ->
+        newTag= JSON.parse angular.copy tag
+        $scope.item.tags= [] if not $scope.item.tags
+        $scope.item.tags.push newTag
+
+
+    $scope.removeTag= (tag) ->
+        remPosition= null
+        $scope.item.tags.map (srv, i) ->
+            if srv.id == tag.id
+                $scope.item.tags.splice i, 1
+
 
     # Действия
 
