@@ -116,17 +116,26 @@ app.controller 'TagsTagListCtrl', ($scope, Tag) ->
 app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
     if $route.current.params.tagId
         $scope.tag= Tag.get $route.current.params, ->
-            $scope.state= 'loaded'
-            $scope.action= 'update'
+            $scope.tags= Tag.query ->
+                $scope.state= 'loaded'
+                $scope.action= 'update'
     else
         $scope.tag= new Tag
         $scope.state= 'loaded'
         $scope.action= 'create'
 
-    $scope.tagEntity= [
-        'server'
-        'item'
-    ]
+
+    $scope.addTag= (tag) ->
+        newTag= JSON.parse angular.copy tag
+        $scope.tag.inheritTags= [] if not $scope.tag.inheritTags
+        $scope.tag.inheritTags.push newTag
+
+
+    $scope.removeTag= (tag) ->
+        remPosition= null
+        $scope.tag.inheritTags.map (tg, i) ->
+            if tg.id == tag.id
+                $scope.tag.inheritTags.splice i, 1
 
     # Действия
 

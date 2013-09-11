@@ -7,35 +7,27 @@ block section-body
         h3(style='text-align:center') Тег
 
         fieldset
-            select.input(required, ng-model='serverId', ng-change='changeServer(serverId)')
-                option(ng-repeat='server in servers', value='{{server.id}}') {{server.id}} - {{server.title}} ({{server.name}})
+            p {{tag.name}}
+            p {{tag.titleRuSingular}} ({{tag.titleRuPlural}})
+            //p {{tag.titleEnSingular}} ({{tag.titleEnPlural}})
+
 
         fieldset
-            input.input(placeholder='Name', type='text', required, ng-maxlength='50', ng-model='tag.name')
+            .row
+                .col-10
+                    select.input(ng-model='item')
+                        option(ng-repeat='item in items', value='{{item}}') {{item.material}} {{item.titleRu}}
+                .col-1
+                    button.btn(ng-click='addItem(item)',ng-disabled='!item')
+                        i.icon-plus
+
+            .row(ng-repeat='tagItem in tag.items')
+                .col-3 {{tagItem.titleRu}}
+                .col-1
+                    button.btn(ng-click='removeItem(tagItem)')
+                        i.icon-minus
 
 
-        fieldset: .row
-            .col-6
-                input.input(placeholder='В единственном числе', type='text', required, ng-maxlength='50', ng-model='tag.titleRuSingular')
-            .col-6
-                input.input(placeholder='Во множественном', type='text', required, ng-maxlength='50', ng-model='tag.titleRuPlural')
-
-
-        fieldset: .row
-            .col-6
-                input.input(placeholder='Singular', type='text', required, ng-maxlength='50', ng-model='tag.titleEnSingular')
-            .col-6
-                input.input(placeholder='Plural', type='text', required, ng-maxlength='50', ng-model='tag.titleEnPlural')
-
-
-        fieldset(ng-if='action=="create"')
-            button.btn.btn-primary.btn-block(type='submit', ng-click='create(TagForm)', ng-disabled='!TagForm.$valid')
-                span Создать тег
-
-        fieldset(ng-if='action=="update"'): .row
-            .col-10
-                button.btn.btn-primary.btn-block(type='submit',ng-click='update(TagForm)',ng-disabled='!TagForm.$valid')
-                    span Обновить тег
-            .col-2
-                button.btn.btn-link.btn-block.text-left(ng-click='delete(TagForm)')
-                    span Удалить
+        fieldset(ng-if='action=="update"')
+            button.btn.btn-primary.btn-block(type='submit',ng-click='update(TagForm)',ng-disabled='!TagForm.$valid')
+                span Обновить тег

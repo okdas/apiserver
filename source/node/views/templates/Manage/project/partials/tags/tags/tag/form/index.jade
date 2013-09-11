@@ -24,6 +24,22 @@ block section-body
                 input.input(placeholder='Plural', type='text', required, ng-maxlength='50', ng-model='tag.titleEnPlural')
 
 
+        fieldset
+            .row
+                .col-10
+                    select.input(ng-model='inheritTag')
+                        option(ng-repeat='inheritTag in tags', value='{{inheritTag}}') {{inheritTag.name}}
+                .col-1
+                    button.btn(ng-click='addTag(inheritTag)',ng-disabled='!inheritTag')
+                        i.icon-plus
+
+            .row(ng-repeat='tagTag in tag.inheritTags')
+                .col-3 {{tagTag.name}}
+                .col-1
+                    button.btn(ng-click='removeTag(tagTag)')
+                        i.icon-minus
+
+
         fieldset(ng-if='action=="create"')
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(TagForm)', ng-disabled='!TagForm.$valid')
                 span Создать тег

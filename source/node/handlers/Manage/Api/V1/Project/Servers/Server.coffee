@@ -9,13 +9,46 @@ access= (req, res, next) ->
 Методы API для работы c серверами.
 ###
 app= module.exports= do express
+app.on 'mount', (parent) ->
+    cfg= parent.get 'config'
 
+
+
+    app.post '/'
+    ,   access
+    ,   createServer
+    ,   (req, res) ->
+            res.json 200
+
+    app.get '/'
+    ,   access
+    ,   getServers
+    ,   (req, res) ->
+            res.json 200
+
+    app.get '/:serverId(\\d+)'
+    ,   access
+    ,   getServer
+    ,   (req, res) ->
+            res.json 200
+
+    app.put '/:serverId(\\d+)'
+    ,   access
+    ,   changeServer
+    ,   (req, res) ->
+            res.json 200
+
+    app.delete '/:serverId(\\d+)'
+    ,   access
+    ,   deleteServer
+    ,   (req, res) ->
+            res.json 200
 
 
 ###
 Добавляет сервер.
 ###
-app.post '/', access, (req, res, next) ->
+createServer= (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -45,7 +78,7 @@ app.post '/', access, (req, res, next) ->
                 return done null, conn, server
 
             bulk= []
-            for tag in req.body.tag
+            for tag in req.body.tags
                 bulk.push [server.id, tag.id]
             conn.query '
                 INSERT INTO server_tag
@@ -70,7 +103,7 @@ app.post '/', access, (req, res, next) ->
 ###
 Отдает список серверов.
 ###
-app.get '/', access, (req, res, next) ->
+getServers= (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -93,7 +126,7 @@ app.get '/', access, (req, res, next) ->
 ###
 Отдает сервер.
 ###
-app.get '/:serverId(\\d+)', access, (req, res, next) ->
+getServer= (req, res, next) ->
     async.waterfall [
 
         (done) ->
@@ -110,9 +143,9 @@ app.get '/:serverId(\\d+)', access, (req, res, next) ->
                     tag.id AS tagId,
                     tag.name AS tagName
                 FROM server AS server
-                JOIN server_tag AS connection
+                LEFT JOIN server_tag AS connection
                     ON connection.serverId = server.id
-                JOIN tag AS tag
+                LEFT JOIN tag AS tag
                     ON tag.id = connection.tagId
                 WHERE server.id = ?'
             ,   [req.params.serverId]
@@ -147,7 +180,7 @@ app.get '/:serverId(\\d+)', access, (req, res, next) ->
 ###
 Изменяет сервер
 ###
-app.put '/:serverId(\\d+)', access, (req, res, next) ->
+changeServer= (req, res, next) ->
     serverId= req.params.serverId
     delete req.body.id
 
@@ -205,7 +238,7 @@ app.put '/:serverId(\\d+)', access, (req, res, next) ->
 ###
 Удаляет сервер
 ###
-app.delete '/:serverId(\\d+)', access, (req, res, next) ->
+deleteServer= (req, res, next) ->
     async.waterfall [
 
         (done) ->

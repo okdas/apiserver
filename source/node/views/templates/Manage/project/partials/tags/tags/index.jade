@@ -18,6 +18,7 @@ block section-body
                 td {{tag.id}}
                 td {{tag.titleRuPlural}}
                 td
+                    span(ng-repeat='inherit in tag.inheritTags')= '{{inherit.name}} '
                 td
                     a(ng-href='#/tags/tag/update/{{tag.id}}')
                         button.btn.btn-success
