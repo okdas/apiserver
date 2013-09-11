@@ -18,6 +18,26 @@ app= angular.module 'project.tags', ['ngResource','ngRoute'], ($routeProvider) -
 
 
 
+    $routeProvider.when '/tags/servertag/list',
+        templateUrl: 'partials/tags/servertags/', controller: 'TagsServerTagListCtrl'
+
+    $routeProvider.when '/tags/servertag/create',
+        templateUrl: 'partials/tags/servertags/servertag/form/', controller: 'TagsServerTagFormCtrl'
+
+    $routeProvider.when '/tags/servertag/update/:tagId',
+        templateUrl: 'partials/tags/servertags/servertag/form/', controller: 'TagsServerTagFormCtrl'
+
+
+
+    $routeProvider.when '/tags/itemtag/list',
+        templateUrl: 'partials/tags/servertags/', controller: 'TagsItemTagListCtrl'
+
+    $routeProvider.when '/tags/servertag/create',
+        templateUrl: 'partials/tags/itemtags/itemtag/form/', controller: 'TagsItemTagFormCtrl'
+
+    $routeProvider.when '/tags/servertag/update/:tagId',
+        templateUrl: 'partials/tags/itemtags/itemtag/form/', controller: 'TagsItemTagFormCtrl'
+
 
 
 
@@ -43,6 +63,19 @@ app.factory 'Tag', ($resource) ->
                 tagId: '@id'
 
 
+
+app.factory 'ServerList', ($resource) ->
+    $resource '/api/v1/servers/server',
+
+
+
+app.factory 'TagServer', ($resource) ->
+    $resource '/api/v1/tags/server/:serverId', {},
+        get:
+            method: 'get'
+            isArray: true
+            params:
+                serverId: '@id'
 
 
 
@@ -94,6 +127,57 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
         'server'
         'item'
     ]
+
+    # Действия
+
+    $scope.create= (TagForm) ->
+        $scope.tag.$create ->
+            $location.path '/tags/tag/list', (err) ->
+                console.log 'err', err
+
+    $scope.update= (TagForm) ->
+        $scope.tag.$update ->
+            $location.path '/tags/tag/list', (err) ->
+                console.log 'err', err
+
+    $scope.delete= ->
+        $scope.tag.$delete ->
+            $location.path '/tags/tag/list'
+
+
+
+
+
+###
+Контроллер списка тегов.
+###
+app.controller 'TagsServerTagListCtrl', ($scope, ServerList, TagServer) ->
+    $scope.servers= ServerList.query ->
+        $scope.state= 'loaded'
+        console.log 'Сервера загружены'
+
+
+    $scope.changeServer= (serverId) ->
+        $scope.tags= TagServer.get
+            serverId: serverId
+        ,   ->
+                $scope.state= 'loaded'
+                $scope.action= 'update'
+
+
+
+###
+Контроллер формы тега.
+###
+app.controller 'TagsServerTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
+    if $route.current.params.tagId
+        $scope.tag= Tag.get $route.current.params, ->
+            $scope.state= 'loaded'
+            $scope.action= 'update'
+    else
+        $scope.tag= new Tag
+        $scope.state= 'loaded'
+        $scope.action= 'create'
 
     # Действия
 

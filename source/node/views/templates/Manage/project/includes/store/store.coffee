@@ -421,17 +421,6 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
                 $scope.item.servers.splice i, 1
 
 
-    $scope.addTag= (tag) ->
-        newTag= JSON.parse angular.copy tag
-        $scope.item.tags= [] if not $scope.item.tags
-        $scope.item.tags.push newTag
-
-
-    $scope.removeTag= (tag) ->
-        remPosition= null
-        $scope.item.tags.map (srv, i) ->
-            if srv.id == tag.id
-                $scope.item.tags.splice i, 1
 
 
     # Действия

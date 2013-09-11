@@ -25,6 +25,12 @@ app.on 'mount', (parent) ->
     ,   (req, res) ->
             res.json 200
 
+    app.get '/server/:serverId(\\d+)'
+    ,   access
+    ,   getServerTags
+    ,   (req, res) ->
+            res.json 200
+
     app.get '/:tagId(\\d+)'
     ,   access
     ,   getTag
@@ -96,6 +102,31 @@ getTags= (req, res, next) ->
         (conn, done) ->
             conn.query '
                 SELECT * FROM tag'
+            ,   (err, rows) ->
+                    return done err, conn, rows
+
+    ],  (err, conn, rows) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, rows
+
+
+
+getServerTags= (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query '
+                SELECT * FROM tag AS tag
+                JOIN server_tag AS server
+                    ON server.tagId = tag.id
+                WHERE server.serverId = ?'
+            ,   [req.params.serverId]
             ,   (err, rows) ->
                     return done err, conn, rows
 

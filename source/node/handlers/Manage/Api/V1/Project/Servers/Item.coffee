@@ -16,9 +16,6 @@ app= module.exports= do express
 Добавляет предмет.
 ###
 app.post '/', access, (req, res, next) ->
-    console.log req.body
-
-
     async.waterfall [
 
         (done) ->
@@ -73,24 +70,6 @@ app.post '/', access, (req, res, next) ->
                 VALUES ?
                 "
             ,   [bulk]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, id, done) ->
-            console.log req.body.tags
-            # а есть ли теги Оо
-            if not req.body.tags
-                return done null, conn
-
-            tags= []
-            for tag in req.body.tags
-                tags.push [id, tag.id]
-            conn.query "
-                INSERT INTO item_tag
-                    (`itemId`, `tagId`)
-                VALUES ?
-                "
-            ,   [tags]
             ,   (err, resp) ->
                     return done err, conn
 
@@ -206,24 +185,6 @@ app.get '/:itemId(\\d+)', access, (req, res, next) ->
                     item.servers= resp
                     return done err, conn, item
 
-        (conn, item, done) ->
-            conn.query '
-                SELECT
-                    tag.id,
-                    tag.name,
-                    tag.titleRuSingular,
-                    tag.titleRuPlural,
-                    tag.titleEnSingular,
-                    tag.titleEnPlural
-                FROM item_tag AS connection
-                JOIN tag AS tag
-                    ON tag.id = connection.tagId
-                WHERE itemId = ?'
-            ,   [req.params.itemId]
-            ,   (err, resp) ->
-                    item.tags= resp
-                    return done err, conn, item
-
     ],  (err, conn, item) ->
             do conn.end if conn
 
@@ -247,9 +208,6 @@ app.put '/:itemId(\\d+)', access, (req, res, next) ->
 
     servers= item.servers or []
     delete item.servers
-
-    tags= item.tags or []
-    delete item.tags
 
     async.waterfall [
 
@@ -296,21 +254,6 @@ app.put '/:itemId(\\d+)', access, (req, res, next) ->
                     for server in servers
                         bulk.push [itemId, server.id]
                     conn.query 'INSERT INTO server_item (`itemId`, `serverId`) VALUES ?'
-                    ,   [bulk]
-                    ,   (err, resp) ->
-                            return done err, conn
-
-        (conn, done) ->
-            conn.query 'DELETE FROM item_tag WHERE itemId = ?'
-            ,   [itemId]
-            ,   (err, resp) ->
-                    return done err, conn if err
-                    return done err, conn if not tags.length
-
-                    bulk= []
-                    for tag in tags
-                        bulk.push [itemId, tag.id]
-                    conn.query 'INSERT INTO item_tag (`itemId`, `tagId`) VALUES ?'
                     ,   [bulk]
                     ,   (err, resp) ->
                             return done err, conn
