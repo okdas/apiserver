@@ -43,6 +43,11 @@ app.on 'mount', (parent) ->
     ,   (req, res) ->
             res.json 200
 
+    app.put '/srv/:tagId(\\d+)'
+    ,   access
+    ,   changeTagConnection
+    ,   (req, res) ->
+            res.json 200
 
     app.get '/:tagId(\\d+)'
     ,   access
@@ -273,7 +278,47 @@ getServerItems= (req, res, next) ->
 
 
 changeTagConnection= (req, res, next) ->
-    res.send 200
+    tagId= req.params.tagId
+    delete req.body.id
+
+    items= req.body.items
+
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn if err
+                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return done err, conn if err
+                    conn.query 'START TRANSACTION', (err) ->
+                        return done err, conn
+
+        (conn, done) ->
+            conn.query 'DELETE FROM item_tag WHERE tagId = ?'
+            ,   [tagId]
+            ,   (err, resp) ->
+                    return done err, conn if err
+                    return done err, conn if not items.length
+
+                    bulk= []
+                    for item in items
+                        bulk.push [tagId, item.id]
+                    conn.query '
+                        INSERT INTO item_tag (`tagId`, `itemId`) VALUES ?
+                        '
+                    ,   [bulk]
+                    ,   (err, resp) ->
+                            return done err, conn
+
+        (conn, done) ->
+            conn.query 'COMMIT', (err) ->
+                return done err, conn
+
+    ],  (err, conn) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200
 
 
 

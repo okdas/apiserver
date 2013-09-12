@@ -81,6 +81,11 @@ app.factory 'TagItemServer', ($resource) ->
             params:
                 tagId: '@id'
 
+        update:
+            method: 'put'
+            params:
+                tagId: '@id'
+
 
 ###
 
@@ -192,18 +197,23 @@ app.controller 'TagsServerTagFormCtrl', ($scope, $route, $q, $location, TagItem,
         $scope.state= 'loaded'
         $scope.action= 'create'
 
-    # Действия
 
-    $scope.create= (TagForm) ->
-        $scope.tag.$create ->
-            $location.path '/tags/tag/list', (err) ->
-                console.log 'err', err
+    $scope.addItem= (item) ->
+        newItem= JSON.parse angular.copy item
+        $scope.tag.items= [] if not $scope.tag.items
+        $scope.tag.items.push newItem
+
+
+    $scope.removeItem= (item) ->
+        remPosition= null
+        $scope.tag.items.map (tg, i) ->
+            if tg.id == item.id
+                $scope.tag.items.splice i, 1
+
+
 
     $scope.update= (TagForm) ->
-        $scope.tag.$update ->
+        news= new TagItemServer angular.copy $scope.tag
+        news.$update ->
             $location.path '/tags/tag/list', (err) ->
                 console.log 'err', err
-
-    $scope.delete= ->
-        $scope.tag.$delete ->
-            $location.path '/tags/tag/list'
