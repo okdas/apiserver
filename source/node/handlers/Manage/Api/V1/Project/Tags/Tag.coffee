@@ -37,6 +37,13 @@ app.on 'mount', (parent) ->
     ,   (req, res) ->
             res.json 200
 
+    app.get '/srv/:tagId(\\d+)'
+    ,   access
+    ,   getServerItems
+    ,   (req, res) ->
+            res.json 200
+
+
     app.get '/:tagId(\\d+)'
     ,   access
     ,   getTag
@@ -203,35 +210,26 @@ getTagItems= (req, res, next) ->
                     tag.titleRuSingular,
                     tag.titleRuPlural,
                     tag.titleEnSingular,
-                    tag.titleEnPlural,
-                    item.id AS itemId,
-                    item.material,
-                    item.titleRu AS itemTitle
-                FROM item AS item
-                JOIN item_tag AS connection
-                    ON connection.itemId = item.id
-                JOIN tag AS tag
-                    ON tag.id = connection.tagId
+                    tag.titleEnPlural
+                FROM tag AS tag
                 WHERE tag.id = ?'
             ,   [req.params.tagId]
+            ,   (err, resp) ->
+                    tag= do resp.shift if not err
+
+                    return done err, conn, tag
+
+        (conn, tag, done) ->
+            conn.query '
+                SELECT
+                    *
+                FROM item_tag AS connection
+                LEFT JOIN item AS item
+                    ON item.id = connection.itemId
+                WHERE connection.tagId = ?'
+            ,   [req.params.tagId]
             ,   (err, rows) ->
-                    tag=
-                        id: ''
-                        name: ''
-                        titleRuSingular: ''
-                        titleRuPlural: ''
-                        items: []
-
-                    rows.map (r) ->
-                        tag.id= r.id
-                        tag.name= r.name
-                        tag.titleRuSingular= r.titleRuSingular
-                        tag.titleRuPlural= r.titleRuPlural
-                        tag.items.push
-                            id: r.itemId
-                            material: r.material
-                            titleRu: r.itemTitle
-
+                    tag.items= rows
                     return done err, conn, tag
 
     ],  (err, conn, tag) ->
@@ -239,6 +237,44 @@ getTagItems= (req, res, next) ->
 
             return next err if err
             return res.json 200, tag
+
+
+
+###
+Получить айтемы через жопу
+###
+getServerItems= (req, res, next) ->
+    async.waterfall [
+
+        (done) ->
+            req.db.getConnection (err, conn) ->
+                return done err, conn
+
+        (conn, done) ->
+            conn.query '
+                SELECT
+                    item.*
+                FROM server_tag AS serverTag
+                JOIN server_item AS serverItem
+                    ON serverItem.serverId = serverTag.serverId
+                JOIN item AS item
+                    ON item.id = serverItem.itemId
+                WHERE serverTag.tagId = ?'
+            ,   [req.params.tagId]
+            ,   (err, rows) ->
+                    return done err, conn, rows
+
+    ],  (err, conn, rows) ->
+            do conn.end if conn
+
+            return next err if err
+            return res.json 200, rows
+
+
+
+changeTagConnection= (req, res, next) ->
+    res.send 200
+
 
 
 

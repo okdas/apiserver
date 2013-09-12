@@ -29,17 +29,6 @@ app= angular.module 'project.tags', ['ngResource','ngRoute'], ($routeProvider) -
 
 
 
-    $routeProvider.when '/tags/itemtag/list',
-        templateUrl: 'partials/tags/itemtags/', controller: 'TagsItemTagListCtrl'
-
-    $routeProvider.when '/tags/servertag/create',
-        templateUrl: 'partials/tags/itemtags/itemtag/form/', controller: 'TagsItemTagFormCtrl'
-
-    $routeProvider.when '/tags/servertag/update/:tagId',
-        templateUrl: 'partials/tags/itemtags/itemtag/form/', controller: 'TagsItemTagFormCtrl'
-
-
-
 
 
 ###
@@ -77,6 +66,20 @@ app.factory 'TagServer', ($resource) ->
             params:
                 serverId: '@id'
 
+
+
+app.factory 'TagItem', ($resource) ->
+    $resource '/api/v1/tags/items/:tagId'
+
+
+
+app.factory 'TagItemServer', ($resource) ->
+    $resource '/api/v1/tags/srv/:tagId', {},
+        get:
+            method: 'get'
+            isArray: true
+            params:
+                tagId: '@id'
 
 
 ###
@@ -178,10 +181,10 @@ app.controller 'TagsServerTagListCtrl', ($scope, ServerList, TagServer) ->
 ###
 Контроллер формы тега.
 ###
-app.controller 'TagsServerTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
+app.controller 'TagsServerTagFormCtrl', ($scope, $route, $q, $location, TagItem, TagItemServer) ->
     if $route.current.params.tagId
-        $scope.servers= ServerList.query ->
-            $scope.tag= Tag.get $route.current.params, ->
+        $scope.items= TagItemServer.get $route.current.params, ->
+            $scope.tag= TagItem.get $route.current.params, ->
                 $scope.state= 'loaded'
                 $scope.action= 'update'
     else
