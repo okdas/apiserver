@@ -28,7 +28,7 @@ block section-body
             .row
                 .col-10
                     select.input(ng-model='inheritTag')
-                        option(ng-repeat='inheritTag in tags', value='{{inheritTag}}') {{inheritTag.name}}
+                        option(ng-repeat='inheritTag in tags | filter:filterTag:inheritTag', value='{{inheritTag}}') {{inheritTag.name}}
                 .col-1
                     button.btn(ng-click='addTag(inheritTag)',ng-disabled='!inheritTag')
                         i.icon-plus

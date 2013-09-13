@@ -125,84 +125,6 @@ app.factory 'TagList', ($resource) ->
 
 
 
-###
-Модель формы предмета.
-###
-app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
-
-    @loadEnchantments= ->
-        dfd= do $q.defer
-        Enchantment.query (enchantments) ->
-            dfd.resolve enchantments
-        dfd.promise
-
-    @loadServers= ->
-        dfd= do $q.defer
-        Server.query (servers) ->
-            dfd.resolve servers
-        dfd.promise
-
-    @load= =>
-        dfd= do $q.defer
-        result= $q.all [
-            @loadEnchantments()
-            @loadServers()
-        ]
-        result.then (data) ->
-            data=
-                enchantments: data[0]
-                servers: data[1]
-            dfd.resolve data
-        dfd.promise
-
-    @
-
-
-
-
-
-###
-
-Фильтры
-
-###
-
-###
-Фильтр чар в редакторе для предмета.
-###
-app.filter 'filterExistsServer', ->
-    (servers, itemServers) ->
-        filtered= []
-
-        if !itemServers
-            return servers
-        else
-            servers.map (server) ->
-                itemServers.map (itemServer) ->
-                    if server.id != itemServer.id
-                        filtered.push server
-            console.log filtered
-            console.log itemServers
-            return filtered
-
-
-
-###
-app.filter 'filterExistsServer', ->
-    (enchantments, item) ->
-        filtered= []
-        angular.forEach enchantments, (enchantment) ->
-            found= false
-            angular.forEach item.enchantments, (e) ->
-                found= true if e.id == enchantment.id
-
-            filtered.push enchantment if not found
-        filtered
-###
-
-
-
-
 
 ###
 
@@ -369,7 +291,7 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, ServerList, TagList) ->
+app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Material, Enchantment, ServerList, TagList) ->
     if $route.current.params.itemId
         $scope.item= Item.get $route.current.params, ->
             $scope.materials= Material.query ->

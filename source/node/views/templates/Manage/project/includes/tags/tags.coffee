@@ -18,17 +18,6 @@ app= angular.module 'project.tags', ['ngResource','ngRoute'], ($routeProvider) -
 
 
 
-    $routeProvider.when '/tags/servertag/list',
-        templateUrl: 'partials/tags/servertags/', controller: 'TagsServerTagListCtrl'
-
-    $routeProvider.when '/tags/servertag/create',
-        templateUrl: 'partials/tags/servertags/servertag/form/', controller: 'TagsServerTagFormCtrl'
-
-    $routeProvider.when '/tags/servertag/update/:tagId',
-        templateUrl: 'partials/tags/servertags/servertag/form/', controller: 'TagsServerTagFormCtrl'
-
-
-
 
 
 ###
@@ -133,6 +122,16 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
         $scope.action= 'create'
 
 
+    $scope.filterTag= (tag) ->
+        isThere= true
+        $scope.tag.inheritTags.map (t) ->
+            if t.id == tag.id
+                isThere= false
+
+        return isThere
+
+
+
     $scope.addTag= (tag) ->
         newTag= JSON.parse angular.copy tag
         $scope.tag.inheritTags= [] if not $scope.tag.inheritTags
@@ -160,60 +159,3 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
     $scope.delete= ->
         $scope.tag.$delete ->
             $location.path '/tags/tag/list'
-
-
-
-
-
-###
-Контроллер списка тегов.
-###
-app.controller 'TagsServerTagListCtrl', ($scope, ServerList, TagServer) ->
-    $scope.servers= ServerList.query ->
-        $scope.state= 'loaded'
-        console.log 'Сервера загружены'
-
-
-    $scope.changeServer= (serverId) ->
-        $scope.tags= TagServer.get
-            serverId: serverId
-        ,   ->
-                $scope.state= 'loaded'
-                $scope.action= 'update'
-
-
-
-###
-Контроллер формы тега.
-###
-app.controller 'TagsServerTagFormCtrl', ($scope, $route, $q, $location, TagItem, TagItemServer) ->
-    if $route.current.params.tagId
-        $scope.items= TagItemServer.get $route.current.params, ->
-            $scope.tag= TagItem.get $route.current.params, ->
-                $scope.state= 'loaded'
-                $scope.action= 'update'
-    else
-        $scope.tag= new Tag
-        $scope.state= 'loaded'
-        $scope.action= 'create'
-
-
-    $scope.addItem= (item) ->
-        newItem= JSON.parse angular.copy item
-        $scope.tag.items= [] if not $scope.tag.items
-        $scope.tag.items.push newItem
-
-
-    $scope.removeItem= (item) ->
-        remPosition= null
-        $scope.tag.items.map (tg, i) ->
-            if tg.id == item.id
-                $scope.tag.items.splice i, 1
-
-
-
-    $scope.update= (TagForm) ->
-        news= new TagItemServer angular.copy $scope.tag
-        news.$update ->
-            $location.path '/tags/tag/list', (err) ->
-                console.log 'err', err
