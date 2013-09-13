@@ -86,8 +86,8 @@ createTag= (req, res, next) ->
                 return done null, conn
 
             bulk= []
-            for tagInh in req.body.inheritTags
-                bulk.push [tag.id, tagInh.id]
+            for tagInherit in req.body.inheritTags
+                bulk.push [tag.id, tagInherit.id]
             conn.query "
                 INSERT INTO tag_tags
                     (`tagId`, `childId`)
@@ -134,14 +134,14 @@ getTags= (req, res, next) ->
                     *
                 FROM tag_tags AS connection
                 JOIN tag AS tag
-                    ON connection.childId = tag.id'
+                    ON connection.tagId = tag.id'
             ,   (err, rows) ->
                     tags.map (tag, i) ->
-                        tags[i].inheritTags= []
+                        tags[i].parentTags= []
 
                         rows.map (r) ->
-                            if tag.id == r.tagId
-                                tags[i].inheritTags.push
+                            if tag.id == r.childId
+                                tags[i].parentTags.push
                                     id: r.id
                                     name: r.name
 
@@ -176,17 +176,18 @@ getTag= (req, res, next) ->
                     *
                 FROM tag_tags AS connection
                 JOIN tag AS tag
-                    ON connection.childId = tag.id
-                WHERE connection.tagId = ?'
+                    ON connection.tagId = tag.id
+                WHERE connection.childId = ?'
             ,   [req.params.tagId]
             ,   (err, rows) ->
-                    tag.inheritTags= []
+                    tag.parentTags= rows
 
-                    rows.map (r) ->
-                        if tag.id == r.tagId
-                            tag.inheritTags.push
-                                id: r.id
-                                name: r.name
+
+                    #rows.map (r) ->
+                    #    if tag.id == r.tagId
+                    #        tag.parentTags.push
+                    #            id: r.id
+                    #            name: r.name
 
                     return done err, conn, tag
 

@@ -27,13 +27,13 @@ block section-body
         fieldset
             .row
                 .col-10
-                    select.input(ng-model='inheritTag')
-                        option(ng-repeat='inheritTag in tags | filter:filterTag:inheritTag', value='{{inheritTag}}') {{inheritTag.name}}
+                    select.input(ng-model='parentTag')
+                        option(ng-repeat='parentTag in tags | filter:filterTag: parentTag', value='{{parentTag}}') {{parentTag.name}}
                 .col-1
-                    button.btn(ng-click='addTag(inheritTag)',ng-disabled='!inheritTag')
+                    button.btn(ng-click='addTag(parentTag)',ng-disabled='!parentTag')
                         i.icon-plus
 
-            .row(ng-repeat='tagTag in tag.inheritTags')
+            .row(ng-repeat='tagTag in tag.parentTags')
                 .col-3 {{tagTag.name}}
                 .col-1
                     button.btn(ng-click='removeTag(tagTag)')

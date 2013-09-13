@@ -124,7 +124,7 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
 
     $scope.filterTag= (tag) ->
         isThere= true
-        $scope.tag.inheritTags.map (t) ->
+        $scope.tag.parentTags.map (t) ->
             if t.id == tag.id
                 isThere= false
 

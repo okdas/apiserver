@@ -8,7 +8,8 @@ block section-body
             tr
                 th #
                 th.col-flex: .table-col: .table-col-sortable Тег
-                th Дочерние
+                th Name
+                th Родительские
                 th
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
@@ -17,8 +18,9 @@ block section-body
             tr(ng-repeat='tag in tags | filter:tagSearch')
                 td {{tag.id}}
                 td {{tag.titleRuPlural}}
+                td {{tag.name}}
                 td
-                    span(ng-repeat='inherit in tag.inheritTags')= '{{inherit.name}} '
+                    span(ng-repeat='parent in tag.parentTags')= '{{parent.name}} '
                 td
                     a(ng-href='#/tags/tag/update/{{tag.id}}')
                         button.btn.btn-success
