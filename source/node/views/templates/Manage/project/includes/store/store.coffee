@@ -389,6 +389,15 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
                         $scope.action= 'create'
 
 
+    $scope.filterServer= (server) ->
+        isThere= true
+        $scope.item.servers.map (srv) ->
+            if srv.id == server.id
+                isThere= false
+
+        return isThere
+
+
     $scope.changeMaterial= (material) ->
         $scope.item.titleRu= JSON.parse(material).titleRu
         $scope.item.titleEn= JSON.parse(material).titleEn
