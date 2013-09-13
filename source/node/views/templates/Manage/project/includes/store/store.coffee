@@ -411,6 +411,7 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
         return isThere
 
 
+
     $scope.changeMaterial= (material) ->
         $scope.item.titleRu= JSON.parse(material).titleRu
         $scope.item.titleEn= JSON.parse(material).titleEn
