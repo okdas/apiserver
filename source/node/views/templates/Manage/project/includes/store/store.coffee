@@ -395,6 +395,8 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
             if srv.id == server.id
                 isThere= false
 
+
+        console.log $scope.servers
         return isThere
 
 
