@@ -52,6 +52,22 @@ block section-body
                         i.icon-minus
 
 
+        fieldset(name='ItemTagForm')
+            .row
+                .col-10
+                    select.input(ng-model='tag')
+                        option(ng-repeat='tag in tags | filter:filterTag:tag', value='{{tag}}') {{tag.name}}
+                .col-1
+                    button.btn(ng-click='addTag(tag)',ng-disabled='!tag')
+                        i.icon-plus
+
+            .row(ng-repeat='itemTag in item.tags')
+                .col-3 {{itemTag.name}}
+                .col-1
+                    button.btn(ng-click='removeTag(itemTag)')
+                        i.icon-minus
+
+
         fieldset(ng-if='action=="create"')
             button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
                 span Добавить предмет

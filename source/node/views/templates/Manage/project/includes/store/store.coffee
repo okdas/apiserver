@@ -94,16 +94,6 @@ app.factory 'Enchantment', ($resource) ->
 
 
 
-app.factory 'ServerList', ($resource) ->
-    $resource '/api/v1/servers/server'
-
-
-
-app.factory 'TagList', ($resource) ->
-    $resource '/api/v1/tags/'
-
-
-
 ###
 Модель предмета.
 ###
@@ -122,6 +112,15 @@ app.factory 'Item', ($resource) ->
             params:
                 itemId: '@id'
 
+
+
+app.factory 'ServerList', ($resource) ->
+    $resource '/api/v1/servers/server'
+
+
+
+app.factory 'TagList', ($resource) ->
+    $resource '/api/v1/tags/'
 
 
 
@@ -395,8 +394,20 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
             if srv.id == server.id
                 isThere= false
 
+        return isThere
 
-        console.log $scope.servers
+
+    # ищем теги подходящие выбранным серверам
+    $scope.filterTag= (tag) ->
+        isThere= false
+        $scope.item.servers.map (server) ->
+            if tag.serverId == server.id
+                isThere= true
+
+        $scope.item.tags.map (t) ->
+            if t.id == tag.id
+                isThere= false
+
         return isThere
 
 
@@ -430,6 +441,20 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
         $scope.item.servers.map (srv, i) ->
             if srv.id == server.id
                 $scope.item.servers.splice i, 1
+
+
+    $scope.addTag= (tag) ->
+        newTag= JSON.parse angular.copy tag
+        $scope.item.tags= [] if not $scope.item.tags
+        $scope.item.tags.push newTag
+
+
+    $scope.removeTag= (tag) ->
+        remPosition= null
+        $scope.item.tags.map (t, i) ->
+            if t.id == tag.id
+                $scope.item.tags.splice i, 1
+
 
 
 

@@ -142,7 +142,13 @@ getTags= (req, res, next) ->
 
         (conn, done) ->
             conn.query '
-                SELECT * FROM tag'
+                SELECT
+                    tag.*,
+                    connection.serverId
+                FROM tag AS tag
+                LEFT JOIN server_tag AS connection
+                    ON connection.tagId = tag.id
+                GROUP BY tag.id'
             ,   (err, rows) ->
                     return done err, conn, rows
 

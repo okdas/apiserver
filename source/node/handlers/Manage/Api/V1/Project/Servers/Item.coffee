@@ -73,6 +73,23 @@ app.post '/', access, (req, res, next) ->
             ,   (err, resp) ->
                     return done err, conn
 
+        (conn, id, done) ->
+            # а есть ли теги
+            if not req.body.tags
+                return done null, conn
+
+            bulk= []
+            for tag in req.body.tags
+                bulk.push [id, tag.id]
+            conn.query "
+                INSERT INTO item_tag
+                    (`itemId`, `tagId`)
+                VALUES ?
+                "
+            ,   [bulk]
+            ,   (err, resp) ->
+                    return done err, conn
+
         (conn, done) ->
             conn.query 'COMMIT', (err) ->
                 console.log err
@@ -185,6 +202,19 @@ app.get '/:itemId(\\d+)', access, (req, res, next) ->
                     item.servers= resp
                     return done err, conn, item
 
+        (conn, item, done) ->
+            conn.query '
+                SELECT
+                    tag.*
+                FROM item_tag AS connection
+                JOIN tag AS tag
+                    ON tag.id = connection.tagId
+                WHERE itemId = ?'
+            ,   [req.params.itemId]
+            ,   (err, resp) ->
+                    item.tags= resp
+                    return done err, conn, item
+
     ],  (err, conn, item) ->
             do conn.end if conn
 
@@ -208,6 +238,9 @@ app.put '/:itemId(\\d+)', access, (req, res, next) ->
 
     servers= item.servers or []
     delete item.servers
+
+    tags= item.tags or []
+    delete item.tags
 
     async.waterfall [
 
@@ -254,6 +287,21 @@ app.put '/:itemId(\\d+)', access, (req, res, next) ->
                     for server in servers
                         bulk.push [itemId, server.id]
                     conn.query 'INSERT INTO server_item (`itemId`, `serverId`) VALUES ?'
+                    ,   [bulk]
+                    ,   (err, resp) ->
+                            return done err, conn
+
+        (conn, done) ->
+            conn.query 'DELETE FROM item_tag WHERE itemId = ?'
+            ,   [itemId]
+            ,   (err, resp) ->
+                    return done err, conn if err
+                    return done err, conn if not tags.length
+
+                    bulk= []
+                    for tag in tags
+                        bulk.push [itemId, tag.id]
+                    conn.query 'INSERT INTO item_tag (`itemId`, `tagId`) VALUES ?'
                     ,   [bulk]
                     ,   (err, resp) ->
                             return done err, conn
