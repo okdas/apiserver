@@ -1,6 +1,6 @@
 ~*
 source/node/views/assets/components
 node_modules/*
-*.log
 app/*
+*.log
 *.pid
