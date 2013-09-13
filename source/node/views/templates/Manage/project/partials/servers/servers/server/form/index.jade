@@ -16,7 +16,7 @@ block section-body
             .row
                 .col-10
                     select.input(ng-model='tag')
-                        option(ng-repeat='tag in tags', value='{{tag}}') {{tag.name}}
+                        option(ng-repeat='tag in tags | filter:filterTag:tag', value='{{tag}}') {{tag.name}}
                 .col-1
                     button.btn(ng-click='addTag(tag)',ng-disabled='!tag')
                         i.icon-plus

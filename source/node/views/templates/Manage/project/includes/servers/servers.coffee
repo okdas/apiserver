@@ -127,6 +127,15 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagL
             $scope.action= 'create'
 
 
+    $scope.filterTag= (tag) ->
+        isThere= true
+        $scope.server.tags.map (t) ->
+            if t.id == tag.id
+                isThere= false
+
+        return isThere
+
+
     $scope.addTag= (tag) ->
         newTag= JSON.parse angular.copy tag
         $scope.server.tags= [] if not $scope.server.tags
