@@ -12,7 +12,7 @@ block section-body
                 input.input(placeholder='Пароль sha1', type='text', required, ng-maxlength='40', ng-model='player.pass')
 
         fieldset
-            input.input.input-auto(placeholder='Email', type='text', required, ng-maxlength='50', ng-pattern='/^[a-zA-Z\\.\\-\\_]+@[a-zA-Z]+\\.[a-zA-Z]+$/', ng-model='player.email')
+            input.input.input-auto(placeholder='Email', type='text', required, ng-maxlength='50', ng-pattern='/^[a-zA-Z0-9\\.\\-\\_]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$/', ng-model='player.email')
             input.input.input-auto(placeholder='Phone', type='text', ng-pattern='/^\\+[0-9]{0,14}$/', ng-model='player.phone')
 
 

@@ -71,7 +71,7 @@ app.post '/', access, (req, res, next) ->
                 "
             ,   [bulk]
             ,   (err, resp) ->
-                    return done err, conn
+                    return done err, conn, id
 
         (conn, id, done) ->
             # а есть ли теги

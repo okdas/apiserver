@@ -118,15 +118,17 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
                 $scope.action= 'update'
     else
         $scope.tag= new Tag
-        $scope.state= 'loaded'
-        $scope.action= 'create'
+        $scope.tags= Tag.query ->
+            $scope.state= 'loaded'
+            $scope.action= 'create'
 
 
     $scope.filterTag= (tag) ->
         isThere= true
-        $scope.tag.parentTags.map (t) ->
-            if t.id == tag.id
-                isThere= false
+        if $scope.tag.parentTags
+            $scope.tag.parentTags.map (t) ->
+                if t.id == tag.id
+                    isThere= false
 
         return isThere
 
@@ -134,15 +136,15 @@ app.controller 'TagsTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
 
     $scope.addTag= (tag) ->
         newTag= JSON.parse angular.copy tag
-        $scope.tag.inheritTags= [] if not $scope.tag.inheritTags
-        $scope.tag.inheritTags.push newTag
+        $scope.tag.parentTags= [] if not $scope.tag.parentTags
+        $scope.tag.parentTags.push newTag
 
 
     $scope.removeTag= (tag) ->
         remPosition= null
-        $scope.tag.inheritTags.map (tg, i) ->
+        $scope.tag.parentTags.map (tg, i) ->
             if tg.id == tag.id
-                $scope.tag.inheritTags.splice i, 1
+                $scope.tag.parentTags.splice i, 1
 
     # Действия
 
