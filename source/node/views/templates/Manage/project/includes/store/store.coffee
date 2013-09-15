@@ -312,9 +312,10 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Materi
 
     $scope.filterServer= (server) ->
         isThere= true
-        $scope.item.servers.map (srv) ->
-            if srv.id == server.id
-                isThere= false
+        if $scope.item.servers
+            $scope.item.servers.map (srv) ->
+                if srv.id == server.id
+                    isThere= false
 
         return isThere
 
@@ -322,13 +323,15 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Materi
     # ищем теги подходящие выбранным серверам
     $scope.filterTag= (tag) ->
         isThere= false
-        $scope.item.servers.map (server) ->
-            if tag.serverId == server.id
-                isThere= true
+        if $scope.item.servers
+            $scope.item.servers.map (server) ->
+                if tag.serverId == server.id
+                    isThere= true
 
-        $scope.item.tags.map (t) ->
-            if t.id == tag.id
-                isThere= false
+        if $scope.item.tags
+            $scope.item.tags.map (t) ->
+                if t.id == tag.id
+                    isThere= false
 
         return isThere
 

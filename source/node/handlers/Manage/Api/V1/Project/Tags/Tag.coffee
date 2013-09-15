@@ -81,18 +81,18 @@ createTag= (req, res, next) ->
                     return done err, conn, tag
 
         (conn, tag, done) ->
-            # а есть ли сервера
-            if not req.body.inheritTags
-                return done null, conn
+            # а есть ли родительские теги
+            if not req.body.parentTags
+                return done null, conn, tag
 
             bulk= []
-            for tagInherit in req.body.inheritTags
-                bulk.push [tag.id, tagInherit.id]
-            conn.query "
+            for parent in req.body.parentTags
+                bulk.push [parent.id, tag.id]
+
+            conn.query '
                 INSERT INTO tag_tags
                     (`tagId`, `childId`)
-                VALUES ?
-                "
+                VALUES ?'
             ,   [bulk]
             ,   (err, resp) ->
                     return done err, conn, tag
@@ -100,6 +100,7 @@ createTag= (req, res, next) ->
         (conn, tag, done) ->
             conn.query 'COMMIT', (err) ->
                 return done err, conn, tag
+
 
     ],  (err, conn, tag) ->
             do conn.end if conn
@@ -205,8 +206,8 @@ changeTag= (req, res, next) ->
 
     tag= req.body
 
-    inheritTags= tag.inheritTags or []
-    delete tag.inheritTags
+    parentTags= tag.parentTags or []
+    delete tag.parentTags
 
     async.waterfall [
 
@@ -219,23 +220,31 @@ changeTag= (req, res, next) ->
                         return done err, conn
 
         (conn, done) ->
+            data=
+                name: tag.name
+                titleRuSingular: tag.titleRuSingular
+                titleRuPlural: tag.titleRuPlural
+                titleEnSingular: tag.titleEnSingular
+                titleEnPlural: tag.titleEnPlural
+
             conn.query 'UPDATE tag SET ? WHERE id = ?'
-            ,   [tag, req.params.tagId]
+            ,   [data, req.params.tagId]
             ,   (err, resp) ->
                     tag= req.body
                     tag.id= req.params.tagId
                     return done err, conn, tag
 
         (conn, tag, done) ->
-            conn.query 'DELETE FROM tag_tags WHERE tagId = ?'
+            conn.query 'DELETE FROM tag_tags WHERE childId = ?'
             ,   [tagId]
             ,   (err, resp) ->
-                    return done err, conn if err
-                    return done err, conn if not inheritTags.length
+                    return done err, conn, tag if err
+                    return done err, conn, tag if not parentTags.length
 
                     bulk= []
-                    for inherit in inheritTags
-                        bulk.push [tagId, inherit.id]
+                    for parent in parentTags
+                        bulk.push [parent.id, tagId]
+
                     conn.query 'INSERT INTO tag_tags (`tagId`, `childId`) VALUES ?'
                     ,   [bulk]
                     ,   (err, resp) ->

@@ -129,9 +129,10 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagL
 
     $scope.filterTag= (tag) ->
         isThere= true
-        $scope.server.tags.map (t) ->
-            if t.id == tag.id
-                isThere= false
+        if $scope.server.tags
+            $scope.server.tags.map (t) ->
+                if t.id == tag.id
+                    isThere= false
 
         return isThere
 
