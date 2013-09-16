@@ -17,7 +17,7 @@ block section-body
         tbody
             tr(ng-repeat='tag in tags | filter:tagSearch')
                 td {{tag.id}}
-                td {{tag.titleRuPlural}}
+                td {{tag.titleRuPlural}} ({{tag.name}})
                 td {{tag.name}}
                 td
                     span(ng-repeat='parent in tag.parentTags')= '{{parent.name}} '

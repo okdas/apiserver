@@ -28,7 +28,7 @@ block section-body
             .row
                 .col-10
                     select.input(ng-model='parentTag')
-                        option(ng-repeat='parentTag in tags | filter:filterTag: parentTag', value='{{parentTag}}') {{parentTag.name}}
+                        option(ng-repeat='parentTag in tags | filter:filterTag: parentTag', value='{{parentTag}}') {{parentTag.titleRuSingular}} ({{parentTag.name}})
                 .col-1
                     button.btn(ng-click='addTag(parentTag)',ng-disabled='!parentTag')
                         i.icon-plus
