@@ -40,7 +40,7 @@ block section-body
             .row
                 .col-10
                     select.input(ng-model='server')
-                        option(ng-repeat='server in servers', value='{{server}}') {{server.title}}
+                        option(ng-repeat='server in servers | filter:filterServer:server', value='{{server}}') {{server.title}}
                 .col-1
                     button.btn(ng-click='addServer(server)',ng-disabled='!server')
                         i.icon-plus
@@ -49,6 +49,22 @@ block section-body
                 .col-3 {{itemServer.title}}
                 .col-1
                     button.btn(ng-click='removeServer(itemServer)')
+                        i.icon-minus
+
+
+        fieldset(name='ItemTagForm')
+            .row
+                .col-10
+                    select.input(ng-model='tag')
+                        option(ng-repeat='tag in tags | filter:filterTag:tag', value='{{tag}}') {{tag.name}} ({{tag.titleRuSingular}})
+                .col-1
+                    button.btn(ng-click='addTag(tag)',ng-disabled='!tag')
+                        i.icon-plus
+
+            .row(ng-repeat='itemTag in item.tags')
+                .col-3 {{itemTag.name}} ({{itemTag.titleRuSingular}})
+                .col-1
+                    button.btn(ng-click='removeTag(itemTag)')
                         i.icon-minus
 
 

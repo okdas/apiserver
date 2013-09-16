@@ -75,6 +75,10 @@ app.factory 'Instance', ($resource) ->
 
 
 
+app.factory 'TagList', ($resource) ->
+    $resource '/api/v1/tags'
+
+
 
 
 ###
@@ -109,17 +113,42 @@ app.controller 'ServersServerListCtrl', ($scope, Server) ->
 ###
 Контроллер формы сервера.
 ###
-app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server) ->
+app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagList) ->
     if $route.current.params.serverId
-        console.log $route.current.params.serverId
-        $scope.server= Server.get $route.current.params, ->
-            $scope.state= 'loaded'
-            $scope.action= 'update'
+        $scope.tags= TagList.query ->
+            $scope.server= Server.get $route.current.params, ->
+                $scope.state= 'loaded'
+                $scope.action= 'update'
 
     else
-        $scope.server= new Server
-        $scope.state= 'loaded'
-        $scope.action= 'create'
+        $scope.tags= TagList.query ->
+            $scope.server= new Server
+            $scope.state= 'loaded'
+            $scope.action= 'create'
+
+
+    $scope.filterTag= (tag) ->
+        isThere= true
+        if $scope.server.tags
+            $scope.server.tags.map (t) ->
+                if t.id == tag.id
+                    isThere= false
+
+        return isThere
+
+
+    $scope.addTag= (tag) ->
+        newTag= JSON.parse angular.copy tag
+        $scope.server.tags= [] if not $scope.server.tags
+        $scope.server.tags.push newTag
+
+
+    $scope.removeTag= (tag) ->
+        remPosition= null
+        $scope.server.tags.map (tg, i) ->
+            if tg.id == tag.id
+                $scope.server.tags.splice i, 1
+
 
     # Действия
 

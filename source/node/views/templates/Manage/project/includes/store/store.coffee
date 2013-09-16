@@ -94,11 +94,6 @@ app.factory 'Enchantment', ($resource) ->
 
 
 
-app.factory 'ServerList', ($resource) ->
-    $resource '/api/v1/servers/server'
-
-
-
 ###
 Модель предмета.
 ###
@@ -119,89 +114,13 @@ app.factory 'Item', ($resource) ->
 
 
 
-###
-Модель заказа.
-###
-app.factory 'Order', ($resource) ->
-    $resource '/api/v1/store/orders/:orderId',
-        orderId:'@id'
+app.factory 'ServerList', ($resource) ->
+    $resource '/api/v1/servers/server'
 
 
 
-###
-Модель формы предмета.
-###
-app.factory 'ItemForm', ($q, Item, Enchantment, Server) ->
-
-    @loadEnchantments= ->
-        dfd= do $q.defer
-        Enchantment.query (enchantments) ->
-            dfd.resolve enchantments
-        dfd.promise
-
-    @loadServers= ->
-        dfd= do $q.defer
-        Server.query (servers) ->
-            dfd.resolve servers
-        dfd.promise
-
-    @load= =>
-        dfd= do $q.defer
-        result= $q.all [
-            @loadEnchantments()
-            @loadServers()
-        ]
-        result.then (data) ->
-            data=
-                enchantments: data[0]
-                servers: data[1]
-            dfd.resolve data
-        dfd.promise
-
-    @
-
-
-
-
-
-###
-
-Фильтры
-
-###
-
-###
-Фильтр чар в редакторе для предмета.
-###
-app.filter 'filterExistsServer', ->
-    (servers, itemServers) ->
-        filtered= []
-
-        if !itemServers
-            return servers
-        else
-            servers.map (server) ->
-                itemServers.map (itemServer) ->
-                    if server.id != itemServer.id
-                        filtered.push server
-            console.log filtered
-            console.log itemServers
-            return filtered
-
-
-
-###
-app.filter 'filterExistsServer', ->
-    (enchantments, item) ->
-        filtered= []
-        angular.forEach enchantments, (enchantment) ->
-            found= false
-            angular.forEach item.enchantments, (e) ->
-                found= true if e.id == enchantment.id
-
-            filtered.push enchantment if not found
-        filtered
-###
+app.factory 'TagList', ($resource) ->
+    $resource '/api/v1/tags/'
 
 
 
@@ -372,25 +291,56 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, Item, Material, Enchantment, ServerList) ->
+app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Material, Enchantment, ServerList, TagList) ->
     if $route.current.params.itemId
         $scope.item= Item.get $route.current.params, ->
             $scope.materials= Material.query ->
                 $scope.enchantments= Enchantment.query ->
                     $scope.servers= ServerList.query ->
-                        $scope.state= 'loaded'
-                        $scope.action= 'update'
+                        $scope.tags= TagList.query ->
+                            $scope.state= 'loaded'
+                            $scope.action= 'update'
     else
         $scope.item= new Item
         $scope.materials= Material.query ->
             $scope.enchantments= Enchantment.query ->
                 $scope.servers= ServerList.query ->
-                    $scope.state= 'loaded'
-                    $scope.action= 'create'
+                    $scope.tags= TagList.query ->
+                        $scope.state= 'loaded'
+                        $scope.action= 'create'
+
+
+    $scope.filterServer= (server) ->
+        isThere= true
+        if $scope.item.servers
+            $scope.item.servers.map (srv) ->
+                if srv.id == server.id
+                    isThere= false
+
+        return isThere
+
+
+    # ищем теги подходящие выбранным серверам
+    $scope.filterTag= (tag) ->
+        isThere= false
+        if $scope.item.servers
+            $scope.item.servers.map (server) ->
+                if tag.serverId == server.id
+                    isThere= true
+
+        if $scope.item.tags
+            $scope.item.tags.map (t) ->
+                if t.id == tag.id
+                    isThere= false
+
+        return isThere
+
+
 
     $scope.changeMaterial= (material) ->
         $scope.item.titleRu= JSON.parse(material).titleRu
         $scope.item.titleEn= JSON.parse(material).titleEn
+
 
     $scope.addEnchantment= (enchantment) ->
         newEnchantment= JSON.parse angular.copy enchantment
@@ -398,22 +348,42 @@ app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, ItemForm, It
         $scope.item.enchantments= [] if not $scope.item.enchantments
         $scope.item.enchantments.push newEnchantment
 
+
     $scope.removeEnchantment= (enchantment) ->
         remPosition= null
         $scope.item.enchantments.map (ench, i) ->
             if ench.id == enchantment.id
                 $scope.item.enchantments.splice i, 1
 
+
     $scope.addServer= (server) ->
         newServer= JSON.parse angular.copy server
         $scope.item.servers= [] if not $scope.item.servers
         $scope.item.servers.push newServer
+
 
     $scope.removeServer= (server) ->
         remPosition= null
         $scope.item.servers.map (srv, i) ->
             if srv.id == server.id
                 $scope.item.servers.splice i, 1
+
+
+    $scope.addTag= (tag) ->
+        newTag= JSON.parse angular.copy tag
+        $scope.item.tags= [] if not $scope.item.tags
+        $scope.item.tags.push newTag
+
+
+    $scope.removeTag= (tag) ->
+        remPosition= null
+        $scope.item.tags.map (t, i) ->
+            if t.id == tag.id
+                $scope.item.tags.splice i, 1
+
+
+
+
 
     # Действия
 
