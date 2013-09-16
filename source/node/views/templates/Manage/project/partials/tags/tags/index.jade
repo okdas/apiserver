@@ -8,7 +8,7 @@ block section-body
             tr
                 th #
                 th.col-flex: .table-col: .table-col-sortable Тег
-                th Name
+                th Название
                 th Родительские
                 th
                     button.btn.btn-info(ng-click='reload()')
@@ -17,8 +17,8 @@ block section-body
         tbody
             tr(ng-repeat='tag in tags | filter:tagSearch')
                 td {{tag.id}}
-                td {{tag.titleRuPlural}} ({{tag.name}})
                 td {{tag.name}}
+                td {{tag.titleRuPlural}}
                 td
                     span(ng-repeat='parent in tag.parentTags')= '{{parent.name}} '
                 td

@@ -74,6 +74,13 @@ module.exports= (grunt) ->
                     dest: '<%= pkg.config.build.app.node %>/db/sql'
                 }]
 
+        watch:
+            scripts:
+                files: '<%= pkg.config.build.src.node %>/views/assets/**/*'
+                tasks: ['jade', 'less', 'copy:views']
+                options:
+                    event: ['added', 'deleted', 'changed']
+
         #coffeelint:
         #    app:
         #        options:
@@ -106,6 +113,7 @@ module.exports= (grunt) ->
     grunt.loadNpmTasks 'grunt-contrib-jade'
     grunt.loadNpmTasks 'grunt-contrib-less'
     grunt.loadNpmTasks 'grunt-yaml'
+    grunt.loadNpmTasks 'grunt-contrib-watch'
     #grunt.loadNpmTasks 'grunt-coffeelint'
     #grunt.loadNpmTasks 'grunt-docco'
 

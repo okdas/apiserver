@@ -12,23 +12,23 @@ block section-body
 
         fieldset: .row
             .col-6
-                input.input(placeholder='В единственном числе', type='text', required, ng-maxlength='50', ng-model='tag.titleRuSingular')
+                input.input(placeholder='В единственном числе', type='text', ng-maxlength='50', ng-model='tag.titleRuSingular')
             .col-6
-                input.input(placeholder='Во множественном', type='text', required, ng-maxlength='50', ng-model='tag.titleRuPlural')
+                input.input(placeholder='Во множественном', type='text', ng-maxlength='50', ng-model='tag.titleRuPlural')
 
 
         fieldset: .row
             .col-6
-                input.input(placeholder='Singular', type='text', required, ng-maxlength='50', ng-model='tag.titleEnSingular')
+                input.input(placeholder='Singular', type='text', ng-maxlength='50', ng-model='tag.titleEnSingular')
             .col-6
-                input.input(placeholder='Plural', type='text', required, ng-maxlength='50', ng-model='tag.titleEnPlural')
+                input.input(placeholder='Plural', type='text', ng-maxlength='50', ng-model='tag.titleEnPlural')
 
 
         fieldset
             .row
                 .col-10
                     select.input(ng-model='parentTag')
-                        option(ng-repeat='parentTag in tags | filter:filterTag: parentTag', value='{{parentTag}}') {{parentTag.titleRuSingular}} ({{parentTag.name}})
+                        option(ng-repeat='parentTag in tags | filter:filterTag: parentTag', value='{{parentTag}}') {{parentTag.name}} ({{parentTag.titleRuSingular}})
                 .col-1
                     button.btn(ng-click='addTag(parentTag)',ng-disabled='!parentTag')
                         i.icon-plus
