@@ -30,6 +30,19 @@ app.post '/', access, (req, res, next) ->
             conn.query 'INSERT INTO player SET ?'
             ,   [req.body]
             ,   (err, resp) ->
+                    playerId= resp.insertId
+                    return done err, conn, playerId
+
+        (conn, playerId, done) ->
+            conn.query '
+                INSERT
+                INTO player_balance
+                SET
+                    playerId = ?,
+                    amount = 0.00,
+                    updatedAt = NOW()'
+            ,   [playerId]
+            ,   (err, resp) ->
                     return done err, conn
 
         (conn, done) ->
@@ -101,6 +114,8 @@ app.get '/:playerId(\\d+)', access, (req, res, next) ->
                 WHERE id = ?'
             ,   [req.params.playerId]
             ,   (err, resp) ->
+                    console.log 'err', err
+                    console.log 'player', player
                     player= do resp.shift if not err
                     return done err, conn, player
 
