@@ -261,3 +261,52 @@ CREATE TABLE IF NOT EXISTS `server_item` (
   CONSTRAINT `server_id_item` FOREIGN KEY (`serverId`) REFERENCES `server` (`id`) ON DELETE CASCADE ON UPDATE CASCADE,
   CONSTRAINT `server_item_id_item` FOREIGN KEY (`itemId`) REFERENCES `item` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+CREATE TABLE `tag` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `name` varchar(45) NOT NULL,
+  `titleRuPlural` varchar(255) DEFAULT NULL,
+  `titleRuSingular` varchar(255) DEFAULT NULL,
+  `titleEnPlural` varchar(45) DEFAULT NULL,
+  `titleEnSingular` varchar(255) DEFAULT NULL,
+  `descRu` mediumtext,
+  `descEn` mediumtext,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `name_UNIQUE` (`name`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='тег';
+
+CREATE TABLE `tag_tags` (
+  `childId` int(11) NOT NULL,
+  `tagId` int(11) NOT NULL,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`childId`,`tagId`),
+  KEY `f_tag_tags_child_idx` (`childId`),
+  KEY `f_tag_tags_tag_idx` (`tagId`),
+  CONSTRAINT `f_tag_tags_child` FOREIGN KEY (`childId`) REFERENCES `tag` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `f_tag_tags_tag` FOREIGN KEY (`tagId`) REFERENCES `tag` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='теги тега';
+
+CREATE TABLE `server_tag` (
+  `serverId` int(11) NOT NULL,
+  `tagId` int(11) NOT NULL,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`serverId`,`tagId`),
+  KEY `f_server_tag_server_idx` (`serverId`),
+  KEY `f_server_tag_tag_idx` (`tagId`),
+  CONSTRAINT `f_server_tag_server` FOREIGN KEY (`serverId`) REFERENCES `server` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `f_server_tag_tag` FOREIGN KEY (`tagId`) REFERENCES `tag` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='теги сервера';
+
+CREATE TABLE `item_tag` (
+  `itemId` int(11) NOT NULL,
+  `tagId` int(11) NOT NULL,
+  `updatedAt` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`itemId`,`tagId`),
+  KEY `f_item_tag_item_idx` (`itemId`),
+  KEY `f_item_tag_tag_idx` (`tagId`),
+  CONSTRAINT `f_item_tag_item` FOREIGN KEY (`itemId`) REFERENCES `item` (`id`) ON DELETE CASCADE,
+  CONSTRAINT `f_item_tag_tag` FOREIGN KEY (`tagId`) REFERENCES `tag` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='теги предмета';
