@@ -10,21 +10,25 @@ access= (req, res, next) ->
 ###
 app= module.exports= do express
 app.on 'mount', (parent) ->
-    cfg= parent.get 'config'
+    app.set 'maria', maria= parent.get 'maria'
 
 
 
     app.post '/'
     ,   access
-    ,   createServer
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   createServer(maria.Server, maria.ServerTag)
+    ,   maria.transaction.rollback()
     ,   (req, res) ->
             res.json 200
 
     app.get '/'
     ,   access
-    ,   getServers
+    ,   maria(app.get 'db')
+    ,   getServers(maria.Server)
     ,   (req, res) ->
-            res.json 200
+            res.json 200, req.servers
 
     app.get '/:serverId(\\d+)'
     ,   access
@@ -45,81 +49,35 @@ app.on 'mount', (parent) ->
             res.json 200
 
 
+
 ###
 Добавляет сервер.
 ###
-createServer= (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            data=
-                name: req.body.name
-                title: req.body.title
-                key: req.body.key
-
-            conn.query 'INSERT INTO server SET ?'
-            ,   [data]
-            ,   (err, resp) ->
-                    server= req.body
-                    server.id= resp.insertId
-                    return done err, conn, server
-
-        (conn, server, done) ->
-            # а есть ли вобще энчаты у предмета
-            if not req.body.tags
-                return done null, conn, server
-
-            bulk= []
-            for tag in req.body.tags
-                bulk.push [server.id, tag.id]
-            conn.query '
-                INSERT INTO server_tag
-                    (`serverId`, `tagId`)
-                VALUES ?'
-            ,   [bulk]
-            ,   (err, resp) ->
-                    return done err, conn, server
-
-        (conn, server, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn, server
-
-    ],  (err, conn, server) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, server
+createServer= (Server, ServerTag) -> (req, res, next) ->
+    server= new Server req.body
+    console.log 'ko'
+    Server.create server, req.maria, (err, server) ->
+        if server
+            serverTag= new ServerTag req.body.tags
+            console.log serverTag.tags
+            #ServerTag.create server.id, serverTag, (err, tags) ->
+            #    console.log 'ko'
+        return next err
 
 
 
 ###
 Отдает список серверов.
 ###
-getServers= (req, res, next) ->
-    async.waterfall [
+getServers= (Server) -> (req, res, next) ->
+    Server.query req.maria, (err, servers) ->
+        req.servers= servers or null
+    
+        if not err and not servers
+            err= 'servers not found'
 
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
+        return next err
 
-        (conn, done) ->
-            conn.query 'SELECT * FROM server'
-            ,   (err, rows) ->
-                    return done err, conn, rows
-
-    ],  (err, conn, rows) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, rows
 
 
 
@@ -265,3 +223,11 @@ deleteServer= (req, res, next) ->
 
             return next err if err
             return res.json 200
+
+
+
+testServer= (Server) -> (req, res, next) ->
+        serv= new Server
+            id: 'qq'
+        console.log 'serv', serv.id
+        res.send 200
