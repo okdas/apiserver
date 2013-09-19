@@ -156,7 +156,5 @@ app.on 'mount', (parent) ->
     Обрабатывает ошибку
     ###
     app.use (err, req, res, next) ->
-        res.status 500
         res.json
-            name: err.name
             message: err.message

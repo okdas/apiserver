@@ -1,9 +1,7 @@
 express= require 'express'
 async= require 'async'
 
-access= (req, res, next) ->
-    return next 401 if do req.isUnauthenticated
-    return do next
+
 
 ###
 Методы API для работы c серверами.
@@ -50,6 +48,18 @@ app.on 'mount', (parent) ->
 
 
 
+access= (req, res, next) ->
+    err= null
+
+    if do req.isUnauthenticated
+        res.status 401
+        err=
+            message: 'user not authenticated'
+
+    return next err
+
+
+
 ###
 Добавляет сервер.
 ###
@@ -72,7 +82,7 @@ createServer= (Server, ServerTag) -> (req, res, next) ->
 getServers= (Server) -> (req, res, next) ->
     Server.query req.maria, (err, servers) ->
         req.servers= servers or null
-    
+
         if not err and not servers
             err= 'servers not found'
 

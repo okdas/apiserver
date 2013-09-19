@@ -111,7 +111,7 @@ module.exports= (cfg, log, done) ->
         maria.transaction.rollback= -> (req, res, next) ->
             return do next if not req.maria.transaction
             req.maria.query 'ROLLBACK', (err) ->
-
+                return next err
 
 
 
