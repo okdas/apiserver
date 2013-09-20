@@ -73,46 +73,47 @@ module.exports= (cfg, log, done) ->
 
         app.db= maria.createPool config.db
 
-        app.set 'maria', maria= -> (req, res, next) ->
-            req.maria= null
+        app.set 'maria', maria= () ->
+            (req, res, next) ->
+                req.maria= null
 
-            console.log 'maria...'
+                console.log 'maria...'
 
-            req.db.getConnection (err, conn) ->
-                if not err
-                    req.maria= conn
+                req.db.getConnection (err, conn) ->
+                    if not err
+                        req.maria= conn
 
-                    req.on 'end', ->
-                        if req.maria
-                            req.maria.end ->
-                                console.log 'request end', arguments
+                        req.on 'end', () ->
+                            if req.maria
+                                req.maria.end () ->
+                                    console.log 'request end', arguments
 
-                    console.log 'maria.'
+                        console.log 'maria.'
 
-                    conn.on 'error', ->
-                        console.log 'error connection', arguments
+                        conn.on 'error', () ->
+                            console.log 'error connection', arguments
 
-                next err
+                    next err
 
+        maria.transaction= () ->
+            (req, res, next) ->
+                req.maria.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
+                    return next err if err
+                    req.maria.query 'START TRANSACTION', (err) ->
+                        req.maria.transaction= true if not err
+                        return next err
 
-
-        maria.transaction= -> (req, res, next) ->
-            req.maria.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                return next err if err
-                req.maria.query 'START TRANSACTION', (err) ->
-                    req.maria.transaction= true if not err
+        maria.transaction.commit= () ->
+            (req, res, next) ->
+                return do next if not req.maria.transaction
+                req.maria.query 'COMMIT', (err) ->
                     return next err
 
-        maria.transaction.commit= -> (req, res, next) ->
-            return do next if not req.maria.transaction
-            req.maria.query 'COMMIT', (err) ->
-                return next err
-
-        maria.transaction.rollback= -> (req, res, next) ->
-            return do next if not req.maria.transaction
-            req.maria.query 'ROLLBACK', (err) ->
-                return next err
-
+        maria.transaction.rollback= () ->
+            (req, res, next) ->
+                return do next if not req.maria.transaction
+                req.maria.query 'ROLLBACK', (err) ->
+                    return next err
 
 
         maria.Server= require './models/Servers/Server'

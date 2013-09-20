@@ -16,10 +16,11 @@ app.on 'mount', (parent) ->
     ,   access
     ,   maria(app.get 'db')
     ,   maria.transaction()
-    ,   createServer(maria.Server, maria.ServerTag)
+    ,   createServer(maria.Server)
+    ,   createServerTags(maria.ServerTag)
     ,   maria.transaction.rollback()
     ,   (req, res) ->
-            res.json 200
+            res.json 200, req.server
 
     app.get '/'
     ,   access
@@ -63,15 +64,22 @@ access= (req, res, next) ->
 ###
 Добавляет сервер.
 ###
-createServer= (Server, ServerTag) -> (req, res, next) ->
+createServer= (Server) -> (req, res, next) ->
+    console.log 'creating server'
     server= new Server req.body
-    console.log 'ko'
     Server.create server, req.maria, (err, server) ->
-        if server
-            serverTag= new ServerTag req.body.tags
-            console.log serverTag.tags
-            #ServerTag.create server.id, serverTag, (err, tags) ->
-            #    console.log 'ko'
+        req.server= server or null
+        console.log 'err creating server:', err
+        return next err
+
+createServerTags= (ServerTag) -> (req, res, next) ->
+    console.log 'creating server tags'
+    console.log 'server', req.server
+    serverTag= new ServerTag req.body.tags
+    console.log 'tags', serverTag.tags
+    ServerTag.create req.server.id, serverTag, req.maria, (err, serverTags) ->
+        req.server.tags= serverTags or null
+        console.log 'err creating server tags:', err
         return next err
 
 

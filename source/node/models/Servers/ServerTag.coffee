@@ -1,24 +1,50 @@
 module.exports= class ServerTag
-    @table: 'server_tags'
-
+    @table: 'server_tag'
+    @original: 'tag'
 
 
     ###
-    data: [
-        '' //tagId
+    tags: [
+        {
+            id: 1,
+            name: 'blocks',
+            titleRuPlural: 'Блоки',
+            titleRuSingular: 'Блок',
+            titleEnPlural: 'Blocks',
+            titleEnSingular: 'Block',
+            descRu: null,
+            descEn: null,
+            updatedAt: '2013-09-16T13:57:07.000Z',
+            serverId: 5,
+            parentTags: [Object]
+        }, {
+            id: 2,
+            name: 'materials',
+            titleRuPlural: 'Материалы',
+            titleRuSingular: 'Материал',
+            titleEnPlural: 'Materials',
+            titleEnSingular: 'Material',
+            descRu: null,
+            descEn: null,
+            updatedAt: '2013-09-16T13:57:07.000Z',
+            serverId: 5,
+            parentTags: [Object]
+        }
     ]
     ###
-    constructor: (serverId, tags) ->
+    constructor: (data) ->
         @tags= []
 
-        if tags.length
-            data.map (val) ->
-                @tags.push val.id
+        if data.length
+            data.map (val) =>
+                @tags.push
+                    id: val.id
 
 
 
     @create: (serverId, serverTag, maria, done) ->
-        return done null if not serverTag.tags.length
+        if not serverTag.tags.length or not serverId
+            return done 'arguments is not validate'
 
         maria.query '
             DELETE
@@ -26,26 +52,57 @@ module.exports= class ServerTag
                 ??
             WHERE
                 serverId = ?'
-        ,   [@serverTags, serverId]
-        ,   (err, res) ->
-                if not err and res.affectedRows != 1
-                    err= 'server tags delete error'
-                    return done err
-
+        ,   [@table, serverId]
+        ,   (err, res) =>
+                return done err if err
 
                 bulk= []
-                for tag in tags
+                for tag in serverTag.tags
                     bulk.push [serverId, tag.id]
 
-                conn.query '
+                maria.query '
                     INSERT
                     INTO
                         ??
                         (`serverId`, `tagId`)
                     VALUES
                         ?'
-                ,   [@serverTags, bulk]
+                ,   [@table, bulk]
                 ,   (err, res) ->
                         if not err and res.affectedRows != 1
                             err= 'server tags insert error'
-                            return done err
+
+                        return done err, serverTag
+
+
+
+    @query: (maria, done) ->
+        maria.query '
+            SELECT
+                connection.serverId,
+                tag.id,
+                tag.name,
+                tag.titleRuPlural
+            FROM ?? AS connection
+            JOIN ?? AS tag
+                ON tag.id = connection.tagId'
+        ,   [@table, @original]
+        ,   (err, rows) ->
+                return done err, rows
+
+
+
+    @get: (serverId, maria, done) ->
+        maria.query '
+            SELECT
+                connection.serverId,
+                tag.id,
+                tag.name,
+                tag.titleRuPlural
+            FROM ?? AS connection
+            JOIN ?? AS tag
+                ON tag.id = connection.tagId
+            WHERE connection.serverId = ?'
+        ,   [@table, @original, serverId]
+        ,   (err, rows) ->
+                return done err, rows

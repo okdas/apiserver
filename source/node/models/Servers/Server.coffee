@@ -1,6 +1,5 @@
 module.exports= class Server
     @table: 'server'
-    @serverTags: 'server_tags'
 
 
 
@@ -14,9 +13,36 @@ module.exports= class Server
 
     ###
     {
-        'title': '',
-        'name': '',
-        'key': ''
+        title: 'qqq',
+        name: 'qqq',
+        key: 'qqq',
+        tags: [
+            {
+                id: 1,
+                name: 'blocks',
+                titleRuPlural: 'Блоки',
+                titleRuSingular: 'Блок',
+                titleEnPlural: 'Blocks',
+                titleEnSingular: 'Block',
+                descRu: null,
+                descEn: null,
+                updatedAt: '2013-09-16T13:57:07.000Z',
+                serverId: 5,
+                parentTags: [Object]
+            }, {
+                id: 2,
+                name: 'materials',
+                titleRuPlural: 'Материалы',
+                titleRuSingular: 'Материал',
+                titleEnPlural: 'Materials',
+                titleEnSingular: 'Material',
+                descRu: null,
+                descEn: null,
+                updatedAt: '2013-09-16T13:57:07.000Z',
+                serverId: 5,
+                parentTags: [Object]
+            }
+        ]
     }
     ###
     @create: (server, maria, done) ->
@@ -25,7 +51,7 @@ module.exports= class Server
         delete server.id if server.id
 
 
-        conn.query '
+        maria.query '
             INSERT
             INTO
                 ??
@@ -33,9 +59,12 @@ module.exports= class Server
                 ?'
         ,   [@table, server]
         ,   (err, res) ->
-                if not err and res.affectedRows != 1
+                if not err && res.affectedRows != 1
                     err= 'server insert error'
-                return done err
+
+                server.id= res.insertId
+
+                return done err, server
 
 
 
@@ -50,6 +79,27 @@ module.exports= class Server
         ,   [@table]
         ,   (err, rows) =>
                 done err, rows
+
+
+
+    @get: (serverId, maria, done) ->
+        maria.query '
+            SELECT
+                server.id,
+                server.title,
+                server.name,
+                server.key
+            FROM ?? AS server
+            WHERE id = ?'
+        ,   [@table, serverId]
+        ,   (err, rows) =>
+                player= null
+
+                if not err and rows.length
+                    player= new @ rows[0]
+
+                done err, player
+
 
 
 
@@ -74,43 +124,6 @@ module.exports= class Server
 
 
 
-    @query: (maria, done) ->
-        maria.query '
-            SELECT
-                server.id,
-                server.title,
-                server.name,
-                server.key
-            FROM ?? AS server'
-        ,   [@table]
-        ,   (err, rows) =>
-                done err, rows
-
-
-
-    @get: (playerId, maria, done) ->
-        maria.query "
-            SELECT
-                Player.id,
-                Player.name,
-                Player.email,
-                Player.phone,
-                IFNULL(PlayerBalance.amount, 0) as balance
-              FROM
-                ?? as Player
-              LEFT OUTER JOIN
-                ?? as PlayerBalance ON PlayerBalance.playerId = Player.id
-            WHERE
-                Player.id = ?
-            "
-        ,   [@table, @tableBalance, playerId]
-        ,   (err, rows) =>
-                player= null
-
-                if not err and rows.length
-                    player= new @ rows[0]
-
-                done err, player
 
 
 
