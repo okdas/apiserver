@@ -50,9 +50,6 @@ module.exports= class ServerTag
                         ?'
                 ,   [@table, bulk]
                 ,   (err, res) ->
-                        if not err and res.affectedRows != 1
-                            err.message= 'server tags insert error'
-
                         return done err, serverTag
 
 

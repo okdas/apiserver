@@ -20,27 +20,11 @@ module.exports= class Server
             {
                 id: 1,
                 name: 'blocks',
-                titleRuPlural: 'Блоки',
-                titleRuSingular: 'Блок',
-                titleEnPlural: 'Blocks',
-                titleEnSingular: 'Block',
-                descRu: null,
-                descEn: null,
-                updatedAt: '2013-09-16T13:57:07.000Z',
-                serverId: 5,
-                parentTags: [Object]
+                titleRuPlural: 'Блоки'
             }, {
                 id: 2,
                 name: 'materials',
-                titleRuPlural: 'Материалы',
-                titleRuSingular: 'Материал',
-                titleEnPlural: 'Materials',
-                titleEnSingular: 'Material',
-                descRu: null,
-                descEn: null,
-                updatedAt: '2013-09-16T13:57:07.000Z',
-                serverId: 5,
-                parentTags: [Object]
+                titleRuPlural: 'Материалы'
             }
         ]
     }

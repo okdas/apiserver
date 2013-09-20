@@ -45,7 +45,7 @@ app.on 'mount', (parent) ->
     ,   updateServerTag(maria.ServerTag)
     ,   maria.transaction.commit()
     ,   (req, res) ->
-            res.json 200
+            res.json 200, req.server
 
     app.delete '/:serverId(\\d+)'
     ,   access
@@ -93,10 +93,6 @@ createServerTags= (ServerTag) -> (req, res, next) ->
 getServers= (Server) -> (req, res, next) ->
     Server.query req.maria, (err, servers) ->
         req.servers= servers or null
-
-        if not err and not servers
-            err= 'servers not found'
-
         return next err
 
 
@@ -133,53 +129,9 @@ updateServerTag= (ServerTag) -> (req, res, next) ->
 
 
 
-
-
 ###
 Удаляет сервер
 ###
 deleteServer= (Server) -> (req, res, next) ->
     Server.delete req.params.serverId, req.maria, (err) ->
         return next err
-
-
-
-###
-Удаляет сервер
-###
-
-
-deleteServerqqq= (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query 'DELETE FROM server WHERE id = ?'
-            ,   [req.params.serverId]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
-
-    ],  (err, conn) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200
-
-
-
-testServer= (Server) -> (req, res, next) ->
-        serv= new Server
-            id: 'qq'
-        console.log 'serv', serv.id
-        res.send 200
