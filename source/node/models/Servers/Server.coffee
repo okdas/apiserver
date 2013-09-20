@@ -64,7 +64,7 @@ module.exports= class Server
 
                 server.id= res.insertId
 
-                return done err, server
+                done err, server
 
 
 
@@ -93,63 +93,49 @@ module.exports= class Server
             WHERE id = ?'
         ,   [@table, serverId]
         ,   (err, rows) =>
-                player= null
+                server= null
 
                 if not err and rows.length
-                    player= new @ rows[0]
+                    server= new @ rows[0]
 
-                done err, player
-
-
+                done err, server
 
 
-    @update: (playerId, player, maria, done) ->
-        player= new @ player if not (player instanceof @)
 
-        maria.query "
+
+    @update: (serverId, server, maria, done) ->
+        return done 'not a Server' if not (server instanceof @)
+
+        delete server.id if server.id
+
+        maria.query '
             UPDATE
                 ??
-               SET
+            SET
                 ?
-             WHERE
-                id = ?
-            "
-        ,   [@table, player, playerId]
-        ,   (err, res) =>
+            WHERE
+                id = ?'
+        ,   [@table, server, serverId]
+        ,   (err, res) ->
 
                 if not err and res.affectedRows != 1
-                    err= 'player update error'
+                    err= 'server update error'
 
-                done err, player
-
-
+                done err, server
 
 
 
+    @delete: (serverId, maria, done) ->
+        maria.query '
+            DELETE
+            FROM
+                ??
+            WHERE
+                id = ?'
+        ,   [@table, serverId]
+        ,   (err, res) ->
 
-    @getByNameAndPass: (player, maria, done) ->
-        player= new @ player if not (player instanceof @)
+                if not err and res.affectedRows != 1
+                    err= 'server delete error'
 
-        maria.query "
-            SELECT
-                Player.id,
-                Player.name,
-                Player.email,
-                Player.phone
-              FROM
-                ?? as Player
-             WHERE
-                Player.name = ?
-               AND
-                Player.pass = ?
-               AND
-                Player.enabledAt IS NOT NULL
-            "
-        ,   ['player', player.name, player.pass]
-        ,   (err, rows) =>
-                player= null
-
-                if not err and rows.length
-                    player= new @ rows[0]
-
-                done err, player
+                done err

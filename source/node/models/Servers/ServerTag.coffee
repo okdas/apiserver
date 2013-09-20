@@ -6,44 +6,23 @@ module.exports= class ServerTag
     ###
     tags: [
         {
-            id: 1,
-            name: 'blocks',
-            titleRuPlural: 'Блоки',
-            titleRuSingular: 'Блок',
-            titleEnPlural: 'Blocks',
-            titleEnSingular: 'Block',
-            descRu: null,
-            descEn: null,
-            updatedAt: '2013-09-16T13:57:07.000Z',
-            serverId: 5,
-            parentTags: [Object]
+            id: 1
         }, {
-            id: 2,
-            name: 'materials',
-            titleRuPlural: 'Материалы',
-            titleRuSingular: 'Материал',
-            titleEnPlural: 'Materials',
-            titleEnSingular: 'Material',
-            descRu: null,
-            descEn: null,
-            updatedAt: '2013-09-16T13:57:07.000Z',
-            serverId: 5,
-            parentTags: [Object]
+            id: 2
         }
     ]
     ###
     constructor: (data) ->
         @tags= []
-
-        if data.length
-            data.map (val) =>
+        if data
+            for tag in data
                 @tags.push
-                    id: val.id
+                    id: tag.id
 
 
 
     @create: (serverId, serverTag, maria, done) ->
-        if not serverTag.tags.length or not serverId
+        if not serverId
             return done 'arguments is not validate'
 
         maria.query '
@@ -55,9 +34,11 @@ module.exports= class ServerTag
         ,   [@table, serverId]
         ,   (err, res) =>
                 return done err if err
+                return done null, null if not serverTag.tags.length
+
 
                 bulk= []
-                for tag in serverTag.tags
+                serverTag.tags.map (tag) ->
                     bulk.push [serverId, tag.id]
 
                 maria.query '
@@ -70,7 +51,7 @@ module.exports= class ServerTag
                 ,   [@table, bulk]
                 ,   (err, res) ->
                         if not err and res.affectedRows != 1
-                            err= 'server tags insert error'
+                            err.message= 'server tags insert error'
 
                         return done err, serverTag
 
