@@ -3,7 +3,7 @@ module.exports= (grunt) ->
         pkg: grunt.file.readJSON 'package.json'
 
         clean:
-            all: ['<%= pkg.config.build.app.root %>/']
+            all: ['<%= pkg.config.build.app.node %>/']
 
         coffee:
             main:
@@ -75,6 +75,11 @@ module.exports= (grunt) ->
                 }]
 
         watch:
+            jade:
+                files: ['**/*.jade', '**/*.coffee']
+                tasks: ['jade']
+                options:
+                    cwd: '<%= pkg.config.build.src.node %>'
             scripts:
                 files: '<%= pkg.config.build.src.node %>/views/assets/**/*'
                 tasks: ['jade', 'less', 'copy:views']
