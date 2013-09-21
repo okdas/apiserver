@@ -1,15 +1,4 @@
 express= require 'express'
-async= require 'async'
-
-access= (req, res, next) ->
-    return next 401 if do req.isUnauthenticated
-    return do next
-
-crypto= require 'crypto'
-sha1= (string) ->
-    hash= crypto.createHash 'sha1'
-    hash.update string
-    return hash.digest 'hex'
 
 
 
@@ -17,21 +6,97 @@ sha1= (string) ->
 Методы API для аутентифицированного пользователя
 ###
 app= module.exports= do express
+app.on 'mount', (parent) ->
+    app.set 'maria', maria= parent.get 'maria'
+
+
+
+    app.get '/'
+    ,   access
+    ,   getUser
+    ,   (req, res) ->
+            res.json 200, req.user
+
+    app.post '/login'
+    ,   maria(app.get 'db')
+    ,   login(maria.User)
+    ,   (req, res) ->
+            res.json 200
+
+    app.post '/logout'
+    ,   access
+    ,   logout
+    ,   (req, res) ->
+            res.json 200
+
+    app.get '/sha1/:string'
+    ,   getSha1(maria.User)
+    ,   (req, res) ->
+            res.json 200, req.sha1
+
+
+
+
+
+access= (req, res, next) ->
+    err= null
+
+    if do req.isUnauthenticated
+        res.status 401
+        err=
+            message: 'user not authenticated'
+
+    return next err
+
+
+
+
+
+getUser= (req, res, next) ->
+    return next null
+
+
+
+login= (User) -> (req, res, next) ->
+    userQuery= new User req.body
+    User.login userQuery, req.maria, (err, user) ->
+        req.login user, (err) ->
+            req.user= user
+            return next err
+
+
+
+logout= (req, res, next) ->
+    do req.logout
+    return next null
+
+
+
+getSha1= (User) -> (req, res, next) ->
+    req.sha1= User.sha1 req.params.string
+    return next null
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 ###
-Отдает аутентифицированного пользователя.
-###
+
 app.get '/', access, (req, res, next) ->
     return res.json 401, null if do req.isUnauthenticated
     return res.json 200, req.user
 
 
 
-###
-Выполняет вход пользователя.
-###
 app.post '/login', (req, res, next) ->
 
     name= req.body.name
@@ -71,11 +136,9 @@ app.post '/login', (req, res, next) ->
 
 
 
-###
-Выполняет выход пользователя.
-###
 app.post '/logout', access, (req, res, next) ->
     return res.json 400, null if req.user.name != req.body.name
 
     do req.logout
     return res.json 200, true
+###
