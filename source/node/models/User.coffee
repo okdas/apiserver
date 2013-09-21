@@ -47,52 +47,65 @@ module.exports= class User
 
 
 
+    @create: (user, maria, done) ->
+        return done 'not a User' if not (user instanceof @)
+
+        delete user.id if user.id
 
 
+        maria.query '
+            INSERT
+            INTO
+                ??
+            SET
+                ?'
+        ,   [@table, user]
+        ,   (err, res) ->
+                if not err && res.affectedRows != 1
+                    err= 'user insert error'
 
+                user.id= res.insertId
 
+                done err, user
 
 
 
     @query: (maria, done) ->
         maria.query '
             SELECT
-                server.id,
-                server.title,
-                server.name,
-                server.key
-            FROM ?? AS server'
+                object.id,
+                object.name,
+                object.pass
+            FROM ?? AS object'
         ,   [@table]
         ,   (err, rows) =>
                 done err, rows
 
 
 
-    @get: (serverId, maria, done) ->
+    @get: (userId, maria, done) ->
         maria.query '
             SELECT
-                server.id,
-                server.title,
-                server.name,
-                server.key
-            FROM ?? AS server
+                object.id,
+                object.name,
+                object.pass
+            FROM ?? AS object
             WHERE id = ?'
-        ,   [@table, serverId]
+        ,   [@table, userId]
         ,   (err, rows) =>
-                server= null
+                user= null
 
                 if not err and rows.length
-                    server= new @ rows[0]
+                    user= new @ rows[0]
 
-                done err, server
-
-
+                done err, user
 
 
-    @update: (serverId, server, maria, done) ->
-        return done 'not a Server' if not (server instanceof @)
 
-        delete server.id if server.id
+    @update: (userId, user, maria, done) ->
+        return done 'not a User' if not (user instanceof @)
+
+        delete user.id if user.id
 
         maria.query '
             UPDATE
@@ -101,24 +114,24 @@ module.exports= class User
                 ?
             WHERE
                 id = ?'
-        ,   [@table, server, serverId]
+        ,   [@table, user, userId]
         ,   (err, res) ->
 
                 if not err and res.affectedRows != 1
-                    err= 'server update error'
+                    err= 'user update error'
 
-                done err, server
+                done err, user
 
 
 
-    @delete: (serverId, maria, done) ->
+    @delete: (userId, maria, done) ->
         maria.query '
             DELETE
             FROM
                 ??
             WHERE
                 id = ?'
-        ,   [@table, serverId]
+        ,   [@table, userId]
         ,   (err, res) ->
 
                 if not err and res.affectedRows != 1
