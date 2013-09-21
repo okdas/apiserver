@@ -1,0 +1,22 @@
+extends ../../../layout
+
+block section-head-title
+    a(href='#/players') Управление игроками
+
+block section-head-nav
+    ul.nav.nav-row
+        li.active: a Игроки
+        li: a(href='#/players/group/list') Группы
+        li: a(href='#/players/permission/list') Разрешения
+        li: a(href='#/players/sender/mail') Рассылка
+
+block section--main
+    h1 {{player.name}}
+    hr
+    .player--groups(ng-controller='Players.PlayerPermissionsCtrl')
+        h3 Группы игрока
+        select(ng-model='group', ng-options='g.name for g in groups')
+            option(value='') Доступные группы...
+        a.btn() Добавить группу {{group}}
+        .group(ng-repeat='group in player.groups')
+            p {{group}}

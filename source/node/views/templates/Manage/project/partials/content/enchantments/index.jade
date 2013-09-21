@@ -1,0 +1,43 @@
+extends ../layout
+
+
+
+block section--head--title
+    a(href='#/content') Управление содержимым
+
+
+
+block section--main
+
+    .section--main--bar: .input-rich
+        input.input(placeholder='Поиск чар', ng-model='enchantmentSearch', required)
+        a.input-action(ng-show="!!enchantmentSearch", ng-click="searchClear()"): i.icon-remove
+
+    table.table
+        thead
+            tr
+
+                th.t.col-flex(colspan=2)
+                    .sortable: .sortable-cell Чары
+
+                th.t
+                    .col: button.btn.btn-info(ng-click='reload()')
+                        i.icon-refresh
+
+        tbody
+            tr(ng-repeat='enchantment in enchantments | filter:enchantmentSearch')
+
+                td.t
+                    .col {{enchantment.titleRu}}. {{enchantment.titleEn}} ({{enchantment.levelMin}}—{{enchantment.levelMax}})
+                td.t
+                    .col.col-right {{enchantment.id}}
+
+                td.t
+                    a(ng-href='#/content/enchantments/enchantment/update/{{enchantment.id}}')
+                        button.btn.btn-success
+                            i.icon-wrench
+
+    .row
+        .col-12
+            a(href='#/content/enchantments/enchantment/create')= 'Создать'
+

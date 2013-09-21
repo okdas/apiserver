@@ -1,0 +1,30 @@
+extends ../../layout
+extends ../layout
+
+block section--main
+    input.input(placeholder='Поиск', ng-model='tagSearch')
+    table.table.players
+        thead: tr
+
+            th.t.col-flex
+                .col Тег
+
+            th.t
+                button.btn.btn-info(ng-click='reload()')
+                    i.icon-refresh
+
+        tbody: tr(ng-repeat='tag in tags | filter:tagSearch')
+
+            td.t.col-flex
+                .col
+                    a(title='{{tag.id}}') {{tag.name}}
+                    span 
+                    span(ng-repeat='parent in tag.parentTags'){{parent.name}} 
+
+            td.t
+                a(ng-href='#/tags/tag/update/{{tag.id}}')
+                    button.btn.btn-success
+                        i.icon-wrench
+    .row
+        .col-12
+            a(href='#/tags/tag/create')= 'Создать'

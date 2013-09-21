@@ -1,28 +1,29 @@
 extends ../../layout
 extends ../layout
 
-block section-body
+block section--main
     input.input(placeholder='Поиск', ng-model='playerSearch')
     table.table.players
         thead
             tr
-                th #
-                th.col-flex: .table-col: .table-col-sortable Игрок
-                th Актив
-                th
-                    button.btn.btn-info(ng-click='reload()')
+                th.t: .t-col #
+                th.t.col-flex: .t-col.table-col: .table-col-sortable Игрок
+                th.t: .t-col Статус
+                th.t: .t-col
+                    button.btn.btn-sm(ng-click='reload()')
                         i.icon-refresh
+
 
         tbody
             tr(ng-repeat='player in players | filter:playerSearch')
-                td {{player.id}}
-                td {{player.name}}
-                td
+                td.t: .t-col {{player.id}}
+                td.t: .t-col {{player.name}}
+                td.t: .t-col
                     button(ng-if='!player.enabledAt', ng-click='activate(player)').btn.btn-success
                         i.icon-unchecked
                     button(ng-if='player.enabledAt', ng-click='deactivate(player)').btn.btn-success
                         i.icon-sign-blank
-                td
+                td.t: .t-col
                     a(ng-href='#/players/player/update/{{player.id}}')
                         button.btn.btn-success
                             i.icon-wrench

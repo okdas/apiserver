@@ -1,27 +1,27 @@
 extends ../../layout
 extends ../layout
 
-block section-body
+block section--main
     input.input(placeholder='Поиск', ng-model='paymentSearch')
     table.table.players
         thead
             tr
-                th #
-                th.col-flex: .table-col: .table-col-sortable Игрок
-                th Открыт
-                th Сумма
-                th
+                th.t #
+                th.t.col-flex: .table-col: .table-col-sortable Игрок
+                th.t Открыт
+                th.t Сумма
+                th.t
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
 
         tbody
             tr(ng-repeat='payment in payments | filter:paymentSearch')
-                td {{payment.id}}
-                td
+                td.t {{payment.id}}
+                td.t
                     a(ng-href='#/players/player/update/{{payment.playerId}}')
                         {{payment.name}}
-                td {{payment.createdAt}}
-                td {{payment.amount}}
-                td
+                td.t {{payment.createdAt}}
+                td.t {{payment.amount}}
+                td.t
                     select.input(required, ng-model='payment.status', ng-change='change(payment)', style='width:100px')
                         option(ng-repeat='status in paymentStatuses', value='{{status}}', ng-selected='payment.status == status') {{status}}

@@ -1,10 +1,18 @@
 extends ../layout
 
-block section-side
-    ul.nav
+
+
+block section--head--title
+    b Управление игроками
+
+
+
+block section--side
+    ul.nav.nav-list
+        li: a(ng-href="#/store") Сводка
+        li.nav-list--sep
         li: a(href='#/players/player/list') Игроки
-        li: a(href='#/players/payment/list') Платежи
-        //li: a(href='#/players/group/list') Группы
-        //li: a(href='#/players/permission/list') Разрешения
+        li: a(href='#/players/group/list') Группы
+        li: a(href='#/players/permission/list') Разрешения
         li: a(href='#/players/sender/mail') Рассылка email
         li: a(href='#/players/sender/sms') Рассылка sms

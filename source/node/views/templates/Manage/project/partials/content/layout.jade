@@ -1,0 +1,20 @@
+extends ../layout
+
+
+
+block section--head--title
+    a(href='#/content') Управление содержимым
+
+
+
+append section--side
+
+    ul.nav.nav-list
+        li: a(ng-href="#/content") Сводка
+        li.nav-list--sep
+    ul.nav.nav-list
+        li.nav-list--header Предметы
+        li: a(ng-href='#/content/materials/list') Справочник материалов
+        li: a(ng-href='#/content/enchantments/list') Справочник чар
+        li.nav-list--header Теги
+        li: a(ng-href='#/content/tag/list') Справочник тегов

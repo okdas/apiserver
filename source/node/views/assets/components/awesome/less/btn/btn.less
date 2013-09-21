@@ -1,4 +1,6 @@
 
+
+
 .btn[disabled] {
     background:#eee;
     border-color:#ccc;
@@ -10,68 +12,29 @@
 
 .btn {
     margin: 0;
-    padding: 11px 15px;
-    line-height: 21px;
+    padding: @input-padding;
+    line-height: @line-height;
     font-size: 14px; font-weight: 400;
-    color:#eee;
+    color: #eee;
     text-shadow:
         0 1px 0 rgba(0,0,0,0.15)
     ;
-    border: 1px solid transparent;
     border-radius: 1px;
-    background-image:
-        linear-gradient(#43a6e2, #277ac1)
-    ;
     cursor: pointer;
-}
-.btn-primary {
-    color:#eee;
-    background-color:#428bca;
-    background-image:
-        linear-gradient(hsl(264, 33%, 57%), hsl(264, 33%, 51%))
-    ;
-    border-color:#428bca;
-    border: 1px solid #7a59ab;
-}
 
-.btn:hover {
-    color:#fff;
-    text-shadow:
-        0 1px 0 rgba(0,0,0,0.3)
-    ;
-    box-shadow:
-        inset 0 -1px 5px -1px rgba(0,0,0,0.3),
-        inset 0 11px 22px 1px #38a9ed
-    ;
-}
+    i {
+        display: inline-block;
+        line-height: inherit;
+    }
 
-.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
-    color:#fff;
-    background-color:#357ebd;
-    border-color:#3071a9;
-    border: 1px solid #7a59ab;
-    box-shadow:
-        inset 0 -1px 5px -1px rgba(0,0,0,0.2),
-        inset 0 11px 22px 1px hsl(264, 33%, 61%)
-    ;
-}
+    &-default {
+        background: transparent;
+        border: 1px solid transparent;
+    }
 
-.btn:active {
-    text-shadow:
-        0 -1px 0 rgba(0,0,0,0.15)
-    ;
-    box-shadow:
-        inset 0 1px 5px -1px rgba(0,0,0,0.3),
-        inset 0 11px 22px 1px rgba(0,0,0,0.1),
-        inset 0 0 2px 2px rgba(0,0,0,0.0)
-    ;
-}
-.btn-primary:active {
-    box-shadow:
-        inset 0 1px 5px -1px rgba(0,0,0,0.35),
-        inset 0 11px 22px 1px hsla(264, 33%, 41%, 0.1),
-        inset 0 0 2px 2px rgba(0,0,0,0.0)
-    ;
+    &-sm {
+        color: red;
+    }
 }
 
 .btn.btn-link, .btn.btn-link:focus, .btn.btn-link:active, .btn.btn-link.active {
@@ -151,5 +114,5 @@
 
 
 .navbar-nav > li > .btn-group {
-    
+
 }

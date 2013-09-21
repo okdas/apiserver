@@ -1,34 +1,151 @@
-extends ../../layout
 extends ../layout
 
-block section-body
-    input.input(placeholder='Поиск', ng-model='itemSearch')
+
+
+block section--head--title
+    a(href='#/store') Управление сервисом
+
+
+
+block section--main
+
+    .section--main--bar: .input-rich
+        input.input(placeholder='Поиск предметов', ng-model='itemSearch', required)
+        a.input-action(ng-show="itemSearch", ng-click="searchClear()"): i.icon-remove
+
     table.table.items
         thead
             tr
-                th
-                th M
-                th.col-flex: .sortable: .sortable-cell Название
-                th Сервера
-                th Кол
-                th Цена
-                th
+
+                th.t.col-flex(colspan=3)
+                    .sortable: .sortable-cell Предмет
+
+                th.t
+                    .col.col-right Цена
+
+                th.t
+                    .col Кол-во
+
+                th.t
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
         tbody
-            tr(ng-repeat='item in items | filter:itemSearch')
-                td {{item.id}}
-                td {{item.material}}
-                td {{item.titleRu}}
-                td
-                    span(ng-repeat='server in item.servers')= '{{server.title}} '
-                td {{item.amount}}
-                td {{item.price}}
-                td
-                    a(href='#/store/items/item/update/{{item.id}}')
-                        button.btn.btn-success
-                            i.icon-wrench
+            tr(ng-repeat='item in items | filter:itemSearch', ng-click="showDetails(item)")
+
+                td.t.col-flex
+                    a(title="{{item.titleEn}}") {{item.titleRu}}
+                td.t
+                    a.col.col-right(title="{{item.id}}") {{item.material}}
+                td.t
+                    a.col: img.item--image(ng-src='{{item.imageUrl}}')
+
+                td.t
+                    a.col.col-right {{item.price | currency}}
+
+                td.t
+                    a.col {{item.amount}}
+
+                td.t
+                    a.col.btn.btn-default(ng-click="showDetails(item)")
+                        i.icon-wrench
 
     .row
         .col-12
             a(href='#/store/items/item/create') Создать
+
+
+
+append dialog
+    .item-dialog(ng-if="'item'==view.dialog.overlay", ng-controller="StoreItemDialogCtrl", ng-init="item=view.dialog.item; state=view.dialog.state")
+        .row: .col-12.dialog--head.info(ng-class="{'primary':'none'==state}")
+            i.icon-share-alt
+            span  Предмет в продаже
+
+        .row: .col-12.dialog--body
+
+            .row: .col-12.col-sm-12.col-lg-10.col-offset-1
+                .item-preview: .row
+                    .col-12.col-sm-8.col-lg-8
+                        +ItemImage()
+                        +ItemTitle()
+                    .col-12.col-sm-4.col-lg-4
+                        +ItemPrice()
+
+                .item-form: .row
+                    .col-12
+                        form(name='ItemForm')
+
+                            fieldset
+                                select.input(required, ng-model='item.material', ng-change='changeMaterial(item.material)')
+                                    option(ng-repeat='material in materials', value='{{material}}', ng-selected='item.material == material.id') {{material.id}} - {{material.titleRu}} ({{material.titleEn}})
+                                input.input(placeholder='Название предмета', type='text', required, ng-model='item.titleRu')
+                                input.input(placeholder='Item name', type='text', required, ng-model='item.titleEn')
+                                .row
+                                    .col-5
+                                        input.input(placeholder='Количество', type='text', required, ng-pattern='/^[0-9]+$/', ng-model='item.amount')
+                                    .col-5
+                                        input.input(placeholder='Цена', type='text', required, ng-pattern='/^[0-9]+[\\.]?[0-9]{0,2}$/', ng-model='item.price')
+
+
+                            fieldset(name='ItemEnchantmentForm')
+                                .row
+                                    .col-10
+                                        select.input(ng-model='enchantment')
+                                            option(ng-repeat='enchantment in enchantments', value='{{enchantment}}') {{enchantment.id}} - {{enchantment.titleRu}} ({{enchantment.titleEn}})
+                                    .col-1
+                                        button.btn(ng-click='addEnchantment(enchantment)', ng-disabled='!enchantment')
+                                            i.icon-plus
+
+                                .row(ng-repeat='itemEnchantment in item.enchantments')
+                                    .col-2 {{itemEnchantment.id}}
+                                    .col-6 {{itemEnchantment.titleRu}}
+                                    .col-2
+                                        input.input(placeholder='Уровень', type='text', required, ng-model='itemEnchantment.level', value='{{itemEnchantment.level}}')
+                                    .col-1
+                                        button.btn(ng-click='removeEnchantment(itemEnchantment)')
+                                            i.icon-minus
+
+
+                            fieldset(name='ItemServerForm')
+                                .row
+                                    .col-10
+                                        select.input(ng-model='server')
+                                            option(ng-repeat='server in servers | filter:filterServer:server', value='{{server}}') {{server.title}}
+                                    .col-1
+                                        button.btn(ng-click='addServer(server)',ng-disabled='!server')
+                                            i.icon-plus
+
+                                .row(ng-repeat='itemServer in item.servers')
+                                    .col-3 {{itemServer.title}}
+                                    .col-1
+                                        button.btn(ng-click='removeServer(itemServer)')
+                                            i.icon-minus
+
+
+                            fieldset(name='ItemTagForm')
+                                .row
+                                    .col-10
+                                        select.input(ng-model='tag')
+                                            option(ng-repeat='tag in tags | filter:filterTag:tag', value='{{tag}}') {{tag.name}} ({{tag.titleRuSingular}})
+                                    .col-1
+                                        button.btn(ng-click='addTag(tag)',ng-disabled='!tag')
+                                            i.icon-plus
+
+                                .row(ng-repeat='itemTag in item.tags')
+                                    .col-3 {{itemTag.name}} ({{itemTag.titleRuSingular}})
+                                    .col-1
+                                        button.btn(ng-click='removeTag(itemTag)')
+                                            i.icon-minus
+
+
+                            fieldset(ng-if='action=="create"')
+                                button.btn.btn-primary.btn-block(type='submit', ng-click='create(ItemForm)', ng-disabled='!ItemForm.$valid')
+                                    span Добавить предмет
+
+                            fieldset(ng-if='action=="update"')
+                                .col-10
+                                    button.btn.btn-primary.btn-block(type='submit', ng-click='update(ItemForm)', ng-disabled='!ItemForm.$valid')
+                                        span Обновить предмет
+                                .col-2
+                                    button.btn.btn-link.btn-block.text-left(ng-click='delete(ItemForm)')
+                                        span Удалить
