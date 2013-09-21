@@ -115,16 +115,14 @@ app.controller 'ServersServerListCtrl', ($scope, Server) ->
 ###
 app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagList) ->
     if $route.current.params.serverId
-        $scope.tags= TagList.query ->
-            $scope.server= Server.get $route.current.params, ->
-                $scope.state= 'loaded'
-                $scope.action= 'update'
+        $scope.server= Server.get $route.current.params, ->
+            $scope.state= 'loaded'
+            $scope.action= 'update'
 
     else
-        $scope.tags= TagList.query ->
-            $scope.server= new Server
-            $scope.state= 'loaded'
-            $scope.action= 'create'
+        $scope.server= new Server
+        $scope.state= 'loaded'
+        $scope.action= 'create'
 
 
     $scope.filterTag= (tag) ->
@@ -148,6 +146,13 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagL
         $scope.server.tags.map (tg, i) ->
             if tg.id == tag.id
                 $scope.server.tags.splice i, 1
+
+
+    $scope.loadTags= ->
+        console.log 'qqqqqqqqqqq'
+        $scope.tags= TagList.query ->
+            console.log 'tags were loaded'
+
 
 
     # Действия

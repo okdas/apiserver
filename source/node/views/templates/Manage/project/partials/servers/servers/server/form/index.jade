@@ -15,7 +15,7 @@ block section-body
         fieldset(name='ServerTagForm')
             .row
                 .col-10
-                    select.input(ng-model='tag')
+                    select.input(ng-model='tag', ng-click='loadTags()')
                         option(ng-repeat='tag in tags | filter:filterTag:tag', value='{{tag}}') {{tag.name}} ({{tag.titleRuSingular}})
                 .col-1
                     button.btn(ng-click='addTag(tag)',ng-disabled='!tag')
