@@ -133,6 +133,4 @@ module.exports= (cfg, log, done) ->
     Обработчики маршрутов приложения
     ###
     app.configure ->
-        config= app.get 'config'
-
         app.use require './handlers'
