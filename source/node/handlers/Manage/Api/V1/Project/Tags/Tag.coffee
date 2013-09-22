@@ -9,282 +9,129 @@ async= require 'async'
 ###
 app= module.exports= do express
 app.on 'mount', (parent) ->
-    cfg= parent.get 'config'
+    app.set 'maria', maria= parent.get 'maria'
 
 
 
     app.post '/'
     ,   access
-    ,   createTag
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   createTag(maria.Tag)
+    ,   createTagTags(maria.TagTags)
+    ,   maria.transaction.commit()
     ,   (req, res) ->
-            res.json 200
+            res.json 200, req.tag
 
     app.get '/'
     ,   access
-    ,   getTags
+    ,   maria(app.get 'db')
+    ,   getTags(maria.Tag)
+    ,   getTagsTags(maria.TagTags)
     ,   (req, res) ->
-            res.json 200
+            res.json 200, req.tags
 
     app.get '/:tagId(\\d+)'
     ,   access
-    ,   getTag
+    ,   maria(app.get 'db')
+    ,   getTag(maria.Tag)
+    ,   getTagTags(maria.TagTags)
     ,   (req, res) ->
-            res.json 200
+            res.json 200, req.tag
 
     app.put '/:tagId(\\d+)'
     ,   access
-    ,   changeTag
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   updateTag(maria.Tag)
+    ,   updateTagTags(maria.TagTags)
+    ,   maria.transaction.commit()
     ,   (req, res) ->
-            res.json 200
+            res.json 200, req.tag
 
     app.delete '/:tagId(\\d+)'
     ,   access
-    ,   deleteTag
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   deleteTag(maria.Tag)
+    ,   maria.transaction.commit()
     ,   (req, res) ->
             res.json 200
-
-
 
 
 
 access= (req, res, next) ->
-    return next 401 if do req.isUnauthenticated
-    return do next
+    err= null
+
+    if do req.isUnauthenticated
+        res.status 401
+        err=
+            message: 'user not authenticated'
+
+    return next err
 
 
 
-createTag= (req, res, next) ->
-    async.waterfall [
+createTag= (Tag) -> (req, res, next) ->
+    console.log 'req', req.body
+    newTag= new Tag req.body
+    Tag.create newTag, req.maria, (err, tag) ->
+        req.tag= tag or null
+        return next err
 
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            data=
-                name: req.body.name
-                titleRuSingular: req.body.titleRuSingular
-                titleRuPlural: req.body.titleRuPlural
-                titleEnSingular: req.body.titleEnSingular
-                titleEnPlural: req.body.titleEnPlural
-
-            conn.query 'INSERT INTO tag SET ?'
-            ,   [data]
-            ,   (err, resp) ->
-                    tag= req.body
-                    tag.id= resp.insertId
-
-                    return done err, conn, tag
-
-        (conn, tag, done) ->
-            # а есть ли родительские теги
-            if not req.body.parentTags
-                return done null, conn, tag
-
-            bulk= []
-            for parent in req.body.parentTags
-                bulk.push [parent.id, tag.id]
-
-            conn.query '
-                INSERT INTO tag_tags
-                    (`tagId`, `childId`)
-                VALUES ?'
-            ,   [bulk]
-            ,   (err, resp) ->
-                    return done err, conn, tag
-
-        (conn, tag, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn, tag
-
-
-    ],  (err, conn, tag) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, tag
+createTagTags= (TagTags) -> (req, res, next) ->
+    newTagTags= new TagTags req.body.parentTags
+    TagTags.create req.tag.id, newTagTags, req.maria, (err, tags) ->
+        req.tag.parenTags= tags or null
+        return next err
 
 
 
-getTags= (req, res, next) ->
-    async.waterfall [
+getTags= (Tag) -> (req, res, next) ->
+    Tag.query req.maria, (err, tags) ->
+        req.tags= tags or null
+        return next err
 
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
+getTagsTags= (TagTags) -> (req, res, next) ->
+    TagTags.query req.maria, (err, tags) ->
+        req.tags.map (tag, i) ->
+            req.tags[i].parentTags= []
 
-        (conn, done) ->
-            conn.query '
-                SELECT
-                    tag.*,
-                    connection.serverId
-                FROM tag AS tag
-                LEFT JOIN server_tag AS connection
-                    ON connection.tagId = tag.id
-                GROUP BY tag.id'
-            ,   (err, rows) ->
-                    return done err, conn, rows
-
-        (conn, tags, done) ->
-            conn.query '
-                SELECT
-                    *
-                FROM tag_tags AS connection
-                JOIN tag AS tag
-                    ON connection.tagId = tag.id'
-            ,   (err, rows) ->
-                    tags.map (tag, i) ->
-                        tags[i].parentTags= []
-
-                        rows.map (r) ->
-                            if tag.id == r.childId
-                                tags[i].parentTags.push
-                                    id: r.id
-                                    name: r.name
-
-                    return done err, conn, tags
-
-    ],  (err, conn, rows) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, rows
+            tags.map (row) ->
+                if tag.id == row.childId
+                    req.tags[i].parentTags.push
+                        id: row.id
+                        name: row.name
+        return next err
 
 
 
-getTag= (req, res, next) ->
-    async.waterfall [
+getTag= (Tag) -> (req, res, next) ->
+    Tag.get req.params.tagId, req.maria, (err, tag) ->
+        req.tag= tag or null
+        return next err
 
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
-
-        (conn, done) ->
-            conn.query '
-                SELECT * FROM tag WHERE id = ?'
-            ,   [req.params.tagId]
-            ,   (err, resp) ->
-                    tag= do resp.shift if not err
-                    return done err, conn, tag
-
-        (conn, tag, done) ->
-            conn.query '
-                SELECT
-                    *
-                FROM tag_tags AS connection
-                JOIN tag AS tag
-                    ON connection.tagId = tag.id
-                WHERE connection.childId = ?'
-            ,   [req.params.tagId]
-            ,   (err, rows) ->
-                    tag.parentTags= rows
-
-
-                    #rows.map (r) ->
-                    #    if tag.id == r.tagId
-                    #        tag.parentTags.push
-                    #            id: r.id
-                    #            name: r.name
-
-                    return done err, conn, tag
-
-    ],  (err, conn, tag) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, tag
+getTagTags= (TagTags) -> (req, res, next) ->
+    TagTags.get req.params.tagId, req.maria, (err, tags) ->
+        req.tag.parentTags= tags or null
+        return next err
 
 
 
-changeTag= (req, res, next) ->
-    tagId= req.params.tagId
-    delete req.body.id
+updateTag= (Tag) -> (req, res, next) ->
+    newTag= new Tag req.body
+    Tag.update req.params.tagId, newTag, req.maria, (err, tag) ->
+        req.tag= tag or null
+        return next err
 
-    tag= req.body
-
-    parentTags= tag.parentTags or []
-    delete tag.parentTags
-
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            data=
-                name: tag.name
-                titleRuSingular: tag.titleRuSingular
-                titleRuPlural: tag.titleRuPlural
-                titleEnSingular: tag.titleEnSingular
-                titleEnPlural: tag.titleEnPlural
-
-            conn.query 'UPDATE tag SET ? WHERE id = ?'
-            ,   [data, req.params.tagId]
-            ,   (err, resp) ->
-                    tag= req.body
-                    tag.id= req.params.tagId
-                    return done err, conn, tag
-
-        (conn, tag, done) ->
-            conn.query 'DELETE FROM tag_tags WHERE childId = ?'
-            ,   [tagId]
-            ,   (err, resp) ->
-                    return done err, conn, tag if err
-                    return done err, conn, tag if not parentTags.length
-
-                    bulk= []
-                    for parent in parentTags
-                        bulk.push [parent.id, tagId]
-
-                    conn.query 'INSERT INTO tag_tags (`tagId`, `childId`) VALUES ?'
-                    ,   [bulk]
-                    ,   (err, resp) ->
-                            return done err, conn, tag
-
-        (conn, tag, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn, tag
-
-    ],  (err, conn, tag) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, tag
+updateTagTags= (TagTags) -> (req, res, next) ->
+    newTagTags= new TagTags req.body.parentTags
+    TagTags.create req.params.tagId, newTagTags, req.maria, (err, tags) ->
+        req.tag.parenTags= tags or null
+        return next err
 
 
 
-deleteTag= (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query 'DELETE FROM tag WHERE id = ?'
-            ,   [req.params.tagId]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
-
-    ],  (err, conn) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200
+deleteTag= (Tag) -> (req, res, next) ->
+    Tag.delete req.params.tagId, req.maria, (err) ->
+        return next err

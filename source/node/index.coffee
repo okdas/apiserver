@@ -73,7 +73,7 @@ module.exports= (cfg, log, done) ->
 
         app.db= maria.createPool config.db
 
-        app.set 'maria', maria= () ->
+        app.set 'maria', maria= ->
             (req, res, next) ->
                 req.maria= null
 
@@ -83,19 +83,19 @@ module.exports= (cfg, log, done) ->
                     if not err
                         req.maria= conn
 
-                        req.on 'end', () ->
+                        req.on 'end', ->
                             if req.maria
-                                req.maria.end () ->
+                                req.maria.end ->
                                     console.log 'request end', arguments
 
                         console.log 'maria.'
 
-                        conn.on 'error', () ->
+                        conn.on 'error', ->
                             console.log 'error connection', arguments
 
                     next err
 
-        maria.transaction= () ->
+        maria.transaction= ->
             (req, res, next) ->
                 req.maria.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
                     return next err if err
@@ -103,13 +103,13 @@ module.exports= (cfg, log, done) ->
                         req.maria.transaction= true if not err
                         return next err
 
-        maria.transaction.commit= () ->
+        maria.transaction.commit= ->
             (req, res, next) ->
                 return do next if not req.maria.transaction
                 req.maria.query 'COMMIT', (err) ->
                     return next err
 
-        maria.transaction.rollback= () ->
+        maria.transaction.rollback= ->
             (req, res, next) ->
                 return do next if not req.maria.transaction
                 req.maria.query 'ROLLBACK', (err) ->
@@ -118,8 +118,11 @@ module.exports= (cfg, log, done) ->
 
         maria.Server= require './models/Servers/Server'
         maria.ServerTag= require './models/Servers/ServerTag'
+
         maria.User= require './models/User'
 
+        maria.Tag= require './models/Tags/Tag'
+        maria.TagTags= require './models/Tags/TagTags'
 
 
         app.use (req, res, next) ->

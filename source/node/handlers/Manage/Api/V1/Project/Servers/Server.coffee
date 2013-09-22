@@ -74,8 +74,8 @@ access= (req, res, next) ->
 Добавляет сервер.
 ###
 createServer= (Server) -> (req, res, next) ->
-    server= new Server req.body
-    Server.create server, req.maria, (err, server) ->
+    newServer= new Server req.body
+    Server.create newServer, req.maria, (err, server) ->
         req.server= server or null
         return next err
 
@@ -116,8 +116,8 @@ getServerTag= (ServerTag) -> (req, res, next) ->
 Изменяет сервер
 ###
 updateServer= (Server) -> (req, res, next) ->
-    server= new Server req.body
-    Server.update req.params.serverId, server, req.maria, (err, server) ->
+    newServer= new Server req.body
+    Server.update req.params.serverId, newServer, req.maria, (err, server) ->
         req.server= server or null
         return next err
 
