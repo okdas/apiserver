@@ -156,6 +156,7 @@ app.on 'mount', (parent) ->
     Обрабатывает ошибку
     ###
     app.use (err, req, res, next) ->
+        console.log 'Error:', err
         if err.status
             res.status err.status
         else

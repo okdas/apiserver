@@ -9,56 +9,164 @@ access= (req, res, next) ->
 Методы API для работы c игроками.
 ###
 app= module.exports= do express
+app.on 'mount', (parent) ->
+    app.set 'maria', maria= parent.get 'maria'
 
 
 
-###
-Добавляет игрока.
-###
-app.post '/', access, (req, res, next) ->
-    async.waterfall [
+    app.post '/'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   createPlayer(maria.Player)
+    ,   createPlayerBalance(maria.PlayerBalance)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200, req.player
 
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
+    app.get '/'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   getPlayers(maria.Player)
+    ,   (req, res) ->
+            res.json 200, req.players
 
-        (conn, done) ->
-            conn.query 'INSERT INTO player SET ?'
-            ,   [req.body]
-            ,   (err, resp) ->
-                    playerId= resp.insertId
-                    return done err, conn, playerId
+    app.get '/:playerId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   getPlayer(maria.Player)
+    ,   getPlayerBalance(maria.PlayerBalance)
+    ,   (req, res) ->
+            res.json 200, req.player
 
-        (conn, playerId, done) ->
-            conn.query '
-                INSERT
-                INTO player_balance
-                SET
-                    playerId = ?,
-                    amount = 0.00,
-                    updatedAt = NOW()'
-            ,   [playerId]
-            ,   (err, resp) ->
-                    return done err, conn
+    app.put '/:playerId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   updatePlayer(maria.Player)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200, req.player
 
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
+    app.get '/activate/:playerId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   activatePlayer(maria.Player)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200
 
-    ],  (err, conn) ->
-            do conn.end if conn
+    app.get '/deactivate/:playerId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   deactivatePlayer(maria.Player)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200
 
-            return next err if err
-            return res.json 200
+    app.delete '/:playerId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   deletePlayer(maria.Player)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200
 
 
 
-###
-Отдает список игроков.
+
+
+access= (req, res, next) ->
+    err= null
+
+    if do req.isUnauthenticated
+        res.status 401
+        err=
+            message: 'user not authenticated'
+
+    return next err
+
+
+
+createPlayer= (Player) -> (req, res, next) ->
+    console.log 'req', req.body
+    newPlayer= new Player req.body
+    Player.create newPlayer, req.maria, (err, player) ->
+        req.player= player or null
+        return next err
+
+createPlayerBalance= (PlayerBalance) -> (req, res, next) ->
+    PlayerBalance.create req.player.id, req.maria, (err) ->
+        return next err
+
+
+
+getPlayers= (Player) -> (req, res, next) ->
+    Player.query req.maria, (err, players) ->
+        req.players= players or null
+        return next err
+
+
+
+getPlayer= (Player) -> (req, res, next) ->
+    Player.get req.params.playerId, req.maria, (err, player) ->
+        req.player= player or null
+        return next err
+
+getPlayerBalance= (PlayerBalance) -> (req, res, next) ->
+    PlayerBalance.get req.params.playerId, req.maria, (err, balance) ->
+        req.player.balance= balance or null
+        return next err
+
+
+
+updatePlayer= (Player) -> (req, res, next) ->
+    newPlayer= new Player req.body
+    Player.update req.params.playerId, newPlayer, req.maria, (err, player) ->
+        req.player= player or null
+        return next err
+
+
+
+activatePlayer= (Player) -> (req, res, next) ->
+    Player.activate req.params.playerId, req.maria, (err) ->
+        return next err
+
+
+
+deactivatePlayer= (Player) -> (req, res, next) ->
+    Player.deactivate req.params.playerId, req.maria, (err) ->
+        return next err
+
+
+
+deletePlayer= (Player) -> (req, res, next) ->
+    Player.delete req.params.playerId, req.maria, (err) ->
+        return next err
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 ###
 app.get '/', access, (req, res, next) ->
     async.waterfall [
@@ -88,9 +196,7 @@ app.get '/', access, (req, res, next) ->
 
 
 
-###
-Отдает игрока.
-###
+
 app.get '/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
@@ -128,9 +234,6 @@ app.get '/:playerId(\\d+)', access, (req, res, next) ->
 
 
 
-###
-Обновляет игрока.
-###
 app.put '/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
@@ -165,9 +268,6 @@ app.put '/:playerId(\\d+)', access, (req, res, next) ->
 
 
 
-###
-Удаляет игрока.
-###
 app.delete '/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
@@ -197,9 +297,6 @@ app.delete '/:playerId(\\d+)', access, (req, res, next) ->
 
 
 
-###
-Актививруем игрока
-###
 app.get '/activate/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
@@ -229,9 +326,6 @@ app.get '/activate/:playerId(\\d+)', access, (req, res, next) ->
 
 
 
-###
-Деактививруем игрока
-###
 app.get '/deactivate/:playerId(\\d+)', access, (req, res, next) ->
     async.waterfall [
 
@@ -261,9 +355,6 @@ app.get '/deactivate/:playerId(\\d+)', access, (req, res, next) ->
 
 
 
-###
-Отдает список разрешений.
-###
 app.get '/permissions', access, (req, res, next) ->
     async.waterfall [
 
@@ -322,4 +413,4 @@ app.get '/permissions', access, (req, res, next) ->
 
             return next err if err
             return res.json 200, entities
-
+###

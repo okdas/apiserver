@@ -124,6 +124,9 @@ module.exports= (cfg, log, done) ->
         maria.Tag= require './models/Tags/Tag'
         maria.TagTags= require './models/Tags/TagTags'
 
+        maria.Player= require './models/Players/Player'
+        maria.PlayerBalance= require './models/Players/PlayerBalance'
+
 
         app.use (req, res, next) ->
             req.db= app.db
