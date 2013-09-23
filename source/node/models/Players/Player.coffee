@@ -1,3 +1,5 @@
+crypto= require 'crypto'
+
 module.exports= class Player
     @table: 'player'
 
@@ -5,9 +7,12 @@ module.exports= class Player
 
     constructor: (data) ->
         @id= data.id if data.id
+        @pass= Player.sha1 data.pass if data.pass
         @name= data.name
         @email= data.email
         @phone= data.phone if data.phone
+        @createdAt= data.createdAt if data.createdAt
+        @updatedAt= data.updatedAt if data.updatedAt
 
 
 
@@ -15,6 +20,8 @@ module.exports= class Player
         return done 'not a Player' if not (player instanceof @)
 
         delete player.id if player.id
+        delete player.createdAt if player.createdAt
+        delete player.updatedAt if player.updatedAt
 
         maria.query '
             INSERT
@@ -30,6 +37,13 @@ module.exports= class Player
                 player.id= res.insertId
 
                 done err, player
+
+
+
+    @sha1: (string) ->
+        hash= crypto.createHash 'sha1'
+        hash.update string
+        return hash.digest 'hex'
 
 
 
@@ -76,6 +90,9 @@ module.exports= class Player
         return done 'not a Player' if not (player instanceof @)
 
         delete player.id if player.id
+        delete player.createdAt if player.createdAt
+        delete player.updatedAt if player.updatedAt
+        delete player.pass if player.pass
 
         maria.query '
             UPDATE
@@ -109,7 +126,7 @@ module.exports= class Player
                 if not err and res.affectedRows != 1
                     err= 'player activate error'
 
-                done err, player
+                done err
 
 
 
@@ -129,7 +146,7 @@ module.exports= class Player
                 if not err and res.affectedRows != 1
                     err= 'player deactivate error'
 
-                done err, player
+                done err
 
 
 

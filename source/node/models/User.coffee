@@ -106,6 +106,7 @@ module.exports= class User
         return done 'not a User' if not (user instanceof @)
 
         delete user.id if user.id
+        delete user.pass if user.pass
 
         maria.query '
             UPDATE

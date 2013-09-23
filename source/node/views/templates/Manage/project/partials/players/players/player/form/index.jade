@@ -9,7 +9,7 @@ block section-body
             input.input(placeholder='Имя', type='text', required, ng-maxlength='50', ng-model='player.name')
 
             div(ng-if='action=="create"')
-                input.input(placeholder='Пароль sha1', type='text', required, ng-maxlength='40', ng-model='player.pass')
+                input.input(placeholder='Пароль', type='text', required, ng-maxlength='40', ng-model='player.pass')
 
         fieldset
             input.input.input-auto(placeholder='Email', type='text', required, ng-maxlength='50', ng-pattern='/^[a-zA-Z0-9\\.\\-\\_]+@[a-zA-Z0-9]+\\.[a-zA-Z0-9]+$/', ng-model='player.email')
@@ -19,7 +19,7 @@ block section-body
         fieldset(ng-if='action=="update"')
             p Создан: {{player.createdAt}}
             p Активирован: {{player.enabledAt}}
-            p Баланс: {{player.amount}}
+            p Баланс: {{player.balance.amount}} Обновлен: {{player.balance.updatedAt}}
 
 
         fieldset(ng-if='action=="create"')
