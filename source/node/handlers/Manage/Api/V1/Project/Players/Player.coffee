@@ -1,9 +1,6 @@
 express= require 'express'
-async= require 'async'
 
-access= (req, res, next) ->
-    return next 401 if do req.isUnauthenticated
-    return do next
+
 
 ###
 Методы API для работы c игроками.

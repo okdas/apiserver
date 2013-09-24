@@ -126,6 +126,7 @@ module.exports= (cfg, log, done) ->
 
         maria.Player= require './models/Players/Player'
         maria.PlayerBalance= require './models/Players/PlayerBalance'
+        maria.Payment= require './models/Players/Payment'
 
 
         app.use (req, res, next) ->

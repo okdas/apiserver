@@ -59,7 +59,7 @@ app.factory 'PlayerList', ($resource) ->
 
 app.factory 'Payment', ($resource) ->
     $resource '/api/v1/players/payment/:paymentId', {},
-        change:
+        update:
             method: 'put'
             params:
                 paymentId: '@id'
@@ -219,7 +219,7 @@ app.controller 'PlayersPaymentListCtrl', ($scope, Payment) ->
 
     $scope.change= (payment) ->
         doChangePayment= new Payment payment
-        doChangePayment.$change ->
+        doChangePayment.$update ->
             do load
 
 
