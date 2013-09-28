@@ -94,11 +94,15 @@ app.on 'mount', (parent) ->
     #  Методы API для работы c ордерами.
     app.use '/api/v1/players/order', require './Manage/Api/V1/Project/Players/Order'
 
+
+
+
+
     # Методы API для работы c аутентифицированным сервером.
-    app.use '/api/v1/players/server', require './Manage/Api/V1/Project/Players/MiddlewareServer'
+    app.use '/api/v1/bukkitshipping/server', require './Manage/Api/V1/Project/Players/MiddlewareServer'
 
     # Методы API для плагина, требуют key сервера.
-    app.use '/api/v1/players/server/item', require './Manage/Api/V1/Project/Players/Item'
+    app.use '/api/v1/bukkitshipping/server/item', require './Manage/Api/V1/Project/Players/Item'
 
 
 

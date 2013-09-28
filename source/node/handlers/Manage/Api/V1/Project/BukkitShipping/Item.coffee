@@ -5,11 +5,115 @@ async= require 'async'
 Методы API для работы c шипментами.
 ###
 app= module.exports= do express
+app.on 'mount', (parent) ->
+    app.set 'maria', maria= parent.get 'maria'
 
 
 
-###
-Список товаров игрока
+    app.get '/:playerName/list'
+    ,   maria(app.get 'db')
+    ,   server(maria.Server)
+    ,   player(maria.Player)
+    ,   getItems(maria.BukkitShipping)
+    ,   getItemsEnchantment(maria.BukkitShipping)
+    ,   (req, res) ->
+            res.json 200, req.items
+
+    app.get '/:playerName/shipments/list'
+    ,   maria(app.get 'db')
+    ,   server(maria.Server)
+    ,   player(maria.Player)
+    ,   getShipments(maria.BukkitShipping)
+    ,   (req, res) ->
+            res.json 200, req.shipments
+
+    app.post '/:playerName/shipments/open'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   server(maria.Server)
+    ,   player(maria.Player)
+    ,   openShipment(maria.BukkitShipping)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200, req.shipment
+
+    app.get '/:playerName/shipments/:shipmentId(\\d+)/close'
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   server(maria.Server)
+    ,   player(maria.Player)
+    ,   closeShipment(maria.BukkitShipping)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200
+
+
+
+access= (req, res, next) ->
+    err= null
+    if do req.isUnauthenticated
+        res.status 401
+        err=
+            message: 'user not authenticated'
+    return next err
+
+
+
+server= (Server) -> (req, res, next) ->
+    return res.json 500, 'no key server' if not req.query.key
+
+    Server.getByKey req.query.key, req.maria, (err, server) ->
+        req.server= server or null
+        return next err
+
+
+
+player= (Player) -> (req, res, next) ->
+    Player.getByName req.params.playerName, req.maria, (err, player) ->
+        req.player= player or null
+        return next err
+
+
+
+getItems= (PlayerItem) -> (req, res, next) ->
+    PlayerItem.get req.params.playerName, req.maria, (err, items) ->
+        req.items= items or null
+        return next err
+
+getItemsEnchantment= (PlayerItemEnchantment) -> (req, res, next) ->
+    serverTag= new ServerTag req.body.tags
+    ServerTag.create req.server.id, serverTag, req.maria, (err, tags) ->
+        req.server.tags= tags or null
+        return next err
+
+
+
+getShipments= (PlayerItem) -> (req, res, next) ->
+    PlayerItem.get req.params.playerName, req.maria, (err, items) ->
+        req.items= items or null
+        return next err
+
+
+
+openShipment= (PlayerItem) -> (req, res, next) ->
+    PlayerItem.get req.params.playerName, req.maria, (err, items) ->
+        req.items= items or null
+        return next err
+
+
+
+closeShipment= (PlayerItem) -> (req, res, next) ->
+    PlayerItem.get req.params.playerName, req.maria, (err, items) ->
+        req.items= items or null
+        return next err
+
+
+
+
+
+
+
 ###
 app.get '/:playerName/list', (req, res, next) ->
     async.waterfall [
@@ -86,60 +190,11 @@ app.get '/:playerName/list', (req, res, next) ->
 
 
 
-###
-Выводит историю отгрузок (шипментов)
-###
-app.get '/:playerName/shipments/list', (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn
-
-        # все примитивно - запрос в таблицу шипментов
-        (conn, done) ->
-            conn.query '
-                SELECT
-                    shipment.id,
-                    shipment.createdAt,
-                    shipment.closedAt
-                FROM player AS player
-                JOIN player_shipment AS shipment
-                    ON shipment.playerId = player.id AND shipment.serverId = ?
-                WHERE player.name = ?'
-            ,   [req.server.id, req.params.playerName]
-            ,   (err, rows) ->
-                    return done err, conn, rows
-
-    ],  (err, conn, rows) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, rows
 
 
 
-###
-Открывает шипмент
-###
+
 app.post '/:playerName/shipments/open', (req, res, next) ->
-    ###
-    прислали кучу айтемов что делать:
-    1. нам прислали id из player_item и реальное количество то есть ошибки быть не может
-       и проверять не нужно (но! всетаки проверим, тем более меньше работы плагину)
-    2. сразу создаем шипмент с этими айтемами
-
-    req.body= [
-        {
-            id: '5', # это id из player_item
-            amount: 10
-        },
-        {
-            id: '7',
-            amount: '2'
-        }
-    ]
-    ###
     async.waterfall [
 
         (done) ->
@@ -222,17 +277,8 @@ app.post '/:playerName/shipments/open', (req, res, next) ->
             return res.json 200, shipment
 
 
-
-###
-Закрывает шипмент
-###
 app.get '/:playerName/shipments/:shipmentId(\\d+)/close', (req, res, next) ->
-    ###
-    1. надо получить все айтемы шипмента, записать массив
-    2. вычест количество из storage_item, сделать там апдейт
-    3. закрыть шипмент - указать дату закрытия
-    ###
-    async.waterfall [
+        async.waterfall [
 
         (done) ->
             req.db.getConnection (err, conn) ->
@@ -299,3 +345,4 @@ app.get '/:playerName/shipments/:shipmentId(\\d+)/close', (req, res, next) ->
 
             return next err if err
             return res.json 200
+###

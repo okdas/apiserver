@@ -55,11 +55,12 @@ module.exports= class Server
     @query: (maria, done) ->
         maria.query '
             SELECT
-                server.id,
-                server.title,
-                server.name,
-                server.key
-            FROM ?? AS server'
+                object.id,
+                object.title,
+                object.name,
+                object.key
+            FROM
+                ?? AS object'
         ,   [@table]
         ,   (err, rows) =>
                 done err, rows
@@ -69,12 +70,14 @@ module.exports= class Server
     @get: (serverId, maria, done) ->
         maria.query '
             SELECT
-                server.id,
-                server.title,
-                server.name,
-                server.key
-            FROM ?? AS server
-            WHERE id = ?'
+                object.id,
+                object.title,
+                object.name,
+                object.key
+            FROM
+                ?? AS object
+            WHERE
+                id = ?'
         ,   [@table, serverId]
         ,   (err, rows) =>
                 server= null
@@ -84,6 +87,27 @@ module.exports= class Server
 
                 done err, server
 
+
+
+    @getByKey: (serverKey, maria, done) ->
+        maria.query '
+            SELECT
+                object.id,
+                object.title,
+                object.name,
+                object.key
+            FROM
+                ?? AS object
+            WHERE
+                `key` = ?'
+        ,   [@table, serverKey]
+        ,   (err, rows) =>
+                server= null
+
+                if not err and rows.length
+                    server= new @ rows[0]
+
+                done err, server
 
 
 

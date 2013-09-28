@@ -85,29 +85,6 @@ module.exports= class Player
 
 
 
-    @getByName: (playerName, maria, done) ->
-        maria.query '
-            SELECT
-                object.id,
-                object.name,
-                object.email,
-                object.phone,
-                object.createdAt,
-                object.enabledAt
-            FROM
-                ?? AS object
-            WHERE
-                `name` = ?'
-        ,   [@table, playerName]
-        ,   (err, rows) =>
-                player= null
-
-                if not err and rows.length
-                    player= new @ rows[0]
-
-                done err, player
-
-
 
     @update: (playerId, player, maria, done) ->
         return done 'not a Player' if not (player instanceof @)
