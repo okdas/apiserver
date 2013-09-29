@@ -53,8 +53,8 @@ app.on 'mount', (parent) ->
 access= (req, res, next) ->
     err= null
     if do req.isUnauthenticated
-        res.status 401
         err=
+            status: 401
             message: 'user not authenticated'
     return next err
 
@@ -64,27 +64,45 @@ server= (Server) -> (req, res, next) ->
     return res.json 500, 'no key server' if not req.query.key
 
     Server.getByKey req.query.key, req.maria, (err, server) ->
-        req.server= server or null
+        if server
+            req.server= server
+        else
+            err=
+                status: 404
+                message: 'server not found'
         return next err
 
 
 
 player= (Player) -> (req, res, next) ->
     Player.getByName req.params.playerName, req.maria, (err, player) ->
-        req.player= player or null
+        if player
+            req.player= player
+        else
+            err=
+                status: 404
+                message: 'player not found'
         return next err
 
 
 
-getItems= (PlayerItem) -> (req, res, next) ->
-    PlayerItem.get req.params.playerName, req.maria, (err, items) ->
+getItems= (BukkitShipping) -> (req, res, next) ->
+    BukkitShipping.queryItem req.player.id, req.server.id, req.maria, (err, items) ->
         req.items= items or null
         return next err
 
-getItemsEnchantment= (PlayerItemEnchantment) -> (req, res, next) ->
-    serverTag= new ServerTag req.body.tags
-    ServerTag.create req.server.id, serverTag, req.maria, (err, tags) ->
-        req.server.tags= tags or null
+getItemsEnchantment= (BukkitShipping) -> (req, res, next) ->
+    itemIds= []
+    req.items.map (item, i) ->
+        req.items[i].enchantments= []
+        itemIds.push item.id
+
+    BukkitShipping.queryEnchantment itemIds, req.maria, (err, enchantments) ->
+        enchantments.map (ench) ->
+            req.items.map (item, i) ->
+                if item.id == ench.id
+                    req.items[i].enchantments.push ench
+        
         return next err
 
 

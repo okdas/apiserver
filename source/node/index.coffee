@@ -128,6 +128,8 @@ module.exports= (cfg, log, done) ->
         maria.PlayerBalance= require './models/Players/PlayerBalance'
         maria.Payment= require './models/Players/Payment'
 
+        maria.BukkitShipping= require './models/BukkitShipping/Item'
+
 
         app.use (req, res, next) ->
             req.db= app.db

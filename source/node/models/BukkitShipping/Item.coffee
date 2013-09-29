@@ -1,14 +1,8 @@
-
-
-
-
-
-
-
 module.exports= class Item
     @table: 'player_server_item'
     @original: 'item'
     @originalPlayer: 'player'
+    @originalEnchantment: 'player_server_item_enchantment'
 
 
 
@@ -36,25 +30,39 @@ module.exports= class Item
 
 
 
-    @query: (playerId, serverId, maria, done) ->
+    @queryItem: (playerId, serverId, maria, done) ->
         maria.query '
             SELECT
+                connection.id,
                 item.material,
                 item.titleRu,
-                connection.amount,
-                player.name
+                connection.amount
             FROM ?? AS connection
             JOIN ?? AS item
                 ON item.id = connection.itemId
-            JOIN ?? AS player
-                ON player.id = connection.playerId
             WHERE
                 connection.playerId = ?
                 AND
                 connection.amount > 0
                 AND
                 connection.serverId = ?'
-        ,   [@table, @original, @originalPlayer, playerId, serverId]
+        ,   [@table, @original, playerId, serverId]
+        ,   (err, rows) =>
+                done err, rows
+
+
+
+    @queryEnchantment: (itemIds, maria, done) ->
+        maria.query '
+            SELECT
+                itemId AS id,
+                enchantmentId,
+                level
+            FROM
+                ??
+            WHERE
+                itemId IN (?)'
+        ,   [@originalEnchantment, itemIds]
         ,   (err, rows) =>
                 done err, rows
 
@@ -65,20 +73,17 @@ module.exports= class Item
             SELECT
                 item.material,
                 item.titleRu,
-                connection.amount,
-                player.name
+                connection.amount
             FROM ?? AS connection
             JOIN ?? AS item
                 ON item.id = connection.itemId
-            JOIN ?? AS player
-                ON player.id = connection.playerId
             WHERE
                 connection.playerId = ?
                 AND
                 connection.amount > 0
                 AND
                 connection.serverId = ?'
-        ,   [@table, @original, @originalPlayer, playerId, serverId]
+        ,   [@table, @original, playerId, serverId]
         ,   (err, rows) =>
                 done err, rows
 
@@ -87,7 +92,7 @@ module.exports= class Item
     ###
     прислали кучу айтемов что делать:
     1. нам прислали id из player_item и реальное количество то есть ошибки быть не может
-       и проверять не нужно (но! всетаки проверим, тем более меньше работы плагину)
+       и проверять не нужно (но! всетаки проверим)
     2. сразу создаем шипмент с этими айтемами
 
     req.body= [
