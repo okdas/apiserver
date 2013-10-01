@@ -137,10 +137,7 @@ module.exports= class Item
 
 
 
-    @createShipmentItems: (shipmentId, items, maria, done) ->
-        data= []
-        items.map (item) ->
-            data.push [shipmentId, item.itemId, item.amount]
+    @createShipmentItems: (maria, done) ->
         maria.query '
             INSERT
             INTO
@@ -148,10 +145,10 @@ module.exports= class Item
                 (`shipmentId`, `playerItemId`, `amount`)
             VALUES
                 ?'
-        ,   [@originalShipmentItem, data]
+        ,   [@originalShipmentItem]
         ,   (err, res) ->
                 done err
-
+                
 
 
     ###
