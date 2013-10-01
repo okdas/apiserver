@@ -1,20 +1,19 @@
-module.exports= class Instance
-    @table: 'instance'
+module.exports= class Enchantment
+    @table: 'bukkit_enchantment'
 
 
 
     constructor: (data) ->
         @id= data.id if data.id
-        @serverId= data.serverId if data.serverId
-        @host= data.host if data.host
-        @port= data.port if data.port
+        @titleRu= data.titleRu if data.titleRu
+        @titleEn= data.titleEn if data.titleEn
+        @levelMax= data.levelMax if data.levelMax
+        @levelMin= data.levelMin if data.levelMin
 
 
 
-    @create: (instance, maria, done) ->
-        return done 'not a Instance' if not (instance instanceof @)
-
-        delete instance.id if instance.id
+    @create: (enchantment, maria, done) ->
+        return done 'not a Enchantment' if not (enchantment instanceof @)
 
         maria.query '
             INSERT
@@ -22,56 +21,59 @@ module.exports= class Instance
                 ??
             SET
                 ?'
-        ,   [@table, instance]
+        ,   [@table, enchantment]
         ,   (err, res) ->
                 if not err && res.affectedRows != 1
-                    err= 'instance insert error'
+                    err= 'enchantment insert error'
 
-                instance.id= res.insertId
+                enchantment.id= res.insertId
 
-                done err, instance
+                done err, enchantment
 
 
 
     @query: (maria, done) ->
         maria.query '
             SELECT
-                instance.id,
-                instance.serverId,
-                instance.host,
-                instance.port
-            FROM ?? AS instance'
+                object.id,
+                object.titleRu,
+                object.titleEn,
+                object.levelMax,
+                object.levelMin
+            FROM ?? AS object'
         ,   [@table]
         ,   (err, rows) =>
                 done err, rows
 
 
 
-    @get: (instanceId, maria, done) ->
+    @get: (enchantmentId, maria, done) ->
         maria.query '
             SELECT
-                instance.id,
-                instance.serverId,
-                instance.host,
-                instance.port
-            FROM ?? AS instance
-            WHERE id = ?'
-        ,   [@table, instanceId]
+                object.id,
+                object.titleRu,
+                object.titleEn,
+                object.levelMax,
+                object.levelMin
+            FROM
+                ?? AS object
+            WHERE
+                id = ?'
+        ,   [@table, enchantmentId]
         ,   (err, rows) =>
-                instance= null
+                enchantment= null
 
                 if not err and rows.length
-                    instance= new @ rows[0]
+                    enchantment= new @ rows[0]
 
-                done err, instance
-
-
+                done err, enchantment
 
 
-    @update: (instanceId, instance, maria, done) ->
-        return done 'not a Server' if not (instance instanceof @)
 
-        delete instance.id if instance.id
+    @update: (enchantmentId, enchantment, maria, done) ->
+        return done 'not a Enchantment' if not (enchantment instanceof @)
+
+        delete enchantment.id if enchantment.id
 
         maria.query '
             UPDATE
@@ -80,27 +82,27 @@ module.exports= class Instance
                 ?
             WHERE
                 id = ?'
-        ,   [@table, instance, instanceId]
+        ,   [@table, enchantment, enchantmentId]
         ,   (err, res) ->
 
                 if not err and res.affectedRows != 1
-                    err= 'instance update error'
+                    err= 'enchantment update error'
 
-                done err, instance
+                done err, enchantment
 
 
 
-    @delete: (instanceId, maria, done) ->
+    @delete: (enchantmentId, maria, done) ->
         maria.query '
             DELETE
             FROM
                 ??
             WHERE
                 id = ?'
-        ,   [@table, instanceId]
+        ,   [@table, enchantmentId]
         ,   (err, res) ->
 
                 if not err and res.affectedRows != 1
-                    err= 'instance delete error'
+                    err= 'enchantment delete error'
 
                 done err

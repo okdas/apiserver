@@ -92,8 +92,6 @@ module.exports= class Material
     @update: (materialId, material, maria, done) ->
         return done 'not a Material' if not (material instanceof @)
 
-        delete material.id if material.id
-
         maria.query '
             UPDATE
                 ??

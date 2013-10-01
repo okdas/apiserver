@@ -1,143 +1,103 @@
 express= require 'express'
-async= require 'async'
 
-access= (req, res, next) ->
-    return next 401 if do req.isUnauthenticated
-    return do next
 
 
 ###
 Методы API для работы c чарами.
 ###
 app= module.exports= do express
+app.on 'mount', (parent) ->
+    app.set 'maria', maria= parent.get 'maria'
+
+
+
+    app.post '/'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   createEnchantment(maria.Enchantment)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200, req.enchantment
+
+    app.get '/'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   getEnchantments(maria.Enchantment)
+    ,   (req, res) ->
+            res.json 200, req.enchantments
+
+    app.get '/:enchantmentId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   getEnchantment(maria.Enchantment)
+    ,   (req, res) ->
+            res.json 200, req.enchantment
+
+    app.put '/:enchantmentId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   updateEnchantment(maria.Enchantment)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200, req.enchantment
+
+    app.delete '/:enchantmentId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   deleteEnchantment(maria.Enchantment)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200
+
+
+
+access= (req, res, next) ->
+    err= null
+    if do req.isUnauthenticated
+        err=
+            status: 401
+            message: 'user not authenticated'
+
+    return next err
 
 
 
 ###
-Добавляет чару.
+Добавляет материал.
 ###
-app.post '/', access, (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query 'INSERT INTO bukkit_enchantment SET ?'
-            ,   [req.body]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
-
-    ],  (err, conn, shipment) ->
-            do conn.end if conn
-
-            return res.json 400, req.body if err and err.code= 'ER_DUP_ENTRY'
-            return next err if err
-            return res.json 201, req.body
+createEnchantment= (Enchantment) -> (req, res, next) ->
+    newEnchantment= new Enchantment req.body
+    Enchantment.create newEnchantment, req.maria, (err, enchantment) ->
+        req.enchantment= enchantment or null
+        return next err
 
 
 
-###
-Отдает список чар.
-###
-app.get '/', access, (req, res, next) ->
-    req.db.getConnection (err, connection) ->
-        return next err if err
-
-        connection.query 'SELECT * FROM bukkit_enchantment'
-        ,   (err, rows) ->
-                do connection.end
-
-                return next err if err
-                return res.json 200, rows
+getEnchantments= (Enchantment) -> (req, res, next) ->
+    Enchantment.query req.maria, (err, enchantments) ->
+        req.enchantments= enchantments or null
+        return next err
 
 
 
-###
-Отдает чару.
-###
-app.get '/:enchantmentId', access, (req, res, next) ->
-    req.db.getConnection (err, conn) ->
-        return next err if err
-
-        conn.query 'SELECT * FROM bukkit_enchantment WHERE id = ?'
-        ,   [req.params.enchantmentId]
-        ,   (err, rows) ->
-                do conn.end
-
-                return next err if err
-                return res.json 404, null if not rows.length
-                return res.json 200, do rows.shift
+getEnchantment= (Enchantment) -> (req, res, next) ->
+    Enchantment.get req.params.enchantmentId, req.maria, (err, enchantment) ->
+        req.enchantment= enchantment or null
+        return next err
 
 
 
-###
-Обновляет чару.
-###
-app.put '/:enchantmentId', access, (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query 'UPDATE bukkit_enchantment SET ? WHERE id = ?'
-            ,   [req.body, req.params.enchantmentId]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
-
-    ],  (err, conn, shipment) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, req.body
+updateEnchantment= (Enchantment) -> (req, res, next) ->
+    newEnchantment= new Enchantment req.body
+    Enchantment.update req.params.enchantmentId, newEnchantment, req.maria, (err, enchantment) ->
+        req.enchantment= enchantment or null
+        return next err
 
 
 
-###
-Удаляет чару.
-###
-app.delete '/:enchantmentId', access, (req, res, next) ->
-    async.waterfall [
-
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            conn.query 'DELETE FROM bukkit_enchantment WHERE id = ?'
-            ,   [req.params.enchantmentId]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                return done err, conn
-
-    ],  (err, conn, shipment) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 200, {}
+deleteEnchantment= (Enchantment) -> (req, res, next) ->
+    Enchantment.delete req.params.enchantmentId, req.maria, (err) ->
+        return next err
