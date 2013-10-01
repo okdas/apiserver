@@ -128,6 +128,9 @@ module.exports= (cfg, log, done) ->
         maria.PlayerBalance= require './models/Players/PlayerBalance'
         maria.Payment= require './models/Players/Payment'
 
+        maria.Material= require './models/Content/Material'
+        maria.Enchantment= require './models/Content/Enchantment'
+
         maria.BukkitShipping= require './models/BukkitShipping/Item'
 
 

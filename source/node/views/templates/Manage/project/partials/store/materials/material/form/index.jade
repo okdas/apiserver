@@ -22,7 +22,7 @@ block section-body
 
         fieldset(ng-if='action=="update"'): .row
             .col-10
-                button.btn.btn-primary.btn-block(type='submit', ng-click='create(MaterialForm)', ng-disabled='!MaterialForm.$valid')
+                button.btn.btn-primary.btn-block(type='submit', ng-click='update(MaterialForm)', ng-disabled='!MaterialForm.$valid')
                     span Обновить материал
             .col-2
                 button.btn.btn-link.btn-block.text-left(ng-click='delete(MaterialForm)')

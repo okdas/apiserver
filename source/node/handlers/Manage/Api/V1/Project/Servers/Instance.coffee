@@ -56,10 +56,9 @@ app.on 'mount', (parent) ->
 
 access= (req, res, next) ->
     err= null
-
     if do req.isUnauthenticated
-        res.status 401
         err=
+            status: 401
             message: 'user not authenticated'
 
     return next err
