@@ -116,8 +116,10 @@ module.exports= (cfg, log, done) ->
                     return next err
 
 
+        maria.Instance= require './models/Servers/Instance'
         maria.Server= require './models/Servers/Server'
         maria.ServerTag= require './models/Servers/ServerTag'
+        maria.Item= require './models/Servers/Item'
 
         maria.User= require './models/User'
 

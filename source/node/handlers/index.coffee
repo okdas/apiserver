@@ -109,10 +109,10 @@ app.on 'mount', (parent) ->
     Баккит
     ###
     # Методы API для работы c чарами.
-    app.use '/api/v1/bukkit/enchantments', require './Manage/Api/V1/Project/Bukkit/Enchantments'
+    app.use '/api/v1/bukkit/enchantments', require './Manage/Api/V1/Project/Content/Enchantments'
 
     # Методы API для работы c материалами.
-    app.use '/api/v1/bukkit/materials', require './Manage/Api/V1/Project/Bukkit/Materials'
+    app.use '/api/v1/bukkit/materials', require './Manage/Api/V1/Project/Content/Materials'
 
 
 

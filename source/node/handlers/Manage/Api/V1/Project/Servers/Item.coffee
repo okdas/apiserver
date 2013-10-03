@@ -1,19 +1,124 @@
 express= require 'express'
-async= require 'async'
 
-access= (req, res, next) ->
-    return next 401 if do req.isUnauthenticated
-    return do next
+
 
 ###
 Методы API для работы c предметами.
 ###
 app= module.exports= do express
+app.on 'mount', (parent) ->
+    app.set 'maria', maria= parent.get 'maria'
+
+
+
+    app.post '/'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   createItem(maria.Item)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200, req.item
+
+    app.get '/'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   getItems(maria.Item)
+    ,   (req, res) ->
+            res.json 200, req.items
+
+    app.get '/:itemId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   getItem(maria.Item)
+    ,   (req, res) ->
+            res.json 200, req.item
+
+    app.put '/:itemId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   updateItem(maria.Item)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200, req.item
+
+    app.delete '/:itemId(\\d+)'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   maria.transaction()
+    ,   deleteItem(maria.Item)
+    ,   maria.transaction.commit()
+    ,   (req, res) ->
+            res.json 200
+
+
+
+access= (req, res, next) ->
+    err= null
+    if do req.isUnauthenticated
+        err=
+            status: 401
+            message: 'user not authenticated'
+
+    return next err
+
+
+
+
+
+
+createItem= (Item) -> (req, res, next) ->
+    newItem= new Item req.body
+    Item.create newItem, req.maria, (err, item) ->
+        req.item= item or null
+        return next err
+
+
+
+###
+Отдает список серверов.
+###
+getItems= (Item) -> (req, res, next) ->
+    Item.query req.maria, (err, items) ->
+        req.items= items or null
+        return next err
+
+
+
+###
+Отдает сервер.
+###
+getItem= (Item) -> (req, res, next) ->
+    Item.get req.params.itemId, req.maria, (err, item) ->
+        req.item= item or null
+        return next err
+
+
+
+###
+Изменяет сервер
+###
+updateInstance= (Item) -> (req, res, next) ->
+    newItem= new Item req.body
+    Item.update req.params.itemId, newItem, req.maria, (err, instance) ->
+        req.item= item or null
+        return next err
+
+
+
+###
+Удаляет сервер
+###
+deleteItem= (Item) -> (req, res, next) ->
+    Item.delete req.params.itemId, req.maria, (err) ->
+        return next err
 
 
 
 ###
 Добавляет предмет.
+###
 ###
 app.post '/', access, (req, res, next) ->
     async.waterfall [
@@ -100,11 +205,12 @@ app.post '/', access, (req, res, next) ->
 
             return next err if err
             return res.json 201, req.body
-
+###
 
 
 ###
 Отдает список предметов.
+###
 ###
 app.get '/', access, (req, res, next) ->
     async.waterfall [
@@ -148,11 +254,12 @@ app.get '/', access, (req, res, next) ->
 
             return next err if err
             return res.json 200, rows
-
+###
 
 
 ###
 Отдает предмет.
+###
 ###
 app.get '/:itemId(\\d+)', access, (req, res, next) ->
     async.waterfall [
@@ -221,11 +328,12 @@ app.get '/:itemId(\\d+)', access, (req, res, next) ->
             return next err if err
             return res.json 404, null if not item
             return res.json 200, item
-
+###
 
 
 ###
 Обновляет предмет.
+###
 ###
 app.put '/:itemId(\\d+)', access, (req, res, next) ->
     itemId= req.params.itemId
@@ -315,11 +423,12 @@ app.put '/:itemId(\\d+)', access, (req, res, next) ->
 
             return next err if err
             return res.json 200, req.body
-
+###
 
 
 ###
 Удаляет предмет.
+###
 ###
 app.delete '/:itemId(\\d+)', access, (req, res, next) ->
     async.waterfall [
@@ -340,3 +449,4 @@ app.delete '/:itemId(\\d+)', access, (req, res, next) ->
 
             return next err if err
             return res.json 200, item
+###
