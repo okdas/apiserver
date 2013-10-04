@@ -1,106 +1,83 @@
 module.exports= class ItemEnchantment
-    @table: 'instance'
+    @table: 'item_enchantment'
+    @original: 'bukkit_enchantment'
 
 
 
     constructor: (data) ->
-        @id= data.id if data.id
-        @serverId= data.serverId if data.serverId
-        @host= data.host if data.host
-        @port= data.port if data.port
+        @enchantments= []
+        if data
+            for ench in data
+                @enchantments.push
+                    id: ench.id
+                    level: ench.level
+                    order: ench.order
 
 
 
-    @create: (instance, maria, done) ->
-        return done 'not a Instance' if not (instance instanceof @)
-
-        delete instance.id if instance.id
+    @create: (itemId, itemEnchantment, maria, done) ->
+        if not itemId
+            return done 'arguments is not validate'
 
         maria.query '
-            INSERT
-            INTO
+            DELETE
+            FROM
                 ??
-            SET
-                ?'
-        ,   [@table, instance]
-        ,   (err, res) ->
-                if not err && res.affectedRows != 1
-                    err= 'instance insert error'
+            WHERE
+                itemId = ?'
+        ,   [@table, itemId]
+        ,   (err, res) =>
+                return done err if err
+                return done null, null if not itemEnchantment.enchantments.length
 
-                instance.id= res.insertId
 
-                done err, instance
+                bulk= []
+                itemEnchantment.enchantments.map (ench) ->
+                    bulk.push [itemId, ench.id, ench.level, ench.order]
+
+                maria.query '
+                    INSERT
+                    INTO
+                        ??
+                        (`itemId`, `enchantmentId`, `level`, `order`)
+                    VALUES
+                        ?'
+                ,   [@table, bulk]
+                ,   (err, res) ->
+                        return done err, itemEnchantment
 
 
 
     @query: (maria, done) ->
         maria.query '
             SELECT
-                instance.id,
-                instance.serverId,
-                instance.host,
-                instance.port
-            FROM ?? AS instance'
-        ,   [@table]
-        ,   (err, rows) =>
-                done err, rows
+                connection.itemId,
+                ench.id,
+                connection.level,
+                connection.order,
+                ench.titleRu
+            FROM ?? AS connection
+            JOIN ?? AS ench
+                ON ench.id = connection.enchantmentId'
+        ,   [@table, @original]
+        ,   (err, rows) ->
+                return done err, rows
 
 
 
-    @get: (instanceId, maria, done) ->
+    @get: (itemId, maria, done) ->
         maria.query '
             SELECT
-                instance.id,
-                instance.serverId,
-                instance.host,
-                instance.port
-            FROM ?? AS instance
-            WHERE id = ?'
-        ,   [@table, instanceId]
-        ,   (err, rows) =>
-                instance= null
-
-                if not err and rows.length
-                    instance= new @ rows[0]
-
-                done err, instance
-
-
-
-
-    @update: (instanceId, instance, maria, done) ->
-        return done 'not a Server' if not (instance instanceof @)
-
-        delete instance.id if instance.id
-
-        maria.query '
-            UPDATE
-                ??
-            SET
-                ?
+                connection.itemId,
+                ench.id,
+                connection.level,
+                connection.order,
+                ench.titleRu
+            FROM ?? AS connection
+            JOIN ?? AS ench
+                ON ench.id = connection.enchantmentId
             WHERE
-                id = ?'
-        ,   [@table, instance, instanceId]
-        ,   (err, res) ->
-
-                if not err and res.affectedRows != 1
-                    err= 'instance update error'
-
-                done err, instance
-
-
-
-    @delete: (instanceId, maria, done) ->
-        maria.query '
-            DELETE
-            FROM
-                ??
-            WHERE
-                id = ?'
-        ,   [@table, instanceId]
-        ,   (err, res) ->
-
-                if not err and res.affectedRows != 1
-                    err= 'instance delete error'
-
-                done err
+                connection.itemId = ?'
+        ,   [@table, @original, itemId]
+        ,   (err, rows) ->
+                return done err, rows

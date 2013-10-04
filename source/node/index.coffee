@@ -120,6 +120,9 @@ module.exports= (cfg, log, done) ->
         maria.Server= require './models/Servers/Server'
         maria.ServerTag= require './models/Servers/ServerTag'
         maria.Item= require './models/Servers/Item'
+        maria.ItemEnchantment= require './models/Servers/ItemEnchantment'
+        maria.ItemServer= require './models/Servers/ItemServer'
+        maria.ItemTag= require './models/Servers/ItemTag'
 
         maria.User= require './models/User'
 

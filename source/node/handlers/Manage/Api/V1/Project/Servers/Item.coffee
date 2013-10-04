@@ -24,6 +24,7 @@ app.on 'mount', (parent) ->
     ,   access
     ,   maria(app.get 'db')
     ,   getItems(maria.Item)
+    ,   getItemsServer(maria.ItemServer)
     ,   (req, res) ->
             res.json 200, req.items
 
@@ -31,6 +32,9 @@ app.on 'mount', (parent) ->
     ,   access
     ,   maria(app.get 'db')
     ,   getItem(maria.Item)
+    ,   getItemServer(maria.ItemServer)
+    ,   getItemTag(maria.ItemTag)
+    ,   getItemEnchantment(maria.ItemEnchantment)
     ,   (req, res) ->
             res.json 200, req.item
 
@@ -67,12 +71,13 @@ access= (req, res, next) ->
 
 
 
-
 createItem= (Item) -> (req, res, next) ->
     newItem= new Item req.body
     Item.create newItem, req.maria, (err, item) ->
         req.item= item or null
         return next err
+
+
 
 
 
@@ -84,14 +89,51 @@ getItems= (Item) -> (req, res, next) ->
         req.items= items or null
         return next err
 
+getItemsServer= (ItemServer) -> (req, res, next) ->
+    ItemServer.query req.maria, (err, servers) ->
+        req.items.map (item, i) ->
+            req.items[i].servers= []
+
+            servers.map (row) ->
+                if item.id == row.itemId
+                    req.items[i].servers.push row
+        return next err
+
+getItemsTag= (ItemTag) -> (req, res, next) ->
+    ItemTag.query req.maria, (err, tags) ->
+        req.items.map (item, i) ->
+            req.items[i].tags= []
+
+            tags.map (row) ->
+                if item.id == row.itemId
+                    req.items[i].tags.push row
+        return next err
+
+
+
 
 
 ###
-Отдает сервер.
+Отдает айтем.
 ###
 getItem= (Item) -> (req, res, next) ->
     Item.get req.params.itemId, req.maria, (err, item) ->
         req.item= item or null
+        return next err
+
+getItemServer= (ItemServer) -> (req, res, next) ->
+    ItemServer.get req.params.itemId, req.maria, (err, servers) ->
+        req.item.servers= servers
+        return next err
+
+getItemTag= (ItemTag) -> (req, res, next) ->
+    ItemTag.get req.params.itemId, req.maria, (err, tags) ->
+        req.item.tags= tags
+        return next err
+
+getItemEnchantment= (ItemEnchantment) -> (req, res, next) ->
+    ItemEnchantment.get req.params.itemId, req.maria, (err, enchantments) ->
+        req.item.enchantments= enchantments
         return next err
 
 
@@ -99,11 +141,13 @@ getItem= (Item) -> (req, res, next) ->
 ###
 Изменяет сервер
 ###
-updateInstance= (Item) -> (req, res, next) ->
+updateItem= (Item) -> (req, res, next) ->
     newItem= new Item req.body
     Item.update req.params.itemId, newItem, req.maria, (err, instance) ->
         req.item= item or null
         return next err
+
+
 
 
 
@@ -116,96 +160,7 @@ deleteItem= (Item) -> (req, res, next) ->
 
 
 
-###
-Добавляет предмет.
-###
-###
-app.post '/', access, (req, res, next) ->
-    async.waterfall [
 
-        (done) ->
-            req.db.getConnection (err, conn) ->
-                return done err, conn if err
-                conn.query 'SET sql_mode="STRICT_TRANS_TABLES,NO_ZERO_DATE,NO_ZERO_IN_DATE"', (err) ->
-                    return done err, conn if err
-                    conn.query 'START TRANSACTION', (err) ->
-                        return done err, conn
-
-        (conn, done) ->
-            data=
-                material: req.body.material
-                titleRu: req.body.titleRu
-                titleEn: req.body.titleEn
-                price: req.body.price
-                amount: req.body.amount
-
-            conn.query 'INSERT INTO item SET ?'
-            ,   [data]
-            ,   (err, resp) ->
-                    id= resp.insertId if not err
-                    return done err, conn, id
-
-        (conn, id, done) ->
-            # а есть ли вобще энчаты у предмета
-            if not req.body.enchantments
-                return done null, conn, id
-
-            bulk= []
-            for enchantment, order in req.body.enchantments
-                bulk.push [id, enchantment.id, enchantment.level, order]
-            conn.query '
-                INSERT INTO item_enchantment
-                    (`itemId`, `enchantmentId`, `level`, `order`)
-                VALUES ?'
-            ,   [bulk]
-            ,   (err, resp) ->
-                    return done err, conn, id
-
-        (conn, id, done) ->
-            # а есть ли сервера
-            if not req.body.servers
-                return done null, conn
-
-            bulk= []
-            for server in req.body.servers
-                bulk.push [id, server.id]
-            conn.query "
-                INSERT INTO server_item
-                    (`itemId`, `serverId`)
-                VALUES ?
-                "
-            ,   [bulk]
-            ,   (err, resp) ->
-                    return done err, conn, id
-
-        (conn, id, done) ->
-            # а есть ли теги
-            if not req.body.tags
-                return done null, conn
-
-            bulk= []
-            for tag in req.body.tags
-                bulk.push [id, tag.id]
-            conn.query "
-                INSERT INTO item_tag
-                    (`itemId`, `tagId`)
-                VALUES ?
-                "
-            ,   [bulk]
-            ,   (err, resp) ->
-                    return done err, conn
-
-        (conn, done) ->
-            conn.query 'COMMIT', (err) ->
-                console.log err
-                return done err, conn
-
-    ],  (err, conn) ->
-            do conn.end if conn
-
-            return next err if err
-            return res.json 201, req.body
-###
 
 
 ###
