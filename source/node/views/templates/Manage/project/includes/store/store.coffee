@@ -120,7 +120,7 @@ app.factory 'ServerList', ($resource) ->
 
 
 app.factory 'TagList', ($resource) ->
-    $resource '/api/v1/tags/'
+    $resource '/api/v1/tags/server'
 
 
 

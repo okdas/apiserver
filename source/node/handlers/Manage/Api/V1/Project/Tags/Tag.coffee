@@ -30,6 +30,13 @@ app.on 'mount', (parent) ->
     ,   (req, res) ->
             res.json 200, req.tags
 
+    app.get '/server'
+    ,   access
+    ,   maria(app.get 'db')
+    ,   getServerTags(maria.Tag)
+    ,   (req, res) ->
+            res.json 200, req.tags
+
     app.get '/:tagId(\\d+)'
     ,   access
     ,   maria(app.get 'db')
@@ -101,6 +108,13 @@ getTagsTags= (TagTags) -> (req, res, next) ->
                     req.tags[i].parentTags.push
                         id: row.id
                         name: row.name
+        return next err
+
+
+
+getServerTags= (Tag) -> (req, res, next) ->
+    Tag.getWithServerId req.maria, (err, tags) ->
+        req.tags= tags or null
         return next err
 
 

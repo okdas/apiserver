@@ -16,6 +16,9 @@ app.on 'mount', (parent) ->
     ,   maria(app.get 'db')
     ,   maria.transaction()
     ,   createItem(maria.Item)
+    ,   createItemServer(maria.ItemServer)
+    ,   createItemTag(maria.ItemTag)
+    ,   createItemEnchantment(maria.ItemEnchantment)
     ,   maria.transaction.commit()
     ,   (req, res) ->
             res.json 200, req.item
@@ -43,6 +46,9 @@ app.on 'mount', (parent) ->
     ,   maria(app.get 'db')
     ,   maria.transaction()
     ,   updateItem(maria.Item)
+    ,   updateItemServer(maria.ItemServer)
+    ,   updateItemTag(maria.ItemTag)
+    ,   updateItemEnchantment(maria.ItemEnchantment)
     ,   maria.transaction.commit()
     ,   (req, res) ->
             res.json 200, req.item
@@ -80,20 +86,20 @@ createItem= (Item) -> (req, res, next) ->
 
 createItemServer= (ItemServer) -> (req, res, next) ->
     newItemServer= new ItemServer req.body.servers
-    ItemServer.create req.item.id, newItemServer, req.maria, (err, item) ->
-        req.item= item or null
+    ItemServer.create req.item.id, newItemServer, req.maria, (err, servers) ->
+        req.item.servers= servers or null
         return next err
 
 createItemTag= (ItemTag) -> (req, res, next) ->
     newItemTag= new ItemTag req.body.tags
-    ItemTag.create req.item.id,  newItemTag, req.maria, (err, item) ->
-        req.item= item or null
+    ItemTag.create req.item.id, newItemTag, req.maria, (err, tags) ->
+        req.item.tags= tags or null
         return next err
 
 createItemEnchantment= (ItemEnchantment) -> (req, res, next) ->
-    newItemEnchantment= new ItemEnchantment req.body.enchantment
-    ItemEnchantment.create req.item.id, newItemEnchantment, req.maria, (err, item) ->
-        req.item= item or null
+    newItemEnchantment= new ItemEnchantment req.body.enchantments
+    ItemEnchantment.create req.item.id, newItemEnchantment, req.maria, (err, enchantments) ->
+        req.item.enchantments= enchantments or null
         return next err
 
 
@@ -160,10 +166,27 @@ getItemEnchantment= (ItemEnchantment) -> (req, res, next) ->
 ###
 updateItem= (Item) -> (req, res, next) ->
     newItem= new Item req.body
-    Item.update req.params.itemId, newItem, req.maria, (err, instance) ->
+    Item.update req.params.itemId, newItem, req.maria, (err, item) ->
         req.item= item or null
         return next err
 
+updateItemServer= (ItemServer) -> (req, res, next) ->
+    newItemServer= new ItemServer req.body.servers
+    ItemServer.create req.params.itemId, newItemServer, req.maria, (err, servers) ->
+        req.item.servers= servers or null
+        return next err
+
+updateItemTag= (ItemTag) -> (req, res, next) ->
+    newItemTag= new ItemTag req.body.tags
+    ItemTag.create req.params.itemId, newItemTag, req.maria, (err, tags) ->
+        req.item.tags= tags or null
+        return next err
+
+updateItemEnchantment= (ItemEnchantment) -> (req, res, next) ->
+    newItemEnchantment= new ItemEnchantment req.body.enchantments
+    ItemEnchantment.create req.params.itemId, newItemEnchantment, req.maria, (err, enchantments) ->
+        req.item.enchantments= enchantments or null
+        return next err
 
 
 

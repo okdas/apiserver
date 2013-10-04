@@ -1,5 +1,6 @@
-module.exports= class User
+module.exports= class Tag
     @table: 'tag'
+    @originalServerTag: 'server_tag'
 
 
 
@@ -79,6 +80,27 @@ module.exports= class User
                     tag= new @ rows[0]
 
                 done err, tag
+
+
+
+    @getWithServerId: (maria, done) ->
+        maria.query '
+            SELECT
+                connection.serverId,
+                object.id,
+                object.name,
+                object.titleRuSingular,
+                object.titleRuPlural,
+                object.titleEnSingular,
+                object.titleEnPlural,
+                object.descRu,
+                object.descEn
+            FROM ?? AS object
+            JOIN ?? AS connection
+                ON connection.tagId = object.id'
+        ,   [@table, @originalServerTag]
+        ,   (err, rows) ->
+                done err, rows
 
 
 

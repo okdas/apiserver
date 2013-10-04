@@ -40,7 +40,7 @@ block section-body
             .row
                 .col-10
                     select.input(ng-model='server')
-                        option(ng-repeat='server in servers | filter:filterServer:server', value='{{server}}') {{server.title}}
+                        option(ng-repeat='server in servers', value='{{server}}') {{server.title}}
                 .col-1
                     button.btn(ng-click='addServer(server)',ng-disabled='!server')
                         i.icon-plus
