@@ -5,8 +5,8 @@ module.exports= class Item
 
     constructor: (data) ->
         @id= data.id if data.id
-        @material= data.serverId if data.serverId
-        @amount= data.host if data.host
+        @material= data.material if data.material
+        @amount= data.amount if data.amount
         @price= data.price if data.price
         @name= data.name if data.name
         @titleRu= data.titleRu if data.titleRu

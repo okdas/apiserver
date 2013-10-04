@@ -72,12 +72,29 @@ access= (req, res, next) ->
 
 
 createItem= (Item) -> (req, res, next) ->
+    console.log 'REQ', req.body
     newItem= new Item req.body
     Item.create newItem, req.maria, (err, item) ->
         req.item= item or null
         return next err
 
+createItemServer= (ItemServer) -> (req, res, next) ->
+    newItemServer= new ItemServer req.body.servers
+    ItemServer.create req.item.id, newItemServer, req.maria, (err, item) ->
+        req.item= item or null
+        return next err
 
+createItemTag= (ItemTag) -> (req, res, next) ->
+    newItemTag= new ItemTag req.body.tags
+    ItemTag.create req.item.id,  newItemTag, req.maria, (err, item) ->
+        req.item= item or null
+        return next err
+
+createItemEnchantment= (ItemEnchantment) -> (req, res, next) ->
+    newItemEnchantment= new ItemEnchantment req.body.enchantment
+    ItemEnchantment.create req.item.id, newItemEnchantment, req.maria, (err, item) ->
+        req.item= item or null
+        return next err
 
 
 
