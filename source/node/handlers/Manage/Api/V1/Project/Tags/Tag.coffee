@@ -114,7 +114,21 @@ getTagsTags= (TagTags) -> (req, res, next) ->
 
 getServerTags= (Tag) -> (req, res, next) ->
     Tag.getWithServerId req.maria, (err, tags) ->
-        req.tags= tags or null
+        req.tags= []
+
+        tags.map (tag, i) ->
+            exists= false
+            req.tags.map (reqTag, i) ->
+                if reqTag.id == tag.id
+                    exists= true
+                    req.tags[i].servers.push tag.serverId
+
+            if !exists
+                tag.servers=[]
+                tag.servers.push tag.serverId
+                delete tag.serverId
+                req.tags.push tag
+
         return next err
 
 

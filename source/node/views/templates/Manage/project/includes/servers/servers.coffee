@@ -117,6 +117,7 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagL
     if $route.current.params.serverId
         $scope.server= Server.get $route.current.params, ->
             $scope.tags= TagList.query ->
+                console.log 'qq', $scope.tags
                 $scope.state= 'loaded'
                 $scope.action= 'update'
 
@@ -128,13 +129,13 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagL
 
 
     $scope.filterTag= (tag) ->
-        isThere= true
+        show= true
         if $scope.server.tags
             $scope.server.tags.map (t) ->
                 if t.id == tag.id
-                    isThere= false
+                    show= false
 
-        return isThere
+        return show
 
 
     $scope.addTag= (tag) ->
