@@ -1,5 +1,5 @@
 module.exports= class Instance
-    @table: 'instance'
+    @table: 'server_instance'
 
 
 

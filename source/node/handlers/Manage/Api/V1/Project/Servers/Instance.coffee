@@ -81,7 +81,7 @@ createInstance= (Instance) -> (req, res, next) ->
 ###
 getInstances= (Instance) -> (req, res, next) ->
     Instance.query req.maria, (err, instances) ->
-        req.instance= instances or null
+        req.instances= instances or null
         return next err
 
 
