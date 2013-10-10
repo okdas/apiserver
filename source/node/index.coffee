@@ -136,7 +136,10 @@ module.exports= (cfg, log, done) ->
         maria.Material= require './models/Content/Material'
         maria.Enchantment= require './models/Content/Enchantment'
 
-        maria.BukkitShipping= require './models/BukkitShipping/Item'
+        maria.BukkitShipping= {}
+        maria.BukkitShipping.Item= require './models/BukkitShipping/Item'
+        maria.BukkitShipping.ItemEnchantment= require './models/BukkitShipping/ItemEnchantment'
+        maria.BukkitShipping.Shipment= require './models/BukkitShipping/Shipment'
 
 
         app.use (req, res, next) ->

@@ -10,7 +10,7 @@ app.on 'mount', (parent) ->
 
 
 
-    app.get '/:serverKey/:playerName/list'
+    app.get '/:serverKey/:playerName/items/list'
     ,   maria(app.get 'db')
     ,   server(maria.Server)
     ,   player(maria.Player)
@@ -85,7 +85,7 @@ player= (Player) -> (req, res, next) ->
 
 
 getItems= (BukkitShipping) -> (req, res, next) ->
-    BukkitShipping.queryItem req.player.id, req.server.id, req.maria, (err, items) ->
+    BukkitShipping.Item.query req.player.id, req.server.id, req.maria, (err, items) ->
         req.items= items or null
         return next err
 
@@ -95,7 +95,7 @@ getItemsEnchantment= (BukkitShipping) -> (req, res, next) ->
         req.items[i].enchantments= []
         itemIds.push item.id
 
-    BukkitShipping.queryEnchantment itemIds, req.maria, (err, enchantments) ->
+    BukkitShipping.ItemEnchantment.query itemIds, req.maria, (err, enchantments) ->
         enchantments.map (ench) ->
             req.items.map (item, i) ->
                 if item.id == ench.id
@@ -106,7 +106,7 @@ getItemsEnchantment= (BukkitShipping) -> (req, res, next) ->
 
 
 getShipments= (BukkitShipping) -> (req, res, next) ->
-    BukkitShipping.queryShipment req.player.id, req.server.id, req.maria, (err, shipments) ->
+    BukkitShipping.Shipment.query req.player.id, req.server.id, req.maria, (err, shipments) ->
         req.shipments= shipments or null
         return next err
 

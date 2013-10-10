@@ -2,7 +2,6 @@ module.exports= class Item
     @table: 'player_server_item'
     @original: 'item'
     @originalPlayer: 'player'
-    @originalEnchantment: 'player_server_item_enchantment'
     @originalShipment: 'player_shipment'
     @originalShipmentItem: 'player_shipment_items'
 
@@ -32,7 +31,7 @@ module.exports= class Item
 
 
 
-    @queryItem: (playerId, serverId, maria, done) ->
+    @query: (playerId, serverId, maria, done) ->
         maria.query '
             SELECT
                 connection.id,
@@ -56,7 +55,7 @@ module.exports= class Item
 
 
 
-    getItems: (itemIds, maria, done) ->
+    @get: (itemIds, maria, done) ->
         maria.query '
             SELECT
                 connection.id,
@@ -70,20 +69,6 @@ module.exports= class Item
                 done err, rows
 
 
-
-    @queryEnchantment: (itemIds, maria, done) ->
-        maria.query '
-            SELECT
-                itemId AS id,
-                enchantmentId,
-                level
-            FROM
-                ??
-            WHERE
-                itemId IN (?)'
-        ,   [@originalEnchantment, itemIds]
-        ,   (err, rows) =>
-                done err, rows
 
 
 
