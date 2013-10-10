@@ -75,6 +75,11 @@ module.exports= (grunt) ->
                 }]
 
         watch:
+            jade:
+                files: ['**/*.jade', '**/*.coffee']
+                tasks: ['jade']
+                options:
+                    cwd: '<%= pkg.config.build.src.node %>'
             scripts:
                 files: '<%= pkg.config.build.src.node %>/views/assets/**/*'
                 tasks: ['jade', 'less', 'copy:views']

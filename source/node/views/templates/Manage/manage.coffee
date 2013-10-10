@@ -43,7 +43,7 @@ app.controller 'CurrentUserCtrl', ($scope, $window, CurrentUser) ->
 
 
 
-app.controller 'ViewCtrl', ($scope, $location, $http, $window, CurrentUser) ->
+app.controller 'ViewCtrl', ($scope, $rootScope, $location, $http, $window, CurrentUser) ->
     $scope.referer= do $location.absUrl
     $scope.dialog=
         overlay: false
@@ -72,3 +72,22 @@ app.controller 'ViewCtrl', ($scope, $location, $http, $window, CurrentUser) ->
             $window.location.href= 'project/'
         , ->
             $scope.user.pass= ''
+
+
+
+    $rootScope.view=
+        dialog:
+            overlay: null
+            state: null
+
+    $rootScope.showViewDialog= (type) ->
+        $rootScope.view.dialog.error= null
+        $rootScope.view.dialog.state= 'none'
+        $rootScope.view.dialog.overlay= type or true
+
+    $rootScope.hideViewDialog= () ->
+        $rootScope.view.dialog.overlay= null
+
+
+    $scope.showPlayerPaymentDialog= () ->
+        $scope.showDialog 'payment'

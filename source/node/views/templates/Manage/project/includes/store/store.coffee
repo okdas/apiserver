@@ -1,4 +1,4 @@
-app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) ->
+app= angular.module 'project.store', ['project.content'], ($routeProvider) ->
 
     # Магазин
 
@@ -21,28 +21,6 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
     $routeProvider.when '/store/items/item/update/:itemId',
         templateUrl: 'partials/store/items/item/form/', controller: 'StoreItemFormCtrl'
 
-    # Bukkit. Материалы
-
-    $routeProvider.when '/store/materials/list',
-        templateUrl: 'partials/store/materials/', controller: 'StoreMaterialListCtrl'
-
-    $routeProvider.when '/store/materials/material/create',
-        templateUrl: 'partials/store/materials/material/form/', controller: 'StoreMaterialFormCtrl'
-
-    $routeProvider.when '/store/materials/material/update/:materialId',
-        templateUrl: 'partials/store/materials/material/form/', controller: 'StoreMaterialFormCtrl'
-
-    # Bukkit. Чары
-
-    $routeProvider.when '/store/enchantments/list',
-        templateUrl: 'partials/store/enchantments/', controller: 'StoreEnchantmentCtrl'
-
-    $routeProvider.when '/store/enchantments/enchantment/create',
-        templateUrl: 'partials/store/enchantments/enchantment/form/', controller: 'StoreEnchantmentFormCtrl'
-
-    $routeProvider.when '/store/enchantments/enchantment/update/:enchantmentId',
-        templateUrl: 'partials/store/enchantments/enchantment/form/', controller: 'StoreEnchantmentFormCtrl'
-
 
 
 
@@ -52,45 +30,6 @@ app= angular.module 'project.store', ['ngResource','ngRoute'], ($routeProvider) 
 Ресурсы
 
 ###
-
-
-###
-Модель материала.
-###
-app.factory 'Material', ($resource) ->
-    $resource '/api/v1/bukkit/materials/:materialId', {},
-        create:
-            method: 'post'
-
-        update:
-            method: 'put'
-            params:
-                materialId: '@id'
-
-        delete:
-            method: 'delete'
-            params:
-                materialId: '@id'
-
-
-
-###
-Модель чар.
-###
-app.factory 'Enchantment', ($resource) ->
-    $resource '/api/v1/bukkit/enchantments/:enchantmentId', {},
-        create:
-            method: 'post'
-
-        update:
-            method: 'put'
-            params:
-                enchantmentId: '@id'
-
-        delete:
-            method: 'delete'
-            params:
-                enchantmentId: '@id'
 
 
 
@@ -112,13 +51,51 @@ app.factory 'Item', ($resource) ->
             params:
                 itemId: '@id'
 
+###
+Модель материала.
+###
+app.factory 'Material', ($resource) ->
+    $resource '/api/v1/bukkit/materials/:materialId', {},
+        create:
+            method: 'post'
 
+        update:
+            method: 'put'
+            params:
+                materialId: '@id'
 
-app.factory 'ServerList', ($resource) ->
+        delete:
+            method: 'delete'
+            params:
+                materialId: '@id'
+
+###
+Модель чар.
+###
+app.factory 'Enchantment', ($resource) ->
+    $resource '/api/v1/bukkit/enchantments/:enchantmentId', {},
+        create:
+            method: 'post'
+
+        update:
+            method: 'put'
+            params:
+                enchantmentId: '@id'
+
+        delete:
+            method: 'delete'
+            params:
+                enchantmentId: '@id'
+
+###
+Модель сервера.
+###
+app.factory 'Server', ($resource) ->
     $resource '/api/v1/servers/server'
 
-
-
+###
+Модель тега.
+###
 app.factory 'TagList', ($resource) ->
     $resource '/api/v1/tags/server'
 
@@ -133,11 +110,13 @@ app.factory 'TagList', ($resource) ->
 ###
 
 
+
 ###
 Контроллер панели управления.
 ###
 app.controller 'StoreDashboardCtrl', ($scope) ->
     $scope.state= 'loaded'
+
 
 
 ###
@@ -153,135 +132,26 @@ app.controller 'StoreOrderListCtrl', ($scope, $location, Order) ->
 
 
 
-
-
-###
-Контроллер материалов баккита
-###
-app.controller 'StoreMaterialListCtrl', ($scope, $location, Material) ->
-    load= ->
-        $scope.materials= Material.query ->
-            $scope.state= 'loaded'
-
-    do load
-
-    $scope.reload= ->
-        do load
-
-
-
-###
-Контроллер формы материала.
-###
-app.controller 'StoreMaterialFormCtrl', ($scope, $route, $q, $location, Material) ->
-    if $route.current.params.materialId
-        $scope.material= Material.get $route.current.params, ->
-            $scope.state= 'loaded'
-            $scope.action= 'update'
-    else
-        $scope.material= new Material
-        $scope.state= 'loaded'
-        $scope.action= 'create'
-
-    # Действия
-
-    $scope.create= (MaterialForm) ->
-        $scope.material.$create ->
-            $location.path '/store/materials/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        MaterialForm[input].$setValidity error.error, false
-
-    $scope.update= (MaterialForm) ->
-        $scope.material.$update ->
-            $location.path '/store/materials/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        MaterialForm[input].$setValidity error.error, false
-
-    $scope.delete= ->
-        $scope.material.$delete ->
-            $location.path '/store/materials/list'
-
-
-
-
-
-###
-Контроллер чар баккита
-###
-app.controller 'StoreEnchantmentCtrl', ($scope, $location, Enchantment) ->
-    load= ->
-        $scope.enchantments= Enchantment.query ->
-            $scope.state= 'loaded'
-
-    do load
-
-    $scope.reload= ->
-        do load
-
-
-
-###
-Контроллер формы чара.
-###
-app.controller 'StoreEnchantmentFormCtrl', ($scope, $route, $q, $location, Enchantment) ->
-    if $route.current.params.enchantmentId
-        $scope.enchantment= Enchantment.get $route.current.params, ->
-            $scope.state= 'loaded'
-            $scope.action= 'update'
-    else
-        $scope.enchantment= new Enchantment
-        $scope.state= 'loaded'
-        $scope.action= 'create'
-
-    # Действия
-
-    $scope.create= (EnchantmentForm) ->
-        $scope.enchantment.$create ->
-            $location.path '/store/enchantments/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        EnchantmentForm[input].$setValidity error.error, false
-
-    $scope.update= (EnchantmentForm) ->
-        $scope.enchantment.$update ->
-            $location.path '/store/enchantments/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        EnchantmentForm[input].$setValidity error.error, false
-
-    $scope.delete= ->
-        $scope.enchantment.$delete ->
-            $location.path '/store/enchantments/list'
-
-
-
-
-
 ###
 Контроллер списка предметов.
 ###
 app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
     load= ->
-        $scope.items= Item.query ->
+        $scope.items= Item.query (items) ->
             $scope.state= 'loaded'
-            console.log 'Предметы загружены'
+            for item in items
+                for server in item.servers
+                    server.abbr= 'L'
 
     do load
 
     $scope.showDetails= (item) ->
-        $scope.dialog.item= item
-        $scope.dialog.templateUrl= 'item/dialog/'
-        $scope.showDialog true
+        $scope.view.dialog.item= item
+        $scope.showViewDialog 'item'
 
     $scope.hideDetails= ->
-        $scope.dialog.item= null
-        do $scope.hideDialog
+        $scope.view.dialog.item= null
+        do $scope.hideViewDialog
 
     $scope.reload= ->
         do load
@@ -291,24 +161,24 @@ app.controller 'StoreItemListCtrl', ($scope, $location, Item) ->
 ###
 Контроллер формы предмета.
 ###
-app.controller 'StoreItemFormCtrl', ($scope, $route, $q, $location, Item, Material, Enchantment, ServerList, TagList) ->
-    if $route.current.params.itemId
-        $scope.item= Item.get $route.current.params, ->
-            $scope.materials= Material.query ->
-                $scope.enchantments= Enchantment.query ->
-                    $scope.servers= ServerList.query ->
-                        $scope.tags= TagList.query ->
-                            $scope.state= 'loaded'
-                            $scope.action= 'update'
-    else
-        $scope.item= new Item
-        $scope.materials= Material.query ->
-            $scope.enchantments= Enchantment.query ->
-                $scope.servers= ServerList.query ->
-                    $scope.tags= TagList.query ->
-                        $scope.state= 'loaded'
-                        $scope.action= 'create'
+app.controller 'StoreItemDialogCtrl', ($scope, $route, $q, $location, Item, Material, Enchantment, Server, Tag) ->
 
+    $scope.materials= Material.query ->
+    $scope.enchantments= Enchantment.query ->
+    $scope.servers= Server.query ->
+    $scope.tags= Tag.query ->
+
+    promise= $q.all
+        materials: $scope.materials.$promise
+        enchantments: $scope.enchantments.$promise
+        servers: $scope.servers.$promise
+        tags: $scope.tags.$promise
+    promise.then (resolved) ->
+            console.log 'resolved', resolved
+            $scope.state= 'none'
+    ,   (error) ->
+            $scope.state= 'fail'
+            $scope.error= error
 
     $scope.filterServer= (server) ->
         show= true

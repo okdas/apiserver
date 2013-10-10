@@ -1,6 +1,16 @@
 extends ../layout
 
-block section-side
-    ul.nav
+
+
+block section--head--title
+    b Управление серверами
+
+
+
+append section--side
+
+    ul.nav.nav-list
+        li: a(ng-href="#/store") Сводка
+        li.nav-list--sep
         li: a(href='#/servers/server/list') Серверы
         li: a(href='#/servers/instance/list') Инстансы

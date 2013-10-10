@@ -1,27 +1,28 @@
 extends ../../layout
 extends ../layout
 
-block section-body
+block section--main
+
+    .section--main--bar: .row
+        .col-12
+            a.btn.btn-primary(href='#/servers/server/create')= 'Создать'
+
     table.table.players
         thead
             tr
-                th
-                th.col-flex: .sortable: .sortable-cell Имя сервера
-                th Ключ
-                th
+                th.t
+                th.t.col-flex: .sortable: .sortable-cell Имя сервера
+                th.t Ключ
+                th.t
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
 
         tbody
             tr(ng-repeat='server in servers')
-                td {{server.id}}
-                td {{server.title}}
-                td {{server.key}}
-                td
+                td.t {{server.id}}
+                td.t {{server.title}}
+                td.t {{server.key}}
+                td.t
                     a(href='#/servers/server/update/{{server.id}}')
                         button.btn.btn-success
                             i.icon-wrench
-
-    .row
-        .col-12
-            a(href='#/servers/server/create')= 'Создать'

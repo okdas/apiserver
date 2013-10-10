@@ -1,0 +1,58 @@
+extends ../layout
+
+
+
+block section--head--title
+    a(href='#/content') Управление содержимым
+
+
+
+block section--main
+
+    .section--main--bar: .input-rich
+        input.input(placeholder='Поиск материалов', ng-model='materialSearch', required)
+        a.input-action(ng-show="!!materialSearch", ng-click="searchClear()"): i.icon-remove
+
+
+    style
+    :less
+        .item--title {
+            white-space: initial;
+        }
+        .item--image {
+            margin: -8px -14px;
+            padding: 1px;
+            background: #eee;
+            border: 1px solid #ccc;
+            box-shadow: inset 0 1px 1px rgba(0, 0, 0, 0.075);
+        }
+
+    table.table
+        thead
+            tr
+
+                th.t(colspan=3)
+                    .sortable: .sortable-cell Материал
+
+                th.t
+                    button.btn.btn-info(ng-click='reload()')
+                        i.icon-refresh
+
+        tbody
+            tr(ng-repeat='material in materials | filter:materialSearch')
+
+                td.t.col-flex
+                    a.col.item--title {{material.titleRu}}. {{material.titleEn}}
+                td.t
+                    a.col.col-right {{material.id}}
+                td.t
+                    a.col: img.item--image(ng-src='{{material.imageUrl}}')
+
+                td.t
+                    a.col.btn.btn-success(ng-href='#/content/materials/material/update/{{material.id}}')
+                        i.icon-wrench
+
+    .row
+        .col-12
+            a(href='#/content/materials/material/create')= 'Создать'
+
