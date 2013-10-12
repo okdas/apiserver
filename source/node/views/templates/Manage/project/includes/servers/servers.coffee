@@ -1,7 +1,6 @@
 app= angular.module 'project.servers', ['ngResource','ngRoute'], ($routeProvider) ->
 
     # Серверы
-
     $routeProvider.when '/servers',
         templateUrl: 'partials/servers/', controller: 'ServersDashboardCtrl'
 
@@ -14,8 +13,8 @@ app= angular.module 'project.servers', ['ngResource','ngRoute'], ($routeProvider
     $routeProvider.when '/servers/server/update/:serverId',
         templateUrl: 'partials/servers/servers/server/form/', controller: 'ServersServerFormCtrl'
 
-    # Серверы. Инстансы
 
+    # Серверы. Инстансы
     $routeProvider.when '/servers/instance/list',
         templateUrl: 'partials/servers/instances/', controller: 'ServersInstanceListCtrl'
 
@@ -34,10 +33,11 @@ app= angular.module 'project.servers', ['ngResource','ngRoute'], ($routeProvider
 Ресурсы
 
 ###
+app.factory 'Server', ($resource) ->
+    $resource '/api/v1/servers/server/:serverId'
 
 
-###
-Модель сервера.
+# Модель сервера.
 ###
 app.factory 'Server', ($resource) ->
     $resource '/api/v1/servers/server/:serverId', {},
@@ -53,11 +53,10 @@ app.factory 'Server', ($resource) ->
             method: 'delete'
             params:
                 serverId: '@id'
+###
 
 
-###
-Модель инстанса.
-###
+# Модель инстанса.
 app.factory 'Instance', ($resource) ->
     $resource '/api/v1/servers/instance/:instanceId', {},
         create:
@@ -75,34 +74,30 @@ app.factory 'Instance', ($resource) ->
 
 
 
+# Cписок тегов
 app.factory 'TagList', ($resource) ->
     $resource '/api/v1/tags'
 
 
 
 
-###
 
+###
 Контроллеры
-
 ###
-
-
-###
-Контроллер панели управления.
-###
-app.controller 'ServersDashboardCtrl', ($scope, $q) ->
+# Контроллер панели управления.
+app.controller 'ServersDashboardCtrl', ($scope) ->
     $scope.state= 'loaded'
 
 
-###
-Контроллер списка серверов.
-###
-app.controller 'ServersServerListCtrl', ($scope, Server) ->
+
+# Контроллер списка серверов.
+app.controller 'ServersServerListCtrl', ($rootScope, $scope, Server) ->
     load= ->
         $scope.servers= Server.query ->
             $scope.state= 'loaded'
-            console.log 'Сервера загружены'
+        , (res) ->
+            $rootScope.error= res
 
     do load
 
@@ -110,23 +105,26 @@ app.controller 'ServersServerListCtrl', ($scope, Server) ->
         do load
 
 
-###
-Контроллер формы сервера.
-###
-app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagList) ->
+
+# Контроллер формы сервера.
+app.controller 'ServersServerFormCtrl', ($rootScope, $scope, $location, Server, TagList) ->
     if $route.current.params.serverId
         $scope.server= Server.get $route.current.params, ->
-            $scope.tags= TagList.query ->
-                console.log 'qq', $scope.tags
-                $scope.state= 'loaded'
-                $scope.action= 'update'
+            console.log 'serv', $scope.server
 
+            #$scope.tags= TagList.query ->
+            console.log 'tags', $scope.tags
+            #$scope.state= 'loaded'
+            $scope.action= 'update'
+        , (res) ->
+            $rootScope.error= res
     else
         $scope.tags= TagList.query ->
             $scope.server= new Server
             $scope.state= 'loaded'
             $scope.action= 'create'
-
+        , (res) ->
+            $rootScope.error= res
 
     $scope.filterTag= (tag) ->
         show= true
@@ -136,7 +134,6 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagL
                     show= false
 
         return show
-
 
     $scope.addTag= (tag) ->
         newTag= JSON.parse angular.copy tag
@@ -150,41 +147,34 @@ app.controller 'ServersServerFormCtrl', ($scope, $route, $location, Server, TagL
             if tg.id == tag.id
                 $scope.server.tags.splice i, 1
 
-
-
-
-
     # Действия
-
-    $scope.create= (ServerForm) ->
+    $scope.create= ->
         $scope.server.$create ->
-            $location.path '/servers/server/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        ServerForm[input].$setValidity error.error, false
+            $location.path '/servers/server/list'
+        , (res) ->
+            $rootScope.error= res
 
-    $scope.update= (ServerForm) ->
+    $scope.update= ->
         $scope.server.$update ->
-            $location.path '/servers/server/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        ServerForm[input].$setValidity error.error, false
+            $location.path '/servers/server/list'
+        , (res) ->
+            $rootScope.error= res
 
     $scope.delete= ->
         $scope.server.$delete ->
             $location.path '/servers/server/list'
+        , (res) ->
+            $rootScope.error= res
 
 
-###
-Контроллер инстанса.
-###
-app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
+
+# Контроллер инстанса.
+app.controller 'ServersInstanceListCtrl', ($rootScope, $scope, Instance) ->
     load= ->
         $scope.instances= Instance.query ->
             $scope.state= 'loaded'
-            console.log 'Инстансы загружены'
+        , (res) ->
+            $rootScope.error= res
 
     do load
 
@@ -201,40 +191,44 @@ app.controller 'ServersInstanceListCtrl', ($scope, Instance) ->
         do load
 
 
-###
-Контроллер формы инстанса.
-###
-app.controller 'ServersInstanceFormCtrl', ($scope, $route, $location, Instance, Server) ->
+
+# Контроллер формы инстанса.
+app.controller 'ServersInstanceFormCtrl', ($rootScope, $scope, $location, Instance, Serverq) ->
+    Server = Serverq
     if $route.current.params.instanceId
         $scope.instance= Instance.get $route.current.params, ->
             $scope.state= 'loaded'
             $scope.action= 'update'
+        , (res) ->
+            $rootScope.error= res
     else
         $scope.instance= new Instance
         $scope.state= 'loaded'
         $scope.action= 'create'
 
+
     $scope.servers= Server.query ->
+        null
+    , (res) ->
+            $rootScope.error= res
+
+
 
     # Действия
-    $scope.create= (InstanceForm) ->
+    $scope.create= ->
         $scope.instance.$create ->
             $location.path '/servers/instance/list'
-        ,   (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        InstanceForm[input].$setValidity error.error, false
+        , (res) ->
+            $rootScope.error= res
 
-    $scope.update= (InstanceForm) ->
+    $scope.update= ->
         $scope.instance.$update ->
             $location.path '/servers/instance/list'
-        , (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        InstanceForm[input].$setValidity error.error, false
+        , (res) ->
+            $rootScope.error= res
 
     $scope.delete= ->
         $scope.instance.$delete ->
             $location.path '/servers/instance/list'
+        , (res) ->
+            $rootScope.error= res

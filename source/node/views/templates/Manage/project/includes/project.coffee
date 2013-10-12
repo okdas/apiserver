@@ -5,3 +5,10 @@ app= angular.module 'manage'
 
         $routeProvider.otherwise
             redirectTo: '/'
+
+
+app.controller 'AppCtrl', ($rootScope, $scope, $location, $http, $window) ->
+    $rootScope.error= ''
+
+    $rootScope.hideError= ->
+        $rootScope.error= null

@@ -88,6 +88,5 @@ app.controller 'ViewCtrl', ($scope, $rootScope, $location, $http, $window, Curre
     $rootScope.hideViewDialog= () ->
         $rootScope.view.dialog.overlay= null
 
-
     $scope.showPlayerPaymentDialog= () ->
         $scope.showDialog 'payment'

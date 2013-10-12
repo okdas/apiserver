@@ -2,7 +2,11 @@ extends ../../layout
 extends ../layout
 
 block section--main
-    input.input(placeholder='Поиск', ng-model='playerSearch')
+
+    .section--main--bar: .row
+        .col-12
+            input.input(placeholder='Поиск', ng-model='playerSearch')
+
     table.table.players
         thead
             tr

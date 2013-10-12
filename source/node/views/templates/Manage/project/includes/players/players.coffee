@@ -1,10 +1,8 @@
 app= angular.module 'project.players', ['ngResource','ngRoute'], ($routeProvider) ->
 
     # Игроки
-
     $routeProvider.when '/players',
         templateUrl: 'partials/players/', controller: 'PlayersDashboardCtrl'
-
 
 
     $routeProvider.when '/players/player/list',
@@ -16,27 +14,25 @@ app= angular.module 'project.players', ['ngResource','ngRoute'], ($routeProvider
     $routeProvider.when '/players/player/update/:playerId',
         templateUrl: 'partials/players/players/player/form/', controller: 'PlayersPlayerFormCtrl'
 
-    # Игроки. Рассылка
 
+    # Игроки. Рассылка
     $routeProvider.when '/players/sender/mail',
         templateUrl: 'partials/players/sender/mail/', controller: 'PlayersSenderMailCtrl'
 
     $routeProvider.when '/players/sender/sms',
         templateUrl: 'partials/players/sender/sms/', controller: 'PlayersSenderSmsCtrl'
 
-    # Игроки. Платежи
 
+    # Игроки. Платежи
     $routeProvider.when '/players/payment/list',
         templateUrl: 'partials/players/payments/', controller: 'PlayersPaymentListCtrl'
 
 
     # Игроки. Группы
-
     #$routeProvider.when '/players/group/list',
     #    templateUrl: 'partials/players/group/list/', controller: 'PlayersGroupListCtrl'
 
     # Игроки. Разрешения
-
     #$routeProvider.when '/players/permission/list',
     #    templateUrl: 'partials/players/permission/list/', controller: 'PlayersPermissionListCtrl'
 
@@ -50,13 +46,13 @@ app= angular.module 'project.players', ['ngResource','ngRoute'], ($routeProvider
 Ресурсы
 
 ###
-
-
+# Список игроков
 app.factory 'PlayerList', ($resource) ->
     $resource '/api/v1/players', {}
 
 
 
+# Платежи
 app.factory 'Payment', ($resource) ->
     $resource '/api/v1/players/payment/:paymentId', {},
         update:
@@ -66,6 +62,7 @@ app.factory 'Payment', ($resource) ->
 
 
 
+# Игрок
 app.factory 'Player', ($resource) ->
     $resource '/api/v1/players/player/:playerId', {},
         create:
@@ -83,6 +80,7 @@ app.factory 'Player', ($resource) ->
 
 
 
+# Активация игрока
 app.factory 'PlayerActivate', ($resource) ->
     $resource '/api/v1/players/player/activate/:playerId', {},
         activate:
@@ -92,6 +90,7 @@ app.factory 'PlayerActivate', ($resource) ->
 
 
 
+# Деактивация игрока
 app.factory 'PlayerDeactivate', ($resource) ->
     $resource '/api/v1/players/player/deactivate/:playerId', {},
         deactivate:
@@ -101,11 +100,7 @@ app.factory 'PlayerDeactivate', ($resource) ->
 
 
 
-app.factory 'PlayerGroupList', ($resource) ->
-    $resource '/api/v1/players/groups', {}
-
-
-
+# Рассылка почты
 app.factory 'PlayerSenderMail', ($resource) ->
     $resource '/api/v1/sender/mail', {},
         send:
@@ -113,6 +108,7 @@ app.factory 'PlayerSenderMail', ($resource) ->
 
 
 
+# Рассылка смс
 app.factory 'PlayerSenderSms', ($resource) ->
     $resource '/api/v1/sender/sms', {},
         send:
@@ -127,23 +123,19 @@ app.factory 'PlayerSenderSms', ($resource) ->
 Контроллеры
 
 ###
-
-
-###
-Контроллер панели управления.
-###
+# Контроллер панели управления.
 app.controller 'PlayersDashboardCtrl', ($scope) ->
     $scope.state= 'loaded'
 
 
-###
-Контроллер списка игроков.
-###
-app.controller 'PlayersPlayerListCtrl', ($scope, Player, PlayerActivate, PlayerDeactivate) ->
+
+# Контроллер списка игроков.
+app.controller 'PlayersPlayerListCtrl', ($rootScope, $scope, Player, PlayerActivate, PlayerDeactivate) ->
     load= ->
         $scope.players= Player.query ->
             $scope.state= 'loaded'
-            console.log 'Пользователи загружены'
+        , (res) ->
+            $rootScope.error= res
 
     do load
 
@@ -151,58 +143,58 @@ app.controller 'PlayersPlayerListCtrl', ($scope, Player, PlayerActivate, PlayerD
         doActivatePlayer= new PlayerActivate player
         doActivatePlayer.$activate ->
             do load
+        , (res) ->
+            $rootScope.error= res
 
     $scope.deactivate= (player) ->
         doActivatePlayer= new PlayerDeactivate player
         doActivatePlayer.$deactivate ->
             do load
+        , (res) ->
+            $rootScope.error= res
 
     $scope.reload= ->
         do load
 
 
 
-###
-Контроллер формы игрока.
-###
-app.controller 'PlayersPlayerFormCtrl', ($scope, $route, $q, $location, Player) ->
+# Контроллер формы игрока.
+app.controller 'PlayersPlayerFormCtrl', ($rootScope, $scope, $location, Player) ->
     if $route.current.params.playerId
         $scope.player= Player.get $route.current.params, ->
             $scope.state= 'loaded'
             $scope.action= 'update'
+        , (res) ->
+            $rootScope.error= res
+
     else
         $scope.player= new Player
         $scope.state= 'loaded'
         $scope.action= 'create'
 
     # Действия
-
-    $scope.create= (PlayerForm) ->
+    $scope.create= ->
         $scope.player.$create ->
-            $location.path '/players/player/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        PlayerForm[input].$setValidity error.error, false
+            $location.path '/players/player/list'
+        , (res) ->
+            $rootScope.error= res
 
-    $scope.update= (PlayerForm) ->
+    $scope.update= ->
         $scope.player.$update ->
-            $location.path '/players/player/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        PlayerForm[input].$setValidity error.error, false
+            $location.path '/players/player/list'
+        , (res) ->
+            $rootScope.error= res
 
     $scope.delete= ->
         $scope.player.$delete ->
             $location.path '/players/player/list'
+        , (res) ->
+            $rootScope.error= res
 
 
 
-###
-Контроллер списка платежей.
-###
-app.controller 'PlayersPaymentListCtrl', ($scope, Payment) ->
+# Контроллер списка платежей.
+app.controller 'PlayersPaymentListCtrl', ($rootScope, $scope, Payment) ->
     load= ->
         $scope.payments= Payment.query ->
             $scope.paymentStatuses= [
@@ -212,88 +204,84 @@ app.controller 'PlayersPaymentListCtrl', ($scope, Payment) ->
             ]
 
             $scope.state= 'loaded'
-            console.log 'Платежи загружены'
+        , (res) ->
+            $rootScope.error= res
 
     do load
 
-
+    # Дествие
     $scope.change= (payment) ->
         doChangePayment= new Payment payment
         doChangePayment.$update ->
             do load
-
+        , (res) ->
+            $rootScope.error= res
 
     $scope.reload= ->
         do load
 
 
 
-app.controller 'PlayersSenderMailCtrl', ($scope, $location, Player, PlayerSenderMail) ->
+# Контроллер рассылки на почту
+app.controller 'PlayersSenderMailCtrl', ($rootScope, $scope, $location, Player, PlayerSenderMail) ->
     $scope.mail= new PlayerSenderMail
 
 
     load= ->
         $scope.players= Player.query ->
             $scope.state= 'loaded'
-            console.log 'Пользователи загружены'
+        , (res) ->
+            $rootScope.error= res
 
     do load
-
 
     $scope.togglePlayer= (player) ->
         player.selected= !player.selected
 
-
-    $scope.send= (MailForm) ->
+    # Отправка
+    $scope.send= ->
         $scope.mail.to= []
         $scope.players.map (val, i) ->
             if val.selected == true
                 $scope.mail.to.push val.email
 
         $scope.mail.$send ->
-            $location.path '/players/player/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        MailForm[input].$setValidity error.error, false
-
+            $location.path '/players/player/list'
+        , (res) ->
+            $rootScope.error= res
 
     $scope.reload= ->
         do load
 
 
 
-app.controller 'PlayersSenderSmsCtrl', ($scope, $location, Player, PlayerSenderSms) ->
+# Контроллер рассылки смс
+app.controller 'PlayersSenderSmsCtrl', ($rootScope, $scope, $location, Player, PlayerSenderSms) ->
     $scope.players= {}
-    $scope.state= 'load'
     $scope.sms= new PlayerSenderSms
-
 
     load= ->
         $scope.players= Player.query ->
             $scope.state= 'loaded'
-            console.log 'Пользователи загружены'
+        , (res) ->
+            $rootScope.error= res
 
     do load
-
 
     $scope.togglePlayer= (player) ->
         player.selected= !player.selected
 
-
-    $scope.send= (SmsForm) ->
+    # Отправка
+    $scope.send= ->
         $scope.sms.to= []
         $scope.players.map (val, i) ->
             if val.selected == true
                 $scope.sms.to.push val.phone
 
         $scope.sms.$send ->
-            $location.path '/players/player/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        SmsForm[input].$setValidity error.error, false
-
+            $location.path '/players/player/list'
+        , (res) ->
+            $rootScope.error= res
 
     $scope.reload= ->
         do load

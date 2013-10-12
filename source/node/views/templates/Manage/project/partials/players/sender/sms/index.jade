@@ -2,15 +2,16 @@ extends ../../../layout
 extends ../../layout
 
 block section--main
+    input.input(placeholder='Поиск', ng-model='playerSearch')
     table.table.players
         thead
             tr
-                th.t #
-                th.t.col-flex: .table-col: .table-col-sortable Игрок
-                th.t: .table-col: .table-col-sortable Телефон
+                th.t: .t-col #
+                th.t.col-flex: .t-col.table-col: .table-col-sortable Игрок
+                th.t: .t-col: Телефон
 
         tbody
-            tr(ng-repeat='player in players', ng-click='togglePlayer(player)', ng-class='{"selected success":player.selected}')
+            tr(ng-repeat='player in players | filter:playerSearch', ng-click='togglePlayer(player)', ng-class='{"selected":player.selected}')
                 td.t {{player.id}}
                 td.t {{player.name}}
                 td.t {{player.phone}}
@@ -22,5 +23,5 @@ append section--side
             textarea.input(placeholder='Тело', type='text', required, ng-model='sms.text')
 
         fieldset
-            button.btn.btn-primary.btn-block(type='submit', ng-click='send(SmsForm)', ng-disabled='!SmsForm.$valid')
+            button.btn.btn-primary.btn-block(type='submit', ng-click='send()', ng-disabled='!SmsForm.$valid')
                 span Отправить

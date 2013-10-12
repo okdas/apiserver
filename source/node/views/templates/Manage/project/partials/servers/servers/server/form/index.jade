@@ -21,7 +21,7 @@ block section--main
                     button.btn(ng-click='addTag(tag)',ng-disabled='!tag')
                         i.icon-plus
 
-            .row(ng-repeat='serverTag in server.tags')
+            //.row(ng-repeat='serverTag in server.tags')
                 .col-3 {{serverTag.name}}
                 .col-1
                     button.btn(ng-click='removeTag(serverTag)')
@@ -29,13 +29,13 @@ block section--main
 
 
         fieldset(ng-if='action=="create"')
-            button.btn.btn-primary.btn-block(type='submit', ng-click='create(SeverForm)', ng-disabled='!ServerForm.$valid')
+            button.btn.btn-primary.btn-block(type='submit', ng-click='create()', ng-disabled='!ServerForm.$valid')
                 span Создать сервер
 
         fieldset(ng-if='action=="update"'): .row
             .col-10
-                button.btn.btn-primary.btn-block(type='submit',ng-click='update(ServerForm)',ng-disabled='!ServerForm.$valid')
+                button.btn.btn-primary.btn-block(type='submit',ng-click='update()',ng-disabled='!ServerForm.$valid')
                     span Обновить сервер
             .col-2
-                button.btn.btn-link.btn-block.text-left(ng-click='delete(ServerForm)')
+                button.btn.btn-link.btn-block.text-left(ng-click='delete()')
                     span Удалить

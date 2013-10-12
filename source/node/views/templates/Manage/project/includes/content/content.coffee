@@ -1,12 +1,11 @@
 app= angular.module 'project.content', ['ngResource','ngRoute'], ($routeProvider) ->
 
     # Bukkit
-
     $routeProvider.when '/content',
         templateUrl: 'partials/content/', controller: 'BukkitDashboardCtrl'
 
-    # Bukkit. Материалы
 
+    # Bukkit. Материалы
     $routeProvider.when '/content/materials/list',
         templateUrl: 'partials/content/materials/', controller: 'BukkitMaterialListCtrl'
 
@@ -16,8 +15,8 @@ app= angular.module 'project.content', ['ngResource','ngRoute'], ($routeProvider
     $routeProvider.when '/content/materials/material/update/:materialId',
         templateUrl: 'partials/content/materials/material/form/', controller: 'BukkitMaterialFormCtrl'
 
-    # Bukkit. Чары
 
+    # Bukkit. Чары
     $routeProvider.when '/content/enchantments/list',
         templateUrl: 'partials/content/enchantments/', controller: 'BukkitEnchantmentCtrl'
 
@@ -29,7 +28,6 @@ app= angular.module 'project.content', ['ngResource','ngRoute'], ($routeProvider
 
 
     # Теги
-
     $routeProvider.when '/content/tag/list',
         templateUrl: 'partials/content/tags/', controller: 'ContentTagListCtrl'
 
@@ -42,17 +40,13 @@ app= angular.module 'project.content', ['ngResource','ngRoute'], ($routeProvider
 
 
 
+
 ###
 
 Ресурсы
 
 ###
-
-
-
-###
-Модель материала.
-###
+# Модель материала.
 app.factory 'Material', ($resource) ->
     $resource '/api/v1/bukkit/materials/:materialId', {},
         create:
@@ -68,9 +62,9 @@ app.factory 'Material', ($resource) ->
             params:
                 materialId: '@id'
 
-###
-Модель чар.
-###
+
+
+# Модель чар.
 app.factory 'Enchantment', ($resource) ->
     $resource '/api/v1/bukkit/enchantments/:enchantmentId', {},
         create:
@@ -86,6 +80,9 @@ app.factory 'Enchantment', ($resource) ->
             params:
                 enchantmentId: '@id'
 
+
+
+# Модель тега
 app.factory 'Tag', ($resource) ->
     $resource '/api/v1/tags/:tagId', {},
         create:
@@ -101,32 +98,12 @@ app.factory 'Tag', ($resource) ->
             params:
                 tagId: '@id'
 
+
+
+# Список серверов
 app.factory 'ServerList', ($resource) ->
-    $resource '/api/v1/servers/server',
+    $resource '/api/v1/servers/server'
 
-app.factory 'TagServer', ($resource) ->
-    $resource '/api/v1/tags/server/:serverId', {},
-        get:
-            method: 'get'
-            isArray: true
-            params:
-                serverId: '@id'
-
-app.factory 'TagItem', ($resource) ->
-    $resource '/api/v1/tags/items/:tagId'
-
-app.factory 'TagItemServer', ($resource) ->
-    $resource '/api/v1/tags/srv/:tagId', {},
-        get:
-            method: 'get'
-            isArray: true
-            params:
-                tagId: '@id'
-
-        update:
-            method: 'put'
-            params:
-                tagId: '@id'
 
 
 
@@ -136,166 +113,157 @@ app.factory 'TagItemServer', ($resource) ->
 Контроллеры
 
 ###
-
-
-
-###
-Контроллер панели управления.
-###
+# Контроллер панели управления.
 app.controller 'BukkitDashboardCtrl', ($scope) ->
     $scope.state= 'loaded'
 
 
 
-###
-Контроллер материалов баккита
-###
-app.controller 'BukkitMaterialListCtrl', ($scope, $location, Material) ->
+# Контроллер материалов баккита
+app.controller 'BukkitMaterialListCtrl', ($rootScope, $scope, Material) ->
     load= ->
         $scope.materials= Material.query ->
             $scope.state= 'loaded'
+        , (res) ->
+            $rootScope.error= res
 
     do load
 
     $scope.reload= ->
         do load
 
-###
-Контроллер формы материала.
-###
-app.controller 'BukkitMaterialFormCtrl', ($scope, $route, $q, $location, Material) ->
+
+
+# Контроллер формы материала.
+app.controller 'BukkitMaterialFormCtrl', ($rootScope, $scope, $location, Material) ->
     if $route.current.params.materialId
         $scope.material= Material.get $route.current.params, ->
             $scope.state= 'loaded'
             $scope.action= 'update'
+        , (res) ->
+            $rootScope.error= res
     else
         $scope.material= new Material
         $scope.state= 'loaded'
         $scope.action= 'create'
 
     # Действия
-
-    $scope.create= (MaterialForm) ->
+    $scope.create= ->
         $scope.material.$create ->
-            $location.path '/store/materials/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        MaterialForm[input].$setValidity error.error, false
+            $location.path '/store/materials/list'
+        , (res) ->
+            $rootScope.error= res
 
-    $scope.update= (MaterialForm) ->
+    $scope.update= ->
         $scope.material.$update ->
-            $location.path '/store/materials/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        MaterialForm[input].$setValidity error.error, false
+            $location.path '/store/materials/list'
+        , (res) ->
+            $rootScope.error= res
 
     $scope.delete= ->
         $scope.material.$delete ->
             $location.path '/store/materials/list'
+        , (res) ->
+            $rootScope.error= res
 
 
 
-###
-Контроллер чар баккита
-###
-app.controller 'BukkitEnchantmentCtrl', ($scope, $location, Enchantment) ->
+# Контроллер чар баккита
+app.controller 'BukkitEnchantmentCtrl', ($rootScope, $scope, $location, Enchantment) ->
     load= ->
         $scope.enchantments= Enchantment.query ->
             $scope.state= 'loaded'
+        , (res) ->
+            $rootScope.error= res
 
     do load
 
     $scope.reload= ->
         do load
 
-###
-Контроллер формы чара.
-###
-app.controller 'BukkitEnchantmentFormCtrl', ($scope, $route, $q, $location, Enchantment) ->
+
+
+# Контроллер формы чара.
+app.controller 'BukkitEnchantmentFormCtrl', ($rootScope, $scope, $location, Enchantment) ->
     if $route.current.params.enchantmentId
         $scope.enchantment= Enchantment.get $route.current.params, ->
             $scope.state= 'loaded'
             $scope.action= 'update'
+        , (res) ->
+            $rootScope.error= res
     else
         $scope.enchantment= new Enchantment
         $scope.state= 'loaded'
         $scope.action= 'create'
 
     # Действия
-
-    $scope.create= (EnchantmentForm) ->
+    $scope.create= ->
         $scope.enchantment.$create ->
-            $location.path '/store/enchantments/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        EnchantmentForm[input].$setValidity error.error, false
+            $location.path '/store/enchantments/list'
+        , (res) ->
+            $rootScope.error= res
 
-    $scope.update= (EnchantmentForm) ->
+    $scope.update= ->
         $scope.enchantment.$update ->
-            $location.path '/store/enchantments/list', (err) ->
-                $scope.errors= err.data.errors
-                if 400 == err.status
-                    angular.forEach err.data.errors, (error, input) ->
-                        EnchantmentForm[input].$setValidity error.error, false
+            $location.path '/store/enchantments/list'
+        , (res) ->
+            $rootScope.error= res
 
     $scope.delete= ->
         $scope.enchantment.$delete ->
             $location.path '/store/enchantments/list'
+        , (res) ->
+            $rootScope.error= res
 
 
 
-###
-Контроллер списка тегов.
-###
-app.controller 'ContentTagListCtrl', ($scope, Tag) ->
+# Контроллер списка тегов.
+app.controller 'ContentTagListCtrl', ($rootScope, $scope, Tag) ->
     load= ->
         $scope.tags= Tag.query ->
             $scope.state= 'loaded'
-            console.log 'Теги загружены'
+        , (res) ->
+            $rootScope.error= res
 
     do load
-
 
     $scope.reload= ->
         do load
 
 
 
-###
-Контроллер формы тега.
-###
-app.controller 'ContentTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
+# Контроллер формы тега.
+app.controller 'ContentTagFormCtrl', ($rootScope, $scope, $location, Tag) ->
     if $route.current.params.tagId
         $scope.tag= Tag.get $route.current.params, ->
             $scope.tags= Tag.query ->
                 $scope.state= 'loaded'
                 $scope.action= 'update'
+            , (res) ->
+                $rootScope.error= res
+        , (res) ->
+            $rootScope.error= res
     else
         $scope.tag= new Tag
         $scope.tags= Tag.query ->
             $scope.state= 'loaded'
             $scope.action= 'create'
-
+        , (res) ->
+            $rootScope.error= res
 
     $scope.filterTag= (tag) ->
-        isThere= true
+        show= true
         if $scope.tag.parentTags
             $scope.tag.parentTags.map (t) ->
                 if t.id == tag.id
-                    isThere= false
+                    show= false
 
-        return isThere
-
-
+        return show
 
     $scope.addTag= (tag) ->
         newTag= JSON.parse angular.copy tag
         $scope.tag.parentTags= [] if not $scope.tag.parentTags
         $scope.tag.parentTags.push newTag
-
 
     $scope.removeTag= (tag) ->
         remPosition= null
@@ -304,17 +272,20 @@ app.controller 'ContentTagFormCtrl', ($scope, $route, $q, $location, Tag) ->
                 $scope.tag.parentTags.splice i, 1
 
     # Действия
-
-    $scope.create= (TagForm) ->
+    $scope.create= ->
         $scope.tag.$create ->
-            $location.path '/content/tag/list', (err) ->
-                console.log 'err', err
+            $location.path '/content/tag/list'
+        , (res) ->
+            $rootScope.error= res
 
-    $scope.update= (TagForm) ->
+    $scope.update= ->
         $scope.tag.$update ->
-            $location.path '/content/tag/list', (err) ->
-                console.log 'err', err
+            $location.path '/content/tag/list'
+        , (res) ->
+            $rootScope.error= res
 
     $scope.delete= ->
         $scope.tag.$delete ->
             $location.path '/content/tag/list'
+        , (res) ->
+            $rootScope.error= res

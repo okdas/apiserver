@@ -10,18 +10,18 @@ block section--main
     table.table.players
         thead
             tr
-                th.t
-                th.t.col-flex: .sortable: .sortable-cell Имя сервера
-                th.t Ключ
-                th.t
+                th.t: .t-col #
+                th.t.col-flex: .t-col.table-col: .table-col-sortable Имя сервера
+                th.t: .t-col Ключ
+                th.t: .t-col
                     button.btn.btn-info(ng-click='reload()')
                         i.icon-refresh
 
         tbody
             tr(ng-repeat='server in servers')
-                td.t {{server.id}}
-                td.t {{server.title}}
-                td.t {{server.key}}
+                td.t: .t-col {{server.id}}
+                td.t: .t-col {{server.title}}
+                td.t: .t-col {{server.key}}
                 td.t
                     a(href='#/servers/server/update/{{server.id}}')
                         button.btn.btn-success
